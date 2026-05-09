@@ -318,8 +318,8 @@
             <div class="match-input-col">
                 <label>✏️ <span data-ar="النوع" data-en="Type">النوع</span></label>
                 <div class="match-toggle-group">
-                    <button class="match-toggle-btn" id="btnDom" onclick="setFlightType('DOM')">🏠 <span data-ar="محلي" data-en="Domestic">محلي</span></button>
-                    <button class="match-toggle-btn" id="btnInt" onclick="setFlightType('INT')">🌍 <span data-ar="دولي" data-en="International">دولي</span></button>
+                    <button class="match-toggle-btn" id="btnDom" onclick="setFlightType('Local')">🏠 <span data-ar="محلي" data-en="Local">محلي</span></button>
+                    <button class="match-toggle-btn" id="btnInt" onclick="setFlightType('International')">🌍 <span data-ar="دولي" data-en="International">دولي</span></button>
                 </div>
             </div>
         </div>
@@ -633,50 +633,50 @@ const checkInMultiFeesTable={
 const currencyArMap={SAR:'ريال سعودي',AED:'درهم إماراتي',KWD:'دينار كويتي',BHD:'دينار بحريني',OMR:'ريال عُماني',QAR:'ريال قطري',USD:'دولار أمريكي'};
 
 // ─── AIRLINE TABLE ──────────────────────────────────────────────
-// nsHours = no-show cutoff, baggageHours = baggage add deadline (both before dep)
+// baggageHours = baggage deadline & no-show cutoff hours before departure
 const AIRLINE_NS_TABLE={
-    "SV":{name:"Saudia",          nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "XY":{name:"flynas",          nsHours:{DOM:1, INT:6}, baggageHours:{DOM:12,INT:12}},
-    "F3":{name:"flyadeal",        nsHours:{DOM:1, INT:6}, baggageHours:{DOM:1, INT:6}},
-    "FZ":{name:"flydubai",        nsHours:{DOM:6, INT:6}, baggageHours:{DOM:6, INT:6}},
-    "G9":{name:"Air Arabia",      nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "E5":{name:"Air Arabia Egypt",nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "J5":{name:"Air Arabia AUH",  nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "EK":{name:"Emirates",        nsHours:{DOM:6, INT:6}, baggageHours:{DOM:6, INT:6}},
-    "EY":{name:"Etihad",          nsHours:{DOM:6, INT:6}, baggageHours:{DOM:6, INT:6}},
-    "QR":{name:"Qatar Airways",   nsHours:{DOM:6, INT:6}, baggageHours:{DOM:6, INT:6}},
-    "GF":{name:"Gulf Air",        nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "KU":{name:"Kuwait Airways",  nsHours:{DOM:4, INT:4}, baggageHours:{DOM:12,INT:12}},
-    "WY":{name:"Oman Air",        nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "J9":{name:"Jazeera Airways", nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "OV":{name:"SalamAir",        nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "RJ":{name:"Royal Jordanian", nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "ME":{name:"Middle East Air.",nsHours:{DOM:6, INT:6}, baggageHours:{DOM:6, INT:6}},
-    "MS":{name:"EgyptAir",        nsHours:{DOM:4, INT:4}, baggageHours:{DOM:48,INT:48}},
-    "NP":{name:"Nile Air",        nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "SM":{name:"Air Cairo",       nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "UJ":{name:"AlMasria",        nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "6E":{name:"IndiGo",          nsHours:{DOM:1, INT:2}, baggageHours:{DOM:1, INT:2}},
-    "AI":{name:"Air India",       nsHours:{DOM:4, INT:6}, baggageHours:{DOM:12,INT:12}},
-    "IX":{name:"Air India Expr.", nsHours:{DOM:1, INT:2}, baggageHours:{DOM:1, INT:2}},
-    "SG":{name:"SpiceJet",        nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "PK":{name:"PIA",             nsHours:{DOM:4, INT:6}, baggageHours:{DOM:4, INT:6}},
-    "UK":{name:"Vistara",         nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "AK":{name:"AirAsia",         nsHours:{DOM:48,INT:48},baggageHours:{DOM:4, INT:4}},
-    "MH":{name:"Malaysia Air.",   nsHours:{DOM:4, INT:6}, baggageHours:{DOM:4, INT:6}},
-    "SQ":{name:"Singapore Air.",  nsHours:{DOM:4, INT:6}, baggageHours:{DOM:4, INT:6}},
-    "CX":{name:"Cathay Pacific",  nsHours:{DOM:4, INT:6}, baggageHours:{DOM:4, INT:6}},
-    "TK":{name:"Turkish Airlines",nsHours:{DOM:4, INT:4}, baggageHours:{DOM:12,INT:12}},
-    "PC":{name:"Pegasus",         nsHours:{DOM:4, INT:4}, baggageHours:{DOM:4, INT:4}},
-    "FR":{name:"Ryanair",         nsHours:{DOM:48,INT:48},baggageHours:{DOM:2, INT:2}},
-    "U2":{name:"easyJet",         nsHours:{DOM:48,INT:48},baggageHours:{DOM:2, INT:2}},
-    "W6":{name:"Wizz Air",        nsHours:{DOM:48,INT:48},baggageHours:{DOM:3, INT:3}},
-    "LH":{name:"Lufthansa",       nsHours:{DOM:4, INT:6}, baggageHours:{DOM:4, INT:6}},
-    "AF":{name:"Air France",      nsHours:{DOM:4, INT:6}, baggageHours:{DOM:4, INT:6}},
-    "BA":{name:"British Airways", nsHours:{DOM:4, INT:6}, baggageHours:{DOM:4, INT:6}},
-    "ET":{name:"Ethiopian Air.",  nsHours:{DOM:4, INT:6}, baggageHours:{DOM:4, INT:6}},
-    "KQ":{name:"Kenya Airways",   nsHours:{DOM:4, INT:6}, baggageHours:{DOM:4, INT:6}},
-    "DEFAULT":{name:"",nsHours:{DOM:24,INT:24},baggageHours:{DOM:24,INT:24}}
+    "SV":{name:"Saudi Arabian Airlines", baggageHours:6},
+    "XY":{name:"flynas",                 baggageHours:12},
+    "F3":{name:"flyadeal",               baggageHours:6},
+    "FZ":{name:"flydubai",               baggageHours:24},
+    "G9":{name:"Air Arabia",             baggageHours:24},
+    "E5":{name:"Air Arabia Egypt",       baggageHours:24},
+    "J5":{name:"Air Arabia AUH",         baggageHours:24},
+    "EK":{name:"Emirates",               baggageHours:6},
+    "EY":{name:"Etihad Airways",         baggageHours:6},
+    "QR":{name:"Qatar Airways",          baggageHours:3},
+    "GF":{name:"Gulf Air",               baggageHours:24},
+    "KU":{name:"Kuwait Airways",         baggageHours:24},
+    "WY":{name:"Oman Air",               baggageHours:24},
+    "J9":{name:"Jazeera Airways",        baggageHours:24},
+    "OV":{name:"SalamAir",               baggageHours:24},
+    "RJ":{name:"Royal Jordanian",        baggageHours:24},
+    "ME":{name:"Middle East Airlines",   baggageHours:24},
+    "MS":{name:"EgyptAir",               baggageHours:48},
+    "NP":{name:"Nile Air",               baggageHours:24},
+    "SM":{name:"Air Cairo",              baggageHours:8},
+    "UJ":{name:"AlMasria",               baggageHours:24},
+    "6E":{name:"IndiGo",                 baggageHours:24},
+    "AI":{name:"Air India",              baggageHours:24},
+    "IX":{name:"Air India Express",      baggageHours:24},
+    "SG":{name:"SpiceJet",               baggageHours:24},
+    "PK":{name:"PIA",                    baggageHours:6},
+    "UK":{name:"Vistara",                baggageHours:24},
+    "AK":{name:"AirAsia",                baggageHours:4},
+    "MH":{name:"Malaysia Airlines",      baggageHours:24},
+    "SQ":{name:"Singapore Airlines",     baggageHours:24},
+    "CX":{name:"Cathay Pacific",         baggageHours:24},
+    "TK":{name:"Turkish Airlines",       baggageHours:12},
+    "PC":{name:"Pegasus",                baggageHours:24},
+    "FR":{name:"Ryanair",                baggageHours:2},
+    "U2":{name:"easyJet",                baggageHours:2},
+    "W6":{name:"Wizz Air",               baggageHours:3},
+    "LH":{name:"Lufthansa",              baggageHours:24},
+    "AF":{name:"Air France",             baggageHours:24},
+    "BA":{name:"British Airways",        baggageHours:24},
+    "ET":{name:"Ethiopian Air.",         baggageHours:6},
+    "KQ":{name:"Kenya Airways",          baggageHours:6},
+    "DEFAULT":{name:"",                  baggageHours:24}
 };
 
 const AIRPORT_COUNTRY={
@@ -690,7 +690,7 @@ const AIRPORT_COUNTRY={
 function getRouteFlightType(fromCode,toCode){
     const fc=AIRPORT_COUNTRY[(fromCode||'').toUpperCase()];
     const tc=AIRPORT_COUNTRY[(toCode||'').toUpperCase()];
-    return (fc&&tc&&fc===tc)?'DOM':'INT';
+    return (fc&&tc&&fc===tc)?'Local':'International';
 }
 
 document.addEventListener('wheel',function(e){if(document.activeElement.type==='number')document.activeElement.blur();},{passive:false});
@@ -910,10 +910,14 @@ async function handleTicketFile(file){
         const fullText=await extractTextFromPDF(file);
         if(!fullText.trim())throw new Error('Empty PDF');
         const result=parseTicketText(fullText);
+        result._rawText=fullText;   // ← store raw text for direct extraction
         ticketData=result;
+        // ✅ Always reset manualOverride on new ticket so NS value auto-fills cleanly
+        document.getElementById('nsValue').dataset.manualOverride='';
+        document.getElementById('nsValue').value='';
         setScanStatus('success',t('✅ تم استخراج بيانات التذكرة بنجاح','✅ Ticket data extracted successfully'),false);
         renderTicketPanel(result);
-        // Auto-fill airline + datetime from ticket
+        // Auto-fill airline + datetime directly from raw text
         _autoFillNsFromTicket(result);
     }catch(err){
         console.error(err);
@@ -928,8 +932,19 @@ function _autoFillNsFromTicket(data){
     let filled=false;
     const pad=n=>String(n).padStart(2,'0');
 
-    // 1) Airline code
-    const airlineCode=fl&&fl.airlineCode ? fl.airlineCode : null;
+    // 1) Airline code — try flight object first, then scan raw text directly
+    let airlineCode=fl&&fl.airlineCode ? fl.airlineCode : null;
+    // Fallback: scan raw ticket text for known airline codes
+    if(!airlineCode && data._rawText){
+        const raw=data._rawText.toUpperCase();
+        // Look for known codes in AIRLINE_NS_TABLE order
+        for(const code of Object.keys(AIRLINE_NS_TABLE)){
+            if(code==='DEFAULT')continue;
+            // must appear as flight number pattern: code followed by dash/space + digits
+            const re=new RegExp('(?:^|[\\s,;(])'+code.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[\\s-]?(\\d{2,4})\\b');
+            if(re.test(raw)){airlineCode=code;break;}
+        }
+    }
     if(airlineCode){
         const codeEl=document.getElementById('nsAirlineCode');
         codeEl.value=airlineCode;
@@ -1006,6 +1021,24 @@ function _autoFillNsFromTicket(data){
                 const d=new Date(`${rawDate} ${rawTime}`);
                 if(!isNaN(d.getTime())){dtEl.value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;parsed=true;}
             }catch(e){}
+        }
+        // Strategy E: fallback — scan raw text for first matching date+time near OB segment
+        if(!parsed && data._rawText){
+            const rawT=data._rawText;
+            // Find "Departure from" section and look for date/time nearby
+            const obIdx=rawT.search(/Departure\s+from/i);
+            const obSnip=obIdx>=0 ? rawT.substring(obIdx, obIdx+400) : rawT.substring(0,400);
+            const dObj=_extractDate(obSnip);
+            const tMatch=obSnip.match(/\b([01]?\d|2[0-3]):[0-5]\d(?:\s*[AaPp][Mm])?\b/);
+            if(dObj.day!=='??'&&tMatch){
+                const monthIdx={JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11}[dObj.mon]??null;
+                if(monthIdx!==null){
+                    const {hr:hr2,mn:mn2}=parseTime(tMatch[0]);
+                    const yr2=parseInt(dObj.year);const day2=parseInt(dObj.day);
+                    dtEl.value=`${yr2}-${pad(monthIdx+1)}-${pad(day2)}T${pad(hr2)}:${pad(mn2)}`;
+                    parsed=true;
+                }
+            }
         }
 
         if(parsed){
@@ -1123,21 +1156,35 @@ const _monthAr={JAN:'يناير',FEB:'فبراير',MAR:'مارس',APR:'أبري
 function _numToMon(n){return['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][n-1]||'JAN';}
 function _extractDate(text){
     const yr=new Date().getFullYear().toString();let dm;
+    // ISO format: 2026-05-26
     dm=text.match(/(\d{4})-(\d{2})-(\d{2})/);if(dm)return{day:dm[3],mon:_numToMon(parseInt(dm[2])),year:dm[1]};
-    dm=text.match(/(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,})\s+(\d{4})/);if(dm){const mo=_monthMapEn[dm[2].toLowerCase()]||dm[2].substring(0,3).toUpperCase();return{day:dm[1].padStart(2,'0'),mon:mo,year:dm[3]};}
+    // "26 May 2026" or "26 MAY 2026"
+    dm=text.match(/(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,})\s+(\d{4})/);if(dm){const mo=_monthMapEn[dm[2].toLowerCase()]||_monthMapEn[dm[2].substring(0,3).toLowerCase()]||dm[2].substring(0,3).toUpperCase();return{day:dm[1].padStart(2,'0'),mon:mo,year:dm[3]};}
+    // "May 26, 2026" or "May 26 2026" (month name first)
+    dm=text.match(/([A-Za-z]{3,})\s+(\d{1,2})(?:st|nd|rd|th)?,?\s*(\d{4})/);if(dm){const mo=_monthMapEn[dm[1].toLowerCase()]||_monthMapEn[dm[1].substring(0,3).toLowerCase()]||dm[1].substring(0,3).toUpperCase();if(mo)return{day:dm[2].padStart(2,'0'),mon:mo,year:dm[3]};}
+    // Arabic month names
     for(const[k,v]of Object.entries(_monthMapAr)){const re=new RegExp('(\\d{1,2})\\s+'+k+'(?:\\s+(\\d{4}))?');const am=text.match(re);if(am)return{day:am[1].padStart(2,'0'),mon:v,year:am[2]||yr};}
+    // DD/MM/YYYY
     dm=text.match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);if(dm)return{day:dm[1].padStart(2,'0'),mon:_numToMon(parseInt(dm[2])),year:dm[3]};
+    // DDMMMYY(YY) like 26MAY26 or 26MAY2026
     dm=text.match(/\b(\d{2})(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)(\d{2,4})?\b/i);if(dm){const y=dm[3]?(dm[3].length===2?'20'+dm[3]:dm[3]):yr;return{day:dm[1],mon:dm[2].toUpperCase(),year:y};}
-    dm=text.match(/([A-Za-z]{3,})\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})/);if(dm)return{day:dm[2].padStart(2,'0'),mon:_monthMapEn[dm[1].toLowerCase()]||dm[1].substring(0,3).toUpperCase(),year:dm[3]};
     return{day:'??',mon:'???',year:yr};
 }
 function _extractAirline(text){
-    // Priority 1: match known airline codes from _airDB
-    const re=/\b([A-Z0-9]{2})\s?[-]?\s?(\d{2,4})\b/g;let m;
-    while((m=re.exec(text))!==null){const code=m[1].toUpperCase();if(_airDB[code])return{code,num:m[2]};}
-    // Priority 2: match any 2-letter code paired with a flight number, even if not in _airDB
+    // Priority 1: match flight number pattern like "F3-115", "XY-64", "SV 123"
+    // Must handle alphanumeric codes (e.g. F3, 6E) - use word boundary only at start
+    const re=/(?:^|[\s,;(])([A-Z][A-Z0-9]|[0-9][A-Z])\s?[-\s]?\s?(\d{2,4})\b/g;let m;
+    while((m=re.exec(text))!==null){
+        const code=m[1].toUpperCase();
+        if(_airDB[code])return{code,num:m[2]};
+    }
+    // Priority 2: strict word-boundary for known codes (handles "F3-115" at line start)
+    const re1b=/\b([A-Z0-9]{2})\s?[-]?\s?(\d{2,4})\b/g;
+    re1b.lastIndex=0;
+    while((m=re1b.exec(text))!==null){const code=m[1].toUpperCase();if(_airDB[code])return{code,num:m[2]};}
+    // Priority 3: match any 2-letter code paired with a flight number, even if not in _airDB
     const re2=/\b([A-Z]{2})\s?[-]?\s?(\d{2,4})\b/g;
-    const skipCodes=new Set(['TO','AT','IN','OF','ON','BY','IS','DO','IT','AS','AN','OR','BE','IF','NO','SO','UP','GO','HE','WE','MY','US','AM','PM']);
+    const skipCodes=new Set(['TO','AT','IN','OF','ON','BY','IS','DO','IT','AS','AN','OR','BE','IF','NO','SO','UP','GO','HE','WE','MY','US','AM','PM','RT','OW']);
     re2.lastIndex=0;
     while((m=re2.exec(text))!==null){
         const code=m[1].toUpperCase();
@@ -1201,7 +1248,7 @@ function parseTicketText(text){
     const pnr=allPNRs[0]||null,pnr2=allPNRs[1]||null;
     const hasMultiPNR=allPNRs.length>=2;
     const ticketNums=[...t2flat.toUpperCase().matchAll(/\b(\d{13})\b/g)].map(m=>m[1]);
-    const times=[...t2flat.matchAll(/\b([01]?\d|2[0-3]):[0-5]\d\b/g)].map(m=>m[0]);
+    const times=[...t2flat.matchAll(/\b([01]?\d|2[0-3]):[0-5]\d(?:\s*[AaPp][Mm])?\b/g)].map(m=>m[0].trim());
     let paxNames=[],paxTypes=[],adultCount=0;
     const _paxTypeMap={ADT:'adult',ADULT:'adult',CHD:'child',CHILD:'child',INF:'infant',INFANT:'infant'};
     function _pushPax(name,typeStr){const type=_paxTypeMap[typeStr.toUpperCase()]||'adult';if(_isValidPassengerName(name)&&!paxNames.includes(name)){paxNames.push(name);paxTypes.push(type);if(type==='adult')adultCount++;}}
@@ -1225,8 +1272,12 @@ function parseTicketText(text){
         const isReturn=/^\s*Return\s+from\b/i.test(seg);
         const direction=isReturn?'inbound':'outbound';const id=isReturn?'IB':'OB';
         const airports=_extractAirports(segFlat);if(airports.length<2)return;
-        const airline=_extractAirline(segFlat);const d=_extractDate(segFlat);
-        const segTimes=[...segFlat.matchAll(/\b([01]?\d|2[0-3]):[0-5]\d\b/g)].map(m=>m[0]);
+        // Try airline extraction from flat segment, also try the original multi-line segment
+        // in case PDF.js split the flight code across lines
+        let airline=_extractAirline(segFlat);
+        if(!airline.code) airline=_extractAirline(seg);
+        const d=_extractDate(segFlat);
+        const segTimes=[...segFlat.matchAll(/\b([01]?\d|2[0-3]):[0-5]\d(?:\s*[AaPp][Mm])?\b/g)].map(m=>m[0].trim());
         const dateAr=d.day!=='??'?`${parseInt(d.day)} ${_monthAr[d.mon]||d.mon} ${d.year}`:null;
         const dateEn=d.day!=='??'?`${parseInt(d.day)} ${d.mon} ${d.year}`:null;
         const fromCode=airports[0].code;const toCode=airports[airports.length-1].code;
@@ -1365,12 +1416,12 @@ function openMatchingClient(data){
     const totalPax=(data.passengers||[]).length;
     const billablePax=paxTypes.filter(t_=>t_!=='infant').length||totalPax||1;
     _matchPax=billablePax;
-    let detectedType='INT';
+    let detectedType='International';
     if(data.flights&&data.flights.length>0){const fl=data.flights[0];detectedType=getRouteFlightType(fl.from,fl.to);}
     _matchFlightType=detectedType;
     _matchPnr=data.hasMultiPNR?'multi':'single';
     const routeInfo=data.flights&&data.flights[0]?`${data.flights[0].from||'?'} → ${data.flights[0].to||'?'}`:t('غير محدد','unknown');
-    const detectedLabel=detectedType==='DOM'?`<span style="color:#0d9e5c;font-weight:900;">🏠 ${t('محلي','Domestic')}</span>`:`<span style="color:#1d4ed8;font-weight:900;">🌍 ${t('دولي','International')}</span>`;
+    const detectedLabel=detectedType==='Local'?`<span style="color:#0d9e5c;font-weight:900;">🏠 ${t('محلي','Local')}</span>`:`<span style="color:#1d4ed8;font-weight:900;">🌍 ${t('دولي','International')}</span>`;
     document.getElementById('mxPaxExtracted').innerHTML=`<strong>${totalPax}</strong> ${t('مسافر','pax')}`+(paxTypes.includes('infant')?` <span style="font-size:0.7rem;color:#b45309;">(incl. infant)</span>`:'')+` → <strong style="color:#0d9e5c;">${billablePax}</strong> ${t('قابل للفوترة','billable')}`;
     document.getElementById('mxFlightTypeExtracted').innerHTML=`${detectedLabel} <span style="font-size:0.72rem;color:#64748b;">(${routeInfo})</span>`;
     const pnrLabel=data.hasMultiPNR?`<span style="color:#dc2626;font-weight:900;">📑 Multi PNR</span> <span style="font-size:0.7rem;color:#64748b;">(${data.pnr||'?'} + ${data.pnr2||'?'})</span>`:`<span style="color:#7c3aed;font-weight:900;">🔖 Single PNR</span> <span style="font-size:0.7rem;color:#64748b;">${data.pnr?'('+data.pnr+')':''}</span>`;
@@ -1385,13 +1436,13 @@ function updateMatchPaxDisplay(){
     const infoEl=document.getElementById('matchPaxInfo');
     if(ticketData){const infants=(ticketData.passengerTypes||[]).filter(t_=>t_==='infant').length;if(infants>0)infoEl.innerHTML=`<span style="color:#b45309;">👶 ${infants} infant(s)<br>${t('الرضع لا يُحتسبون','Not billed')}</span>`;else infoEl.textContent='';}
 }
-function setFlightType(type,silent){_matchFlightType=type;document.getElementById('btnDom').className='match-toggle-btn'+(type==='DOM'?' active-dom':'');document.getElementById('btnInt').className='match-toggle-btn'+(type==='INT'?' active-int':'');if(!silent){updateMatchSummary();runMatchValidation();}}
+function setFlightType(type,silent){_matchFlightType=type;document.getElementById('btnDom').className='match-toggle-btn'+(type==='Local'?' active-dom':'');document.getElementById('btnInt').className='match-toggle-btn'+(type==='International'?' active-int':'');if(!silent){updateMatchSummary();runMatchValidation();}}
 function setMatchPnr(type,silent){_matchPnr=type;document.getElementById('btnSingle').className='match-toggle-btn'+(type==='single'?' active-single':'');document.getElementById('btnMulti').className='match-toggle-btn'+(type==='multi'?' active-multi':'');if(!silent){updateMatchSummary();runMatchValidation();}}
 function updateMatchSummary(){
     const routeType=ticketData?ticketData.routeType:'OW';
     document.getElementById('sumRoute').textContent=routeType==='RT'?t('ذهاب وعودة','Return RT'):t('اتجاه واحد','One Way OW');
     document.getElementById('sumPax').textContent=`${_matchPax} ${t('مسافر','pax')}`;
-    document.getElementById('sumFlightType').textContent=_matchFlightType==='DOM'?t('محلي','Domestic'):t('دولي','International');
+    document.getElementById('sumFlightType').textContent=_matchFlightType==='Local'?t('محلي','Local'):t('دولي','International');
     document.getElementById('sumPnr').textContent=_matchPnr==='multi'?'Multi PNR':'Single PNR';
 }
 function runMatchValidation(){
@@ -1407,7 +1458,7 @@ function runMatchValidation(){
 }
 function applyMatchedData(){
     if(!ticketData)return;
-    const pos=document.getElementById('posCountry');const cur=pos.value;const isDom=_matchFlightType==='DOM';
+    const pos=document.getElementById('posCountry');const cur=pos.value;const isDom=_matchFlightType==='Local';
     if(isDom){if(cur==='KSA_INT')pos.value='KSA_DOM';else if(cur==='BHR_INT')pos.value='BHR_DOM';else if(cur==='OMN_INT')pos.value='OMN_DOM';else if(!cur.includes('DOM'))pos.value='KSA_DOM';}
     else{if(cur==='KSA_DOM')pos.value='KSA_INT';else if(cur==='BHR_DOM')pos.value='BHR_INT';else if(cur==='OMN_DOM')pos.value='OMN_INT';}
     document.getElementById('paxCount').value=_matchPax;
@@ -1451,29 +1502,20 @@ function runNoShowDetect(){
     const entry=AIRLINE_NS_TABLE[code]||null;
     if(!entry){_hideNsDeadlines();return;}
 
-    // Determine DOM/INT
-    let flightType='INT';
-    if(ticketData){const fl=(ticketData.flights||[])[0];if(fl)flightType=getRouteFlightType(fl.from,fl.to);}
-    if(_matchFlightType)flightType=_matchFlightType;
+    const nsHours  = entry.baggageHours;
+    const bagHours = entry.baggageHours;
 
-    const nsHours  = entry.nsHours[flightType]   ?? entry.nsHours.INT;
-    const bagHours = entry.baggageHours[flightType] ?? entry.baggageHours.INT;
-
-    // Auto-fill no-show value (only if not manually set or was auto)
-    // Auto-fill nsValue unless user has manually typed a value
+    // Always auto-fill nsValue from the airline table
     const nsValEl=document.getElementById('nsValue');
-    const isManual=nsValEl.dataset.manualOverride==='1';
-    if(!isManual){
-        nsValEl.value=nsHours;
-        document.getElementById('nsUnit').value='ساعه';
-    }
+    nsValEl.value=nsHours;
+    document.getElementById('nsUnit').value='ساعه';
 
     // Update info boxes
     document.getElementById('nsInfoGrid').style.display='grid';
     document.getElementById('nsBoxAirlineName').textContent=entry.name||code;
-    document.getElementById('nsBoxAirlineCode2').textContent=`IATA: ${code} · ${flightType}`;
+    document.getElementById('nsBoxAirlineCode2').textContent=`IATA: ${code}`;
     document.getElementById('nsBoxBagHours').textContent=`${bagHours}h ${t('قبل الإقلاع','before departure')}`;
-    document.getElementById('nsBoxBagType').textContent=`${t('نافذة الحقيبة','Baggage window')} · ${flightType}`;
+    document.getElementById('nsBoxBagType').textContent=t('نافذة الحقيبة','Baggage window');
 
     if(!depInput){
         document.getElementById('nsBagDeadlineRow').className='ns-deadline-row ns-hidden';
@@ -1485,7 +1527,7 @@ function runNoShowDetect(){
     const now      = new Date();
     const fmt      = d=>d.toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false});
 
-    const bagDeadline = new Date(depTime.getTime() - bagHours*3600*1000);
+    const bagDeadline = new Date(depTime.getTime() - bagHours*3600*1000 - 40*60*1000);
     const nsDeadline  = new Date(depTime.getTime() - nsHours*3600*1000);
 
     // ── Baggage deadline row ────────────────────────────────
@@ -1601,15 +1643,12 @@ function _showNsAlert(code,airlineName,depTime,bagDeadline,nsDeadline,bagMinsLef
 document.addEventListener('DOMContentLoaded',()=>{
     const nsValEl=document.getElementById('nsValue');
     nsValEl.addEventListener('input',function(){
-        // Only flag as manual if user actually typed (not programmatic .value= assignment)
-        if(document.activeElement===this){
-            this.dataset.manualOverride='1';
-        }
         calculate();
     });
-    // Clicking the airline IATA field again clears manual override so auto-fill resumes
     document.getElementById('nsAirlineCode').addEventListener('input',function(){
+        // When airline code changes, always re-run detection to update nsValue
         document.getElementById('nsValue').dataset.manualOverride='';
+        runNoShowDetect();
     });
 });
 
