@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" id="htmlRoot">
 <head>
@@ -42,89 +43,129 @@
         .card-title{font-size:0.9rem;font-weight:800;color:var(--primary);}
         .card-subtitle{font-size:0.72rem;color:var(--text-light);margin-top:2px;}
 
-        /* SCANNER */
-        .ticket-scanner-card{background:linear-gradient(135deg,#f0faff 0%,#e6f4ff 50%,#f0f9ee 100%);border:1.5px dashed #7ab8f5;border-radius:var(--radius);padding:18px;margin-bottom:16px;position:relative;overflow:hidden;}
-        .ticket-scanner-card::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(0,196,232,0.12),transparent);}
-        .scanner-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-        .scanner-label{display:flex;align-items:center;gap:8px;font-size:0.85rem;font-weight:800;color:var(--primary);}
-        .scanner-badge{background:linear-gradient(135deg,var(--accent),#0099ff);color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:99px;}
-        .scanner-optional{font-size:0.68rem;color:var(--text-light);background:var(--bg-deep);border-radius:20px;padding:3px 10px;font-weight:600;}
-        .scan-drop-zone{border:2px dashed #b3d4f7;border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:rgba(255,255,255,0.6);transition:all 0.2s;}
-        .scan-drop-zone:hover{border-color:var(--accent);background:rgba(0,196,232,0.05);}
-        .scan-drop-zone.dragover{border-color:var(--scan-green);background:var(--scan-green-bg);}
-        .scan-drop-icon{font-size:2rem;margin-bottom:6px;display:block;}
-        .scan-drop-text{font-size:0.8rem;color:var(--text-mid);font-weight:600;}
-        .scan-drop-sub{font-size:0.68rem;color:var(--text-light);margin-top:4px;}
-        #ticketFileInput{display:none;}
-        .scan-status{margin-top:12px;border-radius:10px;padding:12px 14px;display:none;align-items:flex-start;gap:10px;}
-        .scan-status.scanning{display:flex;background:#f0f9ff;border:1px solid #bae6fd;}
-        .scan-status.success{display:flex;background:var(--scan-green-bg);border:1px solid #a7f3d0;}
-        .scan-status.error{display:flex;background:#fff5f5;border:1px solid #fca5a5;}
-        .scan-spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid #bae6fd;border-top-color:var(--accent);animation:spin 0.7s linear infinite;flex-shrink:0;margin-top:1px;}
+        /* ═══════════════════════════════════════════
+           UNIFIED TICKET + MATCH PANEL — NEW DESIGN
+           ═══════════════════════════════════════════ */
         @keyframes spin{to{transform:rotate(360deg);}}
-        .scan-status-text{font-size:0.78rem;font-weight:600;}
-        .ticket-info-panel{margin-top:14px;border-radius:10px;background:white;border:1.5px solid #c3e0ff;overflow:hidden;display:none;animation:slideDown 0.3s ease;}
-        @keyframes slideDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+        @keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+        @keyframes pulse-green{0%,100%{box-shadow:0 0 0 0 rgba(13,158,92,0.4);}50%{box-shadow:0 0 0 6px rgba(13,158,92,0);}}
+
+        /* Outer wrapper card */
+        .ticket-scanner-card{
+            background:var(--card);border-radius:var(--radius);
+            box-shadow:var(--shadow-card);border:1px solid var(--border-light);
+            margin-bottom:16px;overflow:hidden;
+        }
+
+        /* Top bar: upload zone always visible */
+        .tsc-topbar{
+            background:linear-gradient(135deg,#f0faff 0%,#e8f4ff 100%);
+            border-bottom:1px solid var(--border-light);
+            padding:14px 16px;display:flex;align-items:center;gap:12px;
+            cursor:pointer;transition:background 0.2s;
+        }
+        .tsc-topbar:hover{background:linear-gradient(135deg,#e6f4ff,#dbeeff);}
+        .tsc-topbar.has-file{background:linear-gradient(135deg,#f0fff8,#dcfce7);border-bottom-color:#a7f3d0;cursor:default;}
+        .tsc-topbar.has-file:hover{background:linear-gradient(135deg,#f0fff8,#dcfce7);}
+        .tsc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;background:linear-gradient(135deg,#dbeafe,#bfdbfe);}
+        .tsc-icon.success{background:linear-gradient(135deg,#d1fae5,#a7f3d0);}
+        .tsc-icon.scanning{background:linear-gradient(135deg,#fef3c7,#fde68a);}
+        .tsc-text{flex:1;min-width:0;}
+        .tsc-title{font-size:0.85rem;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:7px;}
+        .tsc-sub{font-size:0.7rem;color:var(--text-light);margin-top:2px;}
+        .scanner-badge{background:linear-gradient(135deg,var(--accent),#0099ff);color:white;font-size:0.62rem;font-weight:700;padding:2px 8px;border-radius:99px;flex-shrink:0;}
+        .tsc-clear-btn{background:#fff5f5;border:1px solid #fca5a5;color:var(--danger);border-radius:8px;padding:5px 12px;font-size:0.72rem;font-family:'Cairo',sans-serif;cursor:pointer;font-weight:700;flex-shrink:0;transition:all 0.18s;}
+        .tsc-clear-btn:hover{background:var(--danger);color:white;}
+        .scan-spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid #bae6fd;border-top-color:var(--accent);animation:spin 0.7s linear infinite;flex-shrink:0;}
+        #ticketFileInput{display:none;}
+
+        /* Expanded body — shown after ticket parsed */
+        .ticket-info-panel{display:none;animation:slideDown 0.3s ease;}
         .ticket-info-panel.visible{display:block;}
-        .ticket-panel-header{background:linear-gradient(135deg,var(--primary),var(--primary-mid));padding:10px 14px;color:white;font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
-        .ticket-panel-header span{display:flex;align-items:center;gap:6px;}
-        .ticket-clear-btn{background:rgba(255,255,255,0.18);border:none;color:white;border-radius:6px;padding:3px 10px;font-size:0.68rem;font-family:'Cairo',sans-serif;cursor:pointer;font-weight:700;}
-        .ticket-clear-btn:hover{background:rgba(255,255,255,0.3);}
-        .ticket-panel-body{padding:14px;}
-        .flights-section-label,.pax-chips-label{font-size:0.72rem;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
-        .flights-grid{display:flex;flex-direction:column;gap:7px;margin-bottom:12px;}
-        .flight-chip{border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;cursor:pointer;transition:all 0.18s;background:var(--input-bg);display:flex;align-items:center;gap:10px;}
+
+        /* ── SECTION A: Flights ── */
+        .tip-section{padding:14px 16px;border-bottom:1px solid var(--border-light);}
+        .tip-section-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+        .tip-section-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:900;flex-shrink:0;}
+        .sn-blue{background:var(--primary);color:white;}
+        .sn-green{background:#0d9e5c;color:white;}
+        .sn-amber{background:#f59e0b;color:white;}
+        .tip-section-label{font-size:0.78rem;font-weight:800;color:var(--primary);}
+        .tip-section-hint{font-size:0.68rem;color:var(--text-light);margin-right:auto;}
+
+        .flights-grid{display:flex;flex-direction:column;gap:7px;}
+        .flight-chip{border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all 0.18s;background:var(--input-bg);display:flex;align-items:center;gap:10px;}
         .flight-chip:hover{border-color:var(--primary-light);background:#eef3ff;}
         .flight-chip.selected{border-color:var(--primary);background:linear-gradient(135deg,#eef3ff,#e0e9ff);box-shadow:0 0 0 3px rgba(38,87,204,0.1);}
-        .flight-chip-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-        .flight-chip.selected .flight-chip-check{background:var(--primary);border-color:var(--primary);color:white;font-size:0.6rem;}
+        .flight-chip-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.18s;}
+        .flight-chip.selected .flight-chip-check{background:var(--primary);border-color:var(--primary);color:white;font-size:0.65rem;}
         .flight-chip-info{flex:1;}
-        .flight-chip-route{font-size:0.8rem;font-weight:800;color:var(--primary);}
+        .flight-chip-route{font-size:0.82rem;font-weight:800;color:var(--primary);}
         .flight-chip-cities{font-size:0.72rem;color:var(--text-mid);margin:2px 0 3px;font-weight:600;}
         .flight-chip-detail{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:0.7rem;}
         .fcd-fn{background:#dbeafe;color:#1d4ed8;border-radius:5px;padding:1px 7px;font-weight:800;font-size:0.68rem;font-family:'IBM Plex Mono',monospace;}
         .fcd-al{color:var(--text-mid);font-weight:600;}
         .fcd-dt{background:#fef3c7;color:#92400e;border-radius:5px;padding:1px 7px;font-weight:700;font-size:0.68rem;}
         .fcd-tm{background:var(--tag-bg);color:var(--primary);border-radius:5px;padding:1px 7px;font-weight:700;font-size:0.68rem;font-family:'IBM Plex Mono',monospace;}
-        .flight-chip-dir{font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:20px;}
+        .flight-chip-dir{font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;}
         .dir-ob{background:#dbeafe;color:#1d4ed8;}.dir-ib{background:#fef3c7;color:#92400e;}
-        .pax-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;}
-        .pax-chip{border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;transition:all 0.18s;background:var(--input-bg);font-size:0.75rem;font-weight:600;display:flex;align-items:center;gap:5px;color:var(--text-mid);}
+
+        /* ── SECTION B: Passengers ── */
+        .pax-chips{display:flex;flex-wrap:wrap;gap:7px;}
+        .pax-chip{border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;transition:all 0.18s;background:var(--input-bg);font-size:0.76rem;font-weight:600;display:flex;align-items:center;gap:5px;color:var(--text-mid);}
         .pax-chip:hover{border-color:var(--primary-light);color:var(--primary);}
         .pax-chip.selected{background:var(--primary);border-color:var(--primary);color:white;}
-        .apply-ticket-btn{width:100%;padding:10px;border:none;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:800;font-size:0.82rem;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;margin-top:12px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:7px;}
-        .apply-ticket-btn:hover{transform:translateY(-1px);}
 
-        /* MATCHING PANEL */
-        .matching-panel{margin-top:14px;border-radius:12px;overflow:hidden;border:2px solid #f59e0b;display:none;animation:slideDown 0.3s ease;}
-        .matching-panel.visible{display:block;}
-        .matching-panel-header{background:linear-gradient(135deg,#f59e0b,#d97706);padding:11px 16px;color:white;font-size:0.82rem;font-weight:800;display:flex;align-items:center;gap:8px;}
-        .matching-panel-body{background:#fffbeb;padding:16px;}
-        .match-section-label{font-size:0.7rem;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
-        .match-row{display:flex;align-items:stretch;background:white;border-radius:10px;border:1.5px solid #fde68a;margin-bottom:10px;overflow:hidden;}
-        .match-extracted{flex:1;padding:10px 13px;border-left:2px dashed #fde68a;}
-        .match-extracted-label{font-size:0.62rem;font-weight:700;color:#b45309;margin-bottom:3px;display:flex;align-items:center;gap:4px;}
-        .match-extracted-value{font-size:0.88rem;font-weight:800;color:#1e293b;}
-        .match-divider{display:flex;align-items:center;padding:0 8px;color:#f59e0b;font-size:1rem;font-weight:900;flex-shrink:0;}
-        .match-input-col{flex:1;padding:10px 13px;}
-        .match-input-col label{font-size:0.62rem;font-weight:700;color:#0a2463;margin:0 0 4px;display:flex;align-items:center;gap:4px;}
-        .match-toggle-group{display:flex;gap:6px;flex-wrap:wrap;}
-        .match-toggle-btn{flex:1;min-width:80px;padding:8px 10px;border:2px solid var(--border);border-radius:8px;background:white;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;color:var(--text-mid);transition:all 0.18s;text-align:center;}
-        .match-toggle-btn:hover{border-color:#f59e0b;color:#92400e;background:#fffbeb;}
-        .match-toggle-btn.active-dom{border-color:#0d9e5c;background:#d1fae5;color:#065f46;}
-        .match-toggle-btn.active-int{border-color:#3b82f6;background:#dbeafe;color:#1e40af;}
-        .match-toggle-btn.active-single{border-color:#8b5cf6;background:#ede9fe;color:#4c1d95;}
-        .match-toggle-btn.active-multi{border-color:#ef4444;background:#fee2e2;color:#991b1b;}
-        .match-pax-counter{display:flex;align-items:center;gap:10px;}
-        .match-pax-btn{width:32px;height:32px;border-radius:50%;border:2px solid #fde68a;background:white;font-size:1.1rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#b45309;}
-        .match-pax-btn:hover{background:#fef3c7;}
-        .match-pax-num{font-size:1.5rem;font-weight:900;color:#0a2463;min-width:30px;text-align:center;}
-        .match-pax-info{font-size:0.7rem;color:var(--text-mid);font-weight:600;}
-        .match-confirm-btn{width:100%;padding:11px;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:900;font-size:0.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 14px rgba(245,158,11,0.28);}
-        .match-confirm-btn:hover{transform:translateY(-1px);}
-        .match-summary-strip{background:linear-gradient(135deg,#0a2463,#1740a0);border-radius:9px;padding:9px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-        .match-summary-item{display:flex;align-items:center;gap:5px;font-size:0.74rem;font-weight:700;color:white;}
-        .match-summary-item span{color:var(--accent);}
+        /* ── SECTION C: Live Match Summary ── */
+        .live-match-section{padding:14px 16px;background:linear-gradient(135deg,#fffbeb,#fef9ec);border-bottom:1px solid #fde68a;}
+        .lms-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+        .lms-cell{background:white;border-radius:10px;border:1.5px solid var(--border-light);padding:10px 12px;transition:border-color 0.2s,box-shadow 0.2s;}
+        .lms-cell.live-updated{border-color:#0d9e5c;box-shadow:0 0 0 3px rgba(13,158,92,0.1);animation:pulse-green 0.6s ease;}
+        .lms-cell.mismatch{border-color:#f59e0b;background:#fffbeb;}
+        .lms-cell-label{font-size:0.62rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px;display:flex;align-items:center;gap:4px;}
+        .lms-cell-label .lms-src{font-size:0.58rem;background:#e0e9ff;color:var(--primary);border-radius:3px;padding:1px 4px;font-weight:800;}
+        .lms-cell-value{font-size:0.9rem;font-weight:900;color:var(--text-dark);line-height:1.2;}
+        .lms-cell-override{margin-top:6px;}
+
+        /* inline toggle btns inside live-match grid */
+        .lms-toggle-row{display:flex;gap:5px;margin-top:5px;}
+        .lms-toggle-btn{flex:1;padding:5px 6px;border:1.5px solid var(--border);border-radius:7px;background:white;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.72rem;font-weight:700;color:var(--text-mid);transition:all 0.15s;text-align:center;}
+        .lms-toggle-btn:hover{border-color:#f59e0b;color:#92400e;}
+        .lms-toggle-btn.active-dom{border-color:#0d9e5c;background:#d1fae5;color:#065f46;}
+        .lms-toggle-btn.active-int{border-color:#3b82f6;background:#dbeafe;color:#1e40af;}
+        .lms-toggle-btn.active-single{border-color:#8b5cf6;background:#ede9fe;color:#4c1d95;}
+        .lms-toggle-btn.active-multi{border-color:#ef4444;background:#fee2e2;color:#991b1b;}
+
+        /* pax counter inside grid */
+        .lms-pax-counter{display:flex;align-items:center;gap:8px;margin-top:5px;}
+        .lms-pax-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid #fde68a;background:white;font-size:1rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#b45309;transition:background 0.15s;}
+        .lms-pax-btn:hover{background:#fef3c7;}
+        .lms-pax-num{font-size:1.3rem;font-weight:900;color:var(--primary);min-width:26px;text-align:center;}
+        .lms-pax-info{font-size:0.65rem;color:var(--text-light);font-weight:600;}
+
+        /* validation row */
+        .lms-status{border-radius:8px;padding:8px 12px;font-size:0.76rem;font-weight:700;display:flex;align-items:center;gap:7px;}
+        .lms-status.ok{background:#f0fdf4;border:1px solid #a7f3d0;color:#065f46;}
+        .lms-status.warn{background:#fffbeb;border:1px solid #fcd34d;color:#92400e;}
+
+        /* Apply button */
+        .tip-apply-btn{
+            display:flex;align-items:center;justify-content:center;gap:9px;
+            width:100%;padding:13px;border:none;border-radius:0;
+            cursor:pointer;font-family:'Cairo',sans-serif;font-weight:900;font-size:0.92rem;
+            background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 50%,#0088ff 100%);
+            background-size:200% 100%;background-position:right;
+            color:white;transition:all 0.3s;
+        }
+        .tip-apply-btn:hover{background-position:left;transform:none;box-shadow:0 4px 18px rgba(10,36,99,0.25);}
+        .tip-apply-btn:active{transform:scale(0.99);}
+        .tip-apply-btn .tab-arrow{font-size:1rem;transition:transform 0.2s;}
+        .tip-apply-btn:hover .tab-arrow{transform:translateX(-4px);}
+
+        /* hidden legacy */
+        .matching-panel{display:none;}
+        .apply-ticket-btn{display:none;}
+        .match-section-label,.match-row,.match-summary-strip,.match-pax-counter,.match-confirm-btn,.match-toggle-group,.match-toggle-btn,.match-pax-btn,.match-pax-num,.match-pax-info,.match-extracted,.match-divider,.match-input-col,.match-extracted-label,.match-extracted-value,.match-inline-divider,.match-inline-header,.mih-badge{display:none!important;}
 
         /* FORM */
         label{display:block;font-weight:700;margin:10px 0 4px;font-size:0.75rem;color:var(--text-mid);}
@@ -245,103 +286,127 @@
 <div class="wrapper">
 <div>
 
-<!-- TICKET SCANNER -->
+<!-- UNIFIED TICKET PANEL -->
 <div class="ticket-scanner-card">
-    <div class="scanner-header">
-        <div class="scanner-label">🎫 <span data-ar="مسح التذكرة" data-en="Scan Ticket">مسح التذكرة</span> <span class="scanner-badge">AI</span></div>
-        <span class="scanner-optional" data-ar="اختياري" data-en="Optional">اختياري</span>
-    </div>
-    <div class="scan-drop-zone" id="scanDropZone"
-         onclick="document.getElementById('ticketFileInput').click()"
+
+    <!-- TOP BAR: always visible upload trigger -->
+    <div class="tsc-topbar" id="tscTopbar"
+         onclick="if(!ticketData)document.getElementById('ticketFileInput').click()"
          ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
         <input type="file" id="ticketFileInput" accept=".pdf" onchange="handleTicketFile(this.files[0])">
-        <span class="scan-drop-icon">📄</span>
-        <div class="scan-drop-text" data-ar="ارفع ملف PDF الخاص بالتذكرة" data-en="Upload ticket PDF file">ارفع ملف PDF الخاص بالتذكرة</div>
-        <div class="scan-drop-sub" data-ar="اسحب وأفلت أو اضغط للاختيار" data-en="Drag & drop or click to select">اسحب وأفلت أو اضغط للاختيار</div>
-    </div>
-    <div class="scan-status" id="scanStatus">
-        <div class="scan-spinner" id="scanSpinner" style="display:none;"></div>
-        <span id="scanStatusIcon" style="font-size:1.1rem;flex-shrink:0;margin-top:1px;"></span>
-        <div class="scan-status-text" id="scanStatusText"></div>
-    </div>
-    <div class="ticket-info-panel" id="ticketInfoPanel">
-        <div class="ticket-panel-header">
-            <span id="ticketPanelHeaderSpan">📋 <span data-ar="معلومات التذكرة" data-en="Ticket Information">معلومات التذكرة</span></span>
-            <button class="ticket-clear-btn" onclick="clearTicket()" data-ar="مسح" data-en="Clear">مسح</button>
+        <div class="tsc-icon" id="tscIcon">🎫</div>
+        <div class="tsc-text">
+            <div class="tsc-title" id="tscTitle">
+                <span data-ar="مسح التذكرة" data-en="Scan Ticket">مسح التذكرة</span>
+                <span class="scanner-badge">AI</span>
+            </div>
+            <div class="tsc-sub" id="tscSub" data-ar="ارفع ملف PDF – اسحب وأفلت أو اضغط للاختيار" data-en="Upload PDF – drag & drop or click to select">ارفع ملف PDF – اسحب وأفلت أو اضغط للاختيار</div>
         </div>
-        <div class="ticket-panel-body">
-            <div class="flights-section-label" data-ar="اختر الرحلة / الرحلات" data-en="Select Flight(s)">اختر الرحلة / الرحلات</div>
-            <div class="flights-grid" id="flightChipsContainer"></div>
-            <div class="pax-chips-label" data-ar="اختر المسافرين" data-en="Select Passengers">اختر المسافرين</div>
-            <div class="pax-chips" id="paxChipsContainer"></div>
-            <button class="apply-ticket-btn" onclick="applyTicketData()">
-                ✅ <span data-ar="تطبيق البيانات على النموذج" data-en="Apply Data to Form">تطبيق البيانات على النموذج</span>
-            </button>
-        </div>
+        <div id="tscSpinner" class="scan-spinner" style="display:none;"></div>
+        <button class="tsc-clear-btn" id="tscClearBtn" style="display:none;" onclick="event.stopPropagation();clearTicket()" data-ar="مسح ✕" data-en="Clear ✕">مسح ✕</button>
     </div>
-</div>
 
-<!-- MATCHING CLIENT -->
-<div class="matching-panel" id="matchingPanel">
-    <div class="matching-panel-header">🔍 <span data-ar="عميل المطابقة" data-en="Matching Client">عميل المطابقة</span></div>
-    <div class="matching-panel-body">
-        <div class="match-summary-strip">
-            <div class="match-summary-item">✈️ <span id="sumRoute">—</span></div>
-            <div class="match-summary-item">👥 <span id="sumPax">—</span></div>
-            <div class="match-summary-item">🌍 <span id="sumFlightType">—</span></div>
-            <div class="match-summary-item">📋 <span id="sumPnr">—</span></div>
-        </div>
-        <div class="match-section-label" data-ar="① عدد المسافرين" data-en="① Passenger Count">① عدد المسافرين</div>
-        <div class="match-row">
-            <div class="match-extracted">
-                <div class="match-extracted-label">🎫 <span data-ar="مستخرج" data-en="Extracted">مستخرج</span></div>
-                <div class="match-extracted-value" id="mxPaxExtracted">—</div>
+    <!-- EXPANDED BODY: appears after ticket parsed -->
+    <div class="ticket-info-panel" id="ticketInfoPanel">
+
+        <!-- ── SECTION A: Flights ── -->
+        <div class="tip-section">
+            <div class="tip-section-header">
+                <div class="tip-section-num sn-blue">①</div>
+                <div class="tip-section-label" data-ar="اختر الرحلة / الرحلات" data-en="Select Flight(s)">اختر الرحلة / الرحلات</div>
+                <div class="tip-section-hint" id="flightSelHint"></div>
             </div>
-            <div class="match-divider">⇄</div>
-            <div class="match-input-col">
-                <label>✏️ <span data-ar="العدد" data-en="Count">العدد</span></label>
-                <div class="match-pax-counter">
-                    <button class="match-pax-btn" onclick="matchPaxChange(-1)">−</button>
-                    <div class="match-pax-num" id="matchPaxNum">1</div>
-                    <button class="match-pax-btn" onclick="matchPaxChange(+1)">+</button>
-                    <div class="match-pax-info" id="matchPaxInfo"></div>
+            <div class="flights-grid" id="flightChipsContainer"></div>
+        </div>
+
+        <!-- ── SECTION B: Passengers ── -->
+        <div class="tip-section">
+            <div class="tip-section-header">
+                <div class="tip-section-num sn-blue">②</div>
+                <div class="tip-section-label" data-ar="اختر المسافرين" data-en="Select Passengers">اختر المسافرين</div>
+                <div class="tip-section-hint" id="paxSelHint"></div>
+            </div>
+            <div class="pax-chips" id="paxChipsContainer"></div>
+        </div>
+
+        <!-- ── SECTION C: Live Match — auto-updates as you select ── -->
+        <div class="live-match-section">
+            <div class="tip-section-header" style="margin-bottom:12px;">
+                <div class="tip-section-num sn-amber">③</div>
+                <div class="tip-section-label" style="color:#92400e;" data-ar="مطابقة تلقائية — تحقق وعدّل إن لزم" data-en="Auto Match — review & adjust if needed">مطابقة تلقائية — تحقق وعدّل إن لزم</div>
+            </div>
+
+            <div class="lms-grid">
+                <!-- Pax Count cell -->
+                <div class="lms-cell" id="lmsCellPax">
+                    <div class="lms-cell-label">👥 <span data-ar="عدد المسافرين" data-en="Pax Count">عدد المسافرين</span> <span class="lms-src" id="lmsPaxSrc">—</span></div>
+                    <div class="lms-cell-value" id="lmsPaxVal">—</div>
+                    <div class="lms-pax-counter lms-cell-override">
+                        <button class="lms-pax-btn" onclick="matchPaxChange(-1)">−</button>
+                        <div class="lms-pax-num" id="matchPaxNum">1</div>
+                        <button class="lms-pax-btn" onclick="matchPaxChange(+1)">+</button>
+                        <div class="lms-pax-info" id="matchPaxInfo"></div>
+                    </div>
+                </div>
+
+                <!-- Route Type cell -->
+                <div class="lms-cell" id="lmsCellRoute">
+                    <div class="lms-cell-label">✈️ <span data-ar="مسار الرحلة" data-en="Route">مسار الرحلة</span> <span class="lms-src" id="lmsRouteSrc">—</span></div>
+                    <div class="lms-cell-value" id="lmsRouteVal">—</div>
+                </div>
+
+                <!-- Flight Type cell -->
+                <div class="lms-cell" id="lmsCellType">
+                    <div class="lms-cell-label">🌍 <span data-ar="نوع الرحلة" data-en="Flight Type">نوع الرحلة</span> <span class="lms-src" id="lmsTypeSrc">—</span></div>
+                    <div class="lms-cell-value" id="lmsTypeVal">—</div>
+                    <div class="lms-toggle-row lms-cell-override">
+                        <button class="lms-toggle-btn" id="btnDom" onclick="setFlightType('Local')">🏠 <span data-ar="محلي" data-en="Local">محلي</span></button>
+                        <button class="lms-toggle-btn" id="btnInt" onclick="setFlightType('International')">🌍 <span data-ar="دولي" data-en="International">دولي</span></button>
+                    </div>
+                </div>
+
+                <!-- PNR Type cell -->
+                <div class="lms-cell" id="lmsCellPnr">
+                    <div class="lms-cell-label">📋 <span data-ar="نوع الحجز" data-en="PNR Type">نوع الحجز</span> <span class="lms-src" id="lmsPnrSrc">—</span></div>
+                    <div class="lms-cell-value" id="lmsPnrVal">—</div>
+                    <div class="lms-toggle-row lms-cell-override">
+                        <button class="lms-toggle-btn" id="btnSingle" onclick="setMatchPnr('single')">🔖 Single</button>
+                        <button class="lms-toggle-btn" id="btnMulti"  onclick="setMatchPnr('multi')">📑 Multi</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="match-section-label" data-ar="② نوع الرحلة" data-en="② Flight Type">② نوع الرحلة</div>
-        <div class="match-row">
-            <div class="match-extracted">
-                <div class="match-extracted-label">🎫 <span data-ar="مستخرج" data-en="Extracted">مستخرج</span></div>
-                <div class="match-extracted-value" id="mxFlightTypeExtracted">—</div>
-            </div>
-            <div class="match-divider">⇄</div>
-            <div class="match-input-col">
-                <label>✏️ <span data-ar="النوع" data-en="Type">النوع</span></label>
-                <div class="match-toggle-group">
-                    <button class="match-toggle-btn" id="btnDom" onclick="setFlightType('Local')">🏠 <span data-ar="محلي" data-en="Local">محلي</span></button>
-                    <button class="match-toggle-btn" id="btnInt" onclick="setFlightType('International')">🌍 <span data-ar="دولي" data-en="International">دولي</span></button>
-                </div>
+
+            <!-- Validation status -->
+            <div class="lms-status ok" id="matchStatusRow" style="display:none;">
+                <span id="matchStatusText"></span>
             </div>
         </div>
-        <div class="match-section-label" data-ar="③ نوع الحجز" data-en="③ PNR Type">③ نوع الحجز</div>
-        <div class="match-row">
-            <div class="match-extracted">
-                <div class="match-extracted-label">🎫 <span data-ar="مستخرج" data-en="Extracted">مستخرج</span></div>
-                <div class="match-extracted-value" id="mxPnrExtracted">—</div>
-            </div>
-            <div class="match-divider">⇄</div>
-            <div class="match-input-col">
-                <label>✏️ <span data-ar="نوع الحجز" data-en="PNR type">نوع الحجز</span></label>
-                <div class="match-toggle-group">
-                    <button class="match-toggle-btn" id="btnSingle" onclick="setMatchPnr('single')">🔖 Single</button>
-                    <button class="match-toggle-btn" id="btnMulti"  onclick="setMatchPnr('multi')">📑 Multi</button>
-                </div>
-            </div>
-        </div>
-        <div id="matchStatusRow" style="margin-bottom:10px;font-size:0.78rem;font-weight:700;padding:8px 12px;border-radius:8px;border:1px solid;display:none;"><span id="matchStatusText"></span></div>
-        <button class="match-confirm-btn" onclick="applyMatchedData()">✅ <span data-ar="تطبيق البيانات على النموذج" data-en="Apply Matched Data to Form">تطبيق البيانات على النموذج</span></button>
-    </div>
+
+        <!-- ── APPLY BUTTON ── -->
+        <button class="tip-apply-btn" onclick="applyMatchedData()">
+            <span>✅</span>
+            <span data-ar="تطبيق البيانات على النموذج" data-en="Apply Data to Form">تطبيق البيانات على النموذج</span>
+            <span class="tab-arrow">←</span>
+        </button>
+
+    </div><!-- /ticket-info-panel -->
+</div><!-- /ticket-scanner-card -->
+
+<!-- hidden legacy stubs -->
+<div id="matchingPanel" style="display:none;"></div>
+<div class="scan-status" id="scanStatus" style="display:none;">
+    <div class="scan-spinner" id="scanSpinner" style="display:none;"></div>
+    <span id="scanStatusIcon"></span>
+    <div class="scan-status-text" id="scanStatusText"></div>
 </div>
+<!-- legacy IDs that JS references -->
+<span id="sumRoute" style="display:none;"></span>
+<span id="sumPax" style="display:none;"></span>
+<span id="sumFlightType" style="display:none;"></span>
+<span id="sumPnr" style="display:none;"></span>
+<span id="mxPaxExtracted" style="display:none;"></span>
+<span id="mxFlightTypeExtracted" style="display:none;"></span>
+<span id="mxPnrExtracted" style="display:none;"></span>
 
 <!-- SERVICE INFO -->
 <div class="card">
@@ -898,9 +963,9 @@ function resetAll(){
 // ══════════════════════════════════════════════════════════════
 // TICKET SCANNER
 // ══════════════════════════════════════════════════════════════
-function onDragOver(e){e.preventDefault();document.getElementById('scanDropZone').classList.add('dragover');}
-function onDragLeave(e){document.getElementById('scanDropZone').classList.remove('dragover');}
-function onDrop(e){e.preventDefault();document.getElementById('scanDropZone').classList.remove('dragover');const f=e.dataTransfer.files[0];if(f)handleTicketFile(f);}
+function onDragOver(e){e.preventDefault();if(!ticketData)document.getElementById('tscTopbar').style.outline='3px dashed var(--scan-green)';}
+function onDragLeave(e){document.getElementById('tscTopbar').style.outline='';}
+function onDrop(e){e.preventDefault();document.getElementById('tscTopbar').style.outline='';const f=e.dataTransfer.files[0];if(f)handleTicketFile(f);}
 
 async function handleTicketFile(file){
     if(!file)return;
@@ -1234,8 +1299,12 @@ function _isValidPassengerName(raw){
     const letterCount=clean.replace(/[^A-Z]/g,'').length;
     if(letterCount<4)return false;
     if(tokens.length<2)return false;
+    // Allow single-letter initials (e.g. "M" in "FATIMAH MOHSEN M KHAMIS")
+    // but require at least 2 multi-letter tokens
+    const longTokens=tokens.filter(t_=>t_.length>1);
+    if(longTokens.length<2)return false;
     const avgTokenLen=tokens.reduce((s,t_)=>s+t_.length,0)/tokens.length;
-    if(avgTokenLen<2.5)return false;
+    if(avgTokenLen<2.0)return false;
     return true;
 }
 function _cleanName(raw){return raw.trim().replace(/^(?:MR\.?|MRS?\.?|MS\.?|DR\.?|MISS\.?)\s+/i,'').replace(/\/+/g,' ').replace(/\s{2,}/g,' ').replace(/[^A-Z\s\-]/gi,'').trim();}
@@ -1252,11 +1321,11 @@ function parseTicketText(text){
     let paxNames=[],paxTypes=[],adultCount=0;
     const _paxTypeMap={ADT:'adult',ADULT:'adult',CHD:'child',CHILD:'child',INF:'infant',INFANT:'infant'};
     function _pushPax(name,typeStr){const type=_paxTypeMap[typeStr.toUpperCase()]||'adult';if(_isValidPassengerName(name)&&!paxNames.includes(name)){paxNames.push(name);paxTypes.push(type);if(type==='adult')adultCount++;}}
-    [...tUP.matchAll(/\b(?:MR\.?|MRS\.?|MS\.?|DR\.?|MISS\.?)\s+([A-Z]{2,25}(?:\s[A-Z]{2,25}){0,3})\s*\(\s*(ADULT|CHILD|INFANT)\s*\)/g)].forEach(m=>_pushPax(_cleanName(m[1]),m[2]));
-    if(paxNames.length===0)[...tUP.matchAll(/\b([A-Z]{2,25}(?:\s[A-Z]{2,25}){1,3})\s*\(\s*(ADULT|CHILD|INFANT)\s*\)/g)].forEach(m=>_pushPax(_cleanName(m[1]),m[2]));
-    if(paxNames.length===0)[...tUP.matchAll(/\b([A-Z]{2,25}(?:[\/\s][A-Z]{2,25}){1,3})\s+(ADT|CHD|INF|ADULT|CHILD|INFANT)\b/g)].forEach(m=>_pushPax(_cleanName(m[1].replace(/\//g,' ')),m[2]));
-    if(paxNames.length===0)[...tUP.matchAll(/\b\d*(ADT|CHD|INF|ADULT|CHILD|INFANT)\s+([A-Z]{2,25}(?:\s[A-Z]{2,25}){1,3})(?=\s*[\n\r,;·•]|\s{2,}|$)/g)].forEach(m=>_pushPax(_cleanName(m[2]),m[1]));
-    if(paxNames.length===0)[...tUP.matchAll(/\b(?:MR\.?|MRS\.?|MS\.?|DR\.?|MISS\.?)\s+([A-Z]{2,25}(?:\s[A-Z]{2,25}){0,3})\s*[\(\n]/g)].forEach(m=>_pushPax(_cleanName(m[1]),'ADT'));
+    [...tUP.matchAll(/\b(?:MR\.?|MRS\.?|MS\.?|DR\.?|MISS\.?)\s+([A-Z]{1,25}(?:\s[A-Z]{1,25}){0,4})\s*\(\s*(ADULT|CHILD|INFANT)\s*\)/g)].forEach(m=>_pushPax(_cleanName(m[1]),m[2]));
+    if(paxNames.length===0)[...tUP.matchAll(/\b([A-Z]{2,25}(?:\s[A-Z]{1,25}){1,4})\s*\(\s*(ADULT|CHILD|INFANT)\s*\)/g)].forEach(m=>_pushPax(_cleanName(m[1]),m[2]));
+    if(paxNames.length===0)[...tUP.matchAll(/\b([A-Z]{2,25}(?:[\/\s][A-Z]{1,25}){1,4})\s+(ADT|CHD|INF|ADULT|CHILD|INFANT)\b/g)].forEach(m=>_pushPax(_cleanName(m[1].replace(/\//g,' ')),m[2]));
+    if(paxNames.length===0)[...tUP.matchAll(/\b\d*(ADT|CHD|INF|ADULT|CHILD|INFANT)\s+([A-Z]{2,25}(?:\s[A-Z]{1,25}){1,4})(?=\s*[\n\r,;·•]|\s{2,}|$)/g)].forEach(m=>_pushPax(_cleanName(m[2]),m[1]));
+    if(paxNames.length===0)[...tUP.matchAll(/\b(?:MR\.?|MRS\.?|MS\.?|DR\.?|MISS\.?)\s+([A-Z]{1,25}(?:\s[A-Z]{1,25}){0,4})\s*[\(\n]/g)].forEach(m=>_pushPax(_cleanName(m[1]),'ADT'));
     if(paxNames.length===0)[...tUP.matchAll(/^([A-Z]{2,20}(?:\s[A-Z]{2,20}){1,3})\s*$/mg)].forEach(m=>_pushPax(_cleanName(m[1]),'ADT'));
     if(paxNames.length===0)[...tUP.matchAll(/\b([A-Z]{2,25})\/([A-Z]{2,25}(?:\s[A-Z]{2,20})?)\b/g)].forEach(m=>_pushPax(_cleanName(`${m[1]} ${m[2]}`),'ADT'));
     if(paxNames.length===0)[...tUP.matchAll(/(?:TRAVELL?ER|PASSENGER)[:\s]+([A-Z]{2,25}(?:\s[A-Z]{2,25}){1,3})\s*(?:\(|$)/g)].forEach(m=>_pushPax(_cleanName(m[1]),'ADT'));
@@ -1313,41 +1382,64 @@ function parseTicketText(text){
 }
 
 function setScanStatus(type,message,showSpinner){
-    const statusEl=document.getElementById('scanStatus');
-    const spinner=document.getElementById('scanSpinner');
-    const icon=document.getElementById('scanStatusIcon');
-    statusEl.className=`scan-status ${type}`;statusEl.style.display='flex';
-    spinner.style.display=showSpinner?'block':'none';icon.style.display=showSpinner?'none':'block';
-    if(type==='success')icon.textContent='✅';else if(type==='error')icon.textContent='❌';else icon.textContent='';
-    document.getElementById('scanStatusText').textContent=message;
+    const topbar=document.getElementById('tscTopbar');
+    const icon=document.getElementById('tscIcon');
+    const sub=document.getElementById('tscSub');
+    const spinner=document.getElementById('tscSpinner');
+    const clearBtn=document.getElementById('tscClearBtn');
+    if(type==='scanning'){
+        topbar.classList.remove('has-file');
+        icon.textContent='⏳';icon.className='tsc-icon scanning';
+        sub.textContent=message;
+        if(spinner)spinner.style.display='flex';
+        if(clearBtn)clearBtn.style.display='none';
+    } else if(type==='success'){
+        topbar.classList.add('has-file');
+        icon.textContent='✅';icon.className='tsc-icon success';
+        sub.textContent=message;
+        if(spinner)spinner.style.display='none';
+        if(clearBtn)clearBtn.style.display='flex';
+    } else {
+        topbar.classList.remove('has-file');
+        icon.textContent='❌';icon.className='tsc-icon';
+        sub.textContent=message;
+        if(spinner)spinner.style.display='none';
+        if(clearBtn)clearBtn.style.display='flex';
+    }
 }
 
 function renderTicketPanel(data){
     if(!data)return;
-    const ph=document.getElementById('ticketPanelHeaderSpan');
-    if(ph){
+    // Update topbar title with PNR badges
+    const tscTitle=document.getElementById('tscTitle');
+    if(tscTitle){
         let badge='';
-        if(data.pnr)badge+=` <span style="background:rgba(255,255,255,0.2);border-radius:6px;padding:2px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;">${data.pnr}</span>`;
-        if(data.pnr2)badge+=` <span style="background:rgba(255,196,0,0.3);border-radius:6px;padding:2px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;">${data.pnr2}</span>`;
-        if(data.hasMultiPNR)badge+=` <span style="background:#f59e0b;color:#000;border-radius:6px;padding:2px 8px;font-size:0.65rem;font-weight:800;">MULTI PNR</span>`;
-        if(data.routeType==='RT')badge+=` <span style="background:#2563eb;color:#fff;border-radius:6px;padding:2px 8px;font-size:0.65rem;font-weight:800;">RT</span>`;
-        ph.innerHTML=`📋 <span>${currentLang==='ar'?'معلومات التذكرة':'Ticket Information'}</span>${badge}`;
+        if(data.pnr)badge+=` <span style="background:rgba(10,36,99,0.12);border-radius:5px;padding:2px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.68rem;font-weight:800;">${data.pnr}</span>`;
+        if(data.pnr2)badge+=` <span style="background:#fef3c7;color:#92400e;border-radius:5px;padding:2px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.68rem;font-weight:800;">${data.pnr2}</span>`;
+        if(data.hasMultiPNR)badge+=` <span style="background:#fee2e2;color:#991b1b;border-radius:5px;padding:2px 7px;font-size:0.62rem;font-weight:900;">MULTI</span>`;
+        if(data.routeType==='RT')badge+=` <span style="background:#dbeafe;color:#1d4ed8;border-radius:5px;padding:2px 7px;font-size:0.62rem;font-weight:900;">RT</span>`;
+        tscTitle.innerHTML=`<span>${currentLang==='ar'?'معلومات التذكرة':'Ticket Info'}</span>${badge}<span class="scanner-badge">AI</span>`;
     }
+    // Render flight chips
     const fc=document.getElementById('flightChipsContainer');fc.innerHTML='';
     (data.flights||[]).forEach((fl,idx)=>{
         const chip=document.createElement('div');
-        chip.className='flight-chip'+(idx===0?' selected':'');chip.dataset.idx=idx;
+        chip.className='flight-chip selected';chip.dataset.idx=idx;
         const isOB=fl.direction==='outbound'||fl.id==='OB';
         const dirLabel=isOB?`<span class="flight-chip-dir dir-ob">${t('ذهاب','Outbound')}</span>`:`<span class="flight-chip-dir dir-ib">${t('عودة','Inbound')}</span>`;
         const airlineName=currentLang==='ar'?(fl.airlineAr||fl.airlineEn||''):(fl.airlineEn||fl.airlineAr||'');
         const cityFrom=currentLang==='ar'?(fl.fromAr||fl.from):(fl.fromEn||fl.from);
         const cityTo=currentLang==='ar'?(fl.toAr||fl.to):(fl.toEn||fl.to);
         const dateDisp=currentLang==='ar'?(fl.dateAr||fl.date||''):(fl.date||'');
-        chip.innerHTML=`<div class="flight-chip-check">${idx===0?'✓':''}</div><div class="flight-chip-info"><div class="flight-chip-route">${fl.from||'---'} – ${fl.to||'---'} &nbsp;${dirLabel}</div><div class="flight-chip-cities">${cityFrom} → ${cityTo}</div><div class="flight-chip-detail">${fl.flightNumber?'<span class="fcd-fn">'+fl.flightNumber+'</span>':''}${airlineName?'<span class="fcd-al">· '+airlineName+'</span>':''}${dateDisp?'<span class="fcd-dt">· '+dateDisp+'</span>':''}${fl.departureTime?'<span class="fcd-tm">'+fl.departureTime+'</span>':''}</div></div>`;
-        chip.onclick=()=>{chip.classList.toggle('selected');chip.querySelector('.flight-chip-check').textContent=chip.classList.contains('selected')?'✓':'';};
+        chip.innerHTML=`<div class="flight-chip-check">✓</div><div class="flight-chip-info"><div class="flight-chip-route">${fl.from||'---'} – ${fl.to||'---'} &nbsp;${dirLabel}</div><div class="flight-chip-cities">${cityFrom} → ${cityTo}</div><div class="flight-chip-detail">${fl.flightNumber?'<span class="fcd-fn">'+fl.flightNumber+'</span>':''}${airlineName?'<span class="fcd-al">· '+airlineName+'</span>':''}${dateDisp?'<span class="fcd-dt">· '+dateDisp+'</span>':''}${fl.departureTime?'<span class="fcd-tm">'+fl.departureTime+'</span>':''}</div></div>`;
+        chip.onclick=()=>{
+            chip.classList.toggle('selected');
+            chip.querySelector('.flight-chip-check').textContent=chip.classList.contains('selected')?'✓':'';
+            _liveUpdateFromSelections();
+        };
         fc.appendChild(chip);
     });
-    if(data.routeType==='RT'&&data.flights&&data.flights.length>1){fc.querySelectorAll('.flight-chip').forEach(c=>{c.classList.add('selected');c.querySelector('.flight-chip-check').textContent='✓';});}
+    // Render pax chips
     const pc=document.getElementById('paxChipsContainer');pc.innerHTML='';
     (data.passengers||[]).forEach((name,idx)=>{
         const displayName=name.replace(/^(?:MR\.?|MRS?\.?|MS\.?|DR\.?|MISS\.?)\s+/i,'').trim();
@@ -1357,54 +1449,76 @@ function renderTicketPanel(data){
         chip.className=pType==='infant'?'pax-chip':'pax-chip selected';
         chip.dataset.idx=idx;chip.dataset.type=pType;
         chip.innerHTML=`<span>👤</span> ${displayName}${typeLabel}`;
-        chip.onclick=()=>chip.classList.toggle('selected');
+        chip.onclick=()=>{chip.classList.toggle('selected');_liveUpdateFromSelections();};
         pc.appendChild(chip);
     });
     document.getElementById('ticketInfoPanel').classList.add('visible');
     openMatchingClient(data);
 }
 
-function applyTicketData(){
+// Live sync: recalculate match cells whenever user changes a chip selection
+function _liveUpdateFromSelections(){
     if(!ticketData)return;
-    const selIdxs=[];
-    document.querySelectorAll('#flightChipsContainer .flight-chip.selected').forEach(c=>selIdxs.push(parseInt(c.dataset.idx)));
-    const selNames=[],selTypes=[];
-    document.querySelectorAll('#paxChipsContainer .pax-chip.selected').forEach(c=>{
-        const raw=c.textContent.trim().replace('👤','').replace('👶','').replace('🧒','').trim();
-        selNames.push(raw.replace(/^(?:MR\.?|MRS?\.?|MS\.?|DR\.?|MISS\.?)\s+/i,'').trim());
-        selTypes.push(c.dataset.type||'adult');
-    });
-    const feePax=selNames.filter((_,i)=>selTypes[i]!=='infant').length||1;
-    if(selNames.length===0){alert(t('يرجى تحديد مسافر واحد على الأقل','Please select at least one passenger'));return;}
-    if(selIdxs.length===0){alert(t('يرجى تحديد رحلة واحدة على الأقل','Please select at least one flight'));return;}
-    const selFlights=selIdxs.map(i=>ticketData.flights[i]);
-    const hasOB=selFlights.some(f=>f.direction==='outbound'||f.id==='OB');
-    const hasIB=selFlights.some(f=>f.direction==='inbound'||f.id==='IB');
-    const isRT=hasOB&&hasIB;
-    const isMultiPNR=ticketData.hasMultiPNR&&isRT;
-    document.getElementById('paxCount').value=feePax;
-    document.getElementById('routeType').value=isRT?'RT':'OW';onRouteChange();
-    const pnrEl=document.getElementById('pnrType');if(pnrEl){pnrEl.value=isMultiPNR?'multi':'single';onPnrChange();}
-    ticketData._selectedFlights=selFlights;buildPaxRows();
-    setTimeout(()=>{
-        selNames.forEach((name,idx)=>{const el=document.getElementById(`pax_name_${idx+1}`);if(el){el.value=name;el.classList.add('auto-filled');setTimeout(()=>el.classList.remove('auto-filled'),3000);}});
-        calculate();
-        const toast=document.getElementById('toast');
-        toast.innerText=t('✅ تم تطبيق بيانات التذكرة','✅ Ticket data applied');
-        toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show');toast.innerText=t('✅ تم النسخ!','✅ Copied!');},2500);
-    },100);
+    // Count selected non-infant pax
+    let selPaxCount=0;
+    document.querySelectorAll('#paxChipsContainer .pax-chip.selected').forEach(c=>{if((c.dataset.type||'adult')!=='infant')selPaxCount++;});
+    if(selPaxCount>0&&selPaxCount!==_matchPax){_matchPax=selPaxCount;updateMatchPaxDisplay();}
+    // Detect route from selected flights
+    const selChips=[...document.querySelectorAll('#flightChipsContainer .flight-chip.selected')];
+    const selIdxs=selChips.map(c=>parseInt(c.dataset.idx));
+    if(selIdxs.length>0&&ticketData.flights){
+        const selFls=selIdxs.map(i=>ticketData.flights[i]);
+        const hasOB=selFls.some(f=>f.direction==='outbound'||f.id==='OB');
+        const hasIB=selFls.some(f=>f.direction==='inbound'||f.id==='IB');
+        const isRT=hasOB&&hasIB;
+        const fl=selFls[0];
+        const detectedType=fl?getRouteFlightType(fl.from,fl.to):_matchFlightType;
+        if(detectedType!==_matchFlightType){setFlightType(detectedType,true);}
+        // Flash route cell
+        _flashCell('lmsCellRoute');
+        _setLmsRouteVal(isRT);
+    }
+    updateMatchSummary();runMatchValidation();
+    _flashCell('lmsCellPax');
 }
+
+function _flashCell(id){
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.classList.add('live-updated');
+    clearTimeout(el._flashTimer);
+    el._flashTimer=setTimeout(()=>el.classList.remove('live-updated'),800);
+}
+
+function _setLmsRouteVal(isRT){
+    const rv=document.getElementById('lmsRouteVal');
+    if(rv)rv.textContent=isRT?t('ذهاب وعودة RT','Return Trip RT'):t('اتجاه واحد OW','One Way OW');
+}
+
+applyTicketData=function(){};// deprecated, replaced by applyMatchedData
 
 function clearTicket(){
     ticketData=null;
     document.getElementById('ticketInfoPanel').classList.remove('visible');
-    document.getElementById('matchingPanel').classList.remove('visible');
-    document.getElementById('scanStatus').style.display='none';
     document.getElementById('ticketFileInput').value='';
     document.getElementById('flightChipsContainer').innerHTML='';
     document.getElementById('paxChipsContainer').innerHTML='';
     document.getElementById('nsAutoTag').style.display='none';
     document.getElementById('nsInfoGrid').style.display='none';
+    document.getElementById('matchStatusRow').style.display='none';
+    // Reset topbar
+    const topbar=document.getElementById('tscTopbar');
+    const icon=document.getElementById('tscIcon');
+    const sub=document.getElementById('tscSub');
+    const spinner=document.getElementById('tscSpinner');
+    const clearBtn=document.getElementById('tscClearBtn');
+    const tscTitle=document.getElementById('tscTitle');
+    if(topbar)topbar.classList.remove('has-file');
+    if(icon){icon.textContent='🎫';icon.className='tsc-icon';}
+    if(sub)sub.textContent=t('ارفع ملف PDF – اسحب وأفلت أو اضغط للاختيار','Upload PDF – drag & drop or click to select');
+    if(spinner)spinner.style.display='none';
+    if(clearBtn)clearBtn.style.display='none';
+    if(tscTitle)tscTitle.innerHTML=`<span>${t('مسح التذكرة','Scan Ticket')}</span><span class="scanner-badge">AI</span>`;
     _hideNsDeadlines();
 }
 
@@ -1420,61 +1534,122 @@ function openMatchingClient(data){
     if(data.flights&&data.flights.length>0){const fl=data.flights[0];detectedType=getRouteFlightType(fl.from,fl.to);}
     _matchFlightType=detectedType;
     _matchPnr=data.hasMultiPNR?'multi':'single';
-    const routeInfo=data.flights&&data.flights[0]?`${data.flights[0].from||'?'} → ${data.flights[0].to||'?'}`:t('غير محدد','unknown');
-    const detectedLabel=detectedType==='Local'?`<span style="color:#0d9e5c;font-weight:900;">🏠 ${t('محلي','Local')}</span>`:`<span style="color:#1d4ed8;font-weight:900;">🌍 ${t('دولي','International')}</span>`;
-    document.getElementById('mxPaxExtracted').innerHTML=`<strong>${totalPax}</strong> ${t('مسافر','pax')}`+(paxTypes.includes('infant')?` <span style="font-size:0.7rem;color:#b45309;">(incl. infant)</span>`:'')+` → <strong style="color:#0d9e5c;">${billablePax}</strong> ${t('قابل للفوترة','billable')}`;
-    document.getElementById('mxFlightTypeExtracted').innerHTML=`${detectedLabel} <span style="font-size:0.72rem;color:#64748b;">(${routeInfo})</span>`;
-    const pnrLabel=data.hasMultiPNR?`<span style="color:#dc2626;font-weight:900;">📑 Multi PNR</span> <span style="font-size:0.7rem;color:#64748b;">(${data.pnr||'?'} + ${data.pnr2||'?'})</span>`:`<span style="color:#7c3aed;font-weight:900;">🔖 Single PNR</span> <span style="font-size:0.7rem;color:#64748b;">${data.pnr?'('+data.pnr+')':''}</span>`;
-    document.getElementById('mxPnrExtracted').innerHTML=pnrLabel;
+    const isRT=data.routeType==='RT';
+    // Fill live-match cells
+    const infants=paxTypes.filter(t_=>t_==='infant').length;
+    const paxSrc=infants>0?`${totalPax} (${infants} infant)`:`${totalPax}`;
+    _setLmsCell('lmsCellPax','lmsPaxSrc','lmsPaxVal',paxSrc,`${billablePax} ${t('قابل للفوترة','billable')}`);
+    _setLmsCell('lmsCellRoute','lmsRouteSrc','lmsRouteVal',isRT?'RT':'OW',isRT?t('ذهاب وعودة RT','Return Trip RT'):t('اتجاه واحد OW','One Way OW'));
+    _setLmsCell('lmsCellType','lmsTypeSrc','lmsTypeVal',detectedType==='Local'?t('محلي','Local'):t('دولي','International'),detectedType==='Local'?`🏠 ${t('محلي','Local')}`:`🌍 ${t('دولي','International')}`);
+    _setLmsCell('lmsCellPnr','lmsPnrSrc','lmsPnrVal',data.hasMultiPNR?`Multi (${data.pnr||''}+${data.pnr2||''})`:`Single (${data.pnr||''})`,data.hasMultiPNR?'📑 Multi PNR':'🔖 Single PNR');
     setFlightType(detectedType,true);setMatchPnr(_matchPnr,true);
     updateMatchPaxDisplay();updateMatchSummary();runMatchValidation();
-    document.getElementById('matchingPanel').classList.add('visible');
 }
-function matchPaxChange(delta){_matchPax=Math.max(1,Math.min(10,_matchPax+delta));updateMatchPaxDisplay();updateMatchSummary();runMatchValidation();}
+
+function _setLmsCell(cellId,srcId,valId,srcText,valHTML){
+    const src=document.getElementById(srcId);const val=document.getElementById(valId);
+    if(src)src.textContent=srcText;
+    if(val)val.innerHTML=valHTML;
+    _flashCell(cellId);
+}
+
+function matchPaxChange(delta){
+    _matchPax=Math.max(1,Math.min(10,_matchPax+delta));
+    updateMatchPaxDisplay();updateMatchSummary();runMatchValidation();
+    _flashCell('lmsCellPax');
+}
 function updateMatchPaxDisplay(){
-    document.getElementById('matchPaxNum').textContent=_matchPax;
+    const numEl=document.getElementById('matchPaxNum');if(numEl)numEl.textContent=_matchPax;
+    // Update the cell value text too
+    const valEl=document.getElementById('lmsPaxVal');
+    if(valEl)valEl.textContent=`${_matchPax} ${t('مسافر','pax')}`;
     const infoEl=document.getElementById('matchPaxInfo');
-    if(ticketData){const infants=(ticketData.passengerTypes||[]).filter(t_=>t_==='infant').length;if(infants>0)infoEl.innerHTML=`<span style="color:#b45309;">👶 ${infants} infant(s)<br>${t('الرضع لا يُحتسبون','Not billed')}</span>`;else infoEl.textContent='';}
+    if(ticketData&&infoEl){const infants=(ticketData.passengerTypes||[]).filter(t_=>t_==='infant').length;if(infants>0)infoEl.innerHTML=`<span style="color:#b45309;">👶 ${infants} inf</span>`;else infoEl.textContent='';}
 }
-function setFlightType(type,silent){_matchFlightType=type;document.getElementById('btnDom').className='match-toggle-btn'+(type==='Local'?' active-dom':'');document.getElementById('btnInt').className='match-toggle-btn'+(type==='International'?' active-int':'');if(!silent){updateMatchSummary();runMatchValidation();}}
-function setMatchPnr(type,silent){_matchPnr=type;document.getElementById('btnSingle').className='match-toggle-btn'+(type==='single'?' active-single':'');document.getElementById('btnMulti').className='match-toggle-btn'+(type==='multi'?' active-multi':'');if(!silent){updateMatchSummary();runMatchValidation();}}
+function setFlightType(type,silent){
+    _matchFlightType=type;
+    const btnDom=document.getElementById('btnDom');const btnInt=document.getElementById('btnInt');
+    if(btnDom)btnDom.className='lms-toggle-btn'+(type==='Local'?' active-dom':'');
+    if(btnInt)btnInt.className='lms-toggle-btn'+(type==='International'?' active-int':'');
+    const typeVal=document.getElementById('lmsTypeVal');
+    if(typeVal)typeVal.innerHTML=type==='Local'?`🏠 ${t('محلي','Local')}`:`🌍 ${t('دولي','International')}`;
+    if(!silent){updateMatchSummary();runMatchValidation();_flashCell('lmsCellType');}
+}
+function setMatchPnr(type,silent){
+    _matchPnr=type;
+    const btnS=document.getElementById('btnSingle');const btnM=document.getElementById('btnMulti');
+    if(btnS)btnS.className='lms-toggle-btn'+(type==='single'?' active-single':'');
+    if(btnM)btnM.className='lms-toggle-btn'+(type==='multi'?' active-multi':'');
+    const pnrVal=document.getElementById('lmsPnrVal');
+    if(pnrVal)pnrVal.innerHTML=type==='multi'?'📑 Multi PNR':'🔖 Single PNR';
+    if(!silent){updateMatchSummary();runMatchValidation();_flashCell('lmsCellPnr');}
+}
 function updateMatchSummary(){
+    // Update hidden legacy spans (used nowhere visible now)
     const routeType=ticketData?ticketData.routeType:'OW';
-    document.getElementById('sumRoute').textContent=routeType==='RT'?t('ذهاب وعودة','Return RT'):t('اتجاه واحد','One Way OW');
-    document.getElementById('sumPax').textContent=`${_matchPax} ${t('مسافر','pax')}`;
-    document.getElementById('sumFlightType').textContent=_matchFlightType==='Local'?t('محلي','Local'):t('دولي','International');
-    document.getElementById('sumPnr').textContent=_matchPnr==='multi'?'Multi PNR':'Single PNR';
+    const sr=document.getElementById('sumRoute');if(sr)sr.textContent=routeType==='RT'?t('ذهاب وعودة','Return RT'):t('اتجاه واحد','One Way OW');
+    const sp=document.getElementById('sumPax');if(sp)sp.textContent=`${_matchPax} ${t('مسافر','pax')}`;
+    const sf=document.getElementById('sumFlightType');if(sf)sf.textContent=_matchFlightType==='Local'?t('محلي','Local'):t('دولي','International');
+    const spnr=document.getElementById('sumPnr');if(spnr)spnr.textContent=_matchPnr==='multi'?'Multi PNR':'Single PNR';
 }
 function runMatchValidation(){
-    const statusRow=document.getElementById('matchStatusRow');const statusText=document.getElementById('matchStatusText');
-    if(!ticketData)return;
-    const paxTypes=ticketData.passengerTypes||[];const totalPax=(ticketData.passengers||[]).length;
+    const statusRow=document.getElementById('matchStatusRow');
+    const statusText=document.getElementById('matchStatusText');
+    if(!ticketData||!statusRow)return;
+    const paxTypes=ticketData.passengerTypes||[];
+    const totalPax=(ticketData.passengers||[]).length;
     const billable=paxTypes.filter(t_=>t_!=='infant').length||totalPax;
     const warnings=[];
-    if(_matchPax!==billable)warnings.push(`⚠️ ${t('عدد المسافرين','Pax')} (${_matchPax}) ${t('يختلف عن التذكرة','≠ ticket')} (${billable})`);
-    if(_matchPnr!==(ticketData.hasMultiPNR?'multi':'single'))warnings.push(`⚠️ ${t('نوع PNR يختلف عن التذكرة','PNR type differs from ticket')}`);
-    if(warnings.length>0){statusText.innerHTML=warnings.join('<br>');statusRow.style.cssText='margin-bottom:10px;font-size:0.78rem;font-weight:700;padding:8px 12px;border-radius:8px;border:1px solid #fed7aa;display:block;background:#fff7ed;color:#92400e;';}
-    else{statusText.innerHTML=`✅ ${t('جميع البيانات متطابقة','All data matches')}`;statusRow.style.cssText='margin-bottom:10px;font-size:0.78rem;font-weight:700;padding:8px 12px;border-radius:8px;border:1px solid #a7f3d0;display:block;background:#f0fdf4;color:#065f46;';}
+    if(_matchPax!==billable)warnings.push(`⚠️ ${t('عدد المسافرين','Pax count')} (${_matchPax}) ≠ ${t('التذكرة','ticket')} (${billable})`);
+    if(_matchPnr!==(ticketData.hasMultiPNR?'multi':'single'))warnings.push(`⚠️ ${t('نوع PNR يختلف','PNR type differs')}`);
+    statusRow.style.display='flex';
+    if(warnings.length>0){
+        statusRow.className='lms-status warn';
+        statusText.innerHTML=warnings.join(' &nbsp;·&nbsp; ');
+    } else {
+        statusRow.className='lms-status ok';
+        statusText.innerHTML=`✅ ${t('جميع البيانات متطابقة','All data matches')}`;
+    }
 }
 function applyMatchedData(){
     if(!ticketData)return;
+
+    // ── 1. Validate chips selection (from ticket panel) ──────────
+    const selIdxs=[];
+    document.querySelectorAll('#flightChipsContainer .flight-chip.selected').forEach(c=>selIdxs.push(parseInt(c.dataset.idx)));
+    if(selIdxs.length===0){alert(t('يرجى تحديد رحلة واحدة على الأقل','Please select at least one flight'));return;}
+    const selChipNames=[],selChipTypes=[];
+    document.querySelectorAll('#paxChipsContainer .pax-chip.selected').forEach(c=>{
+        const raw=c.textContent.trim().replace('👤','').replace('👶','').replace('🧒','').trim();
+        selChipNames.push(raw.replace(/^(?:MR\.?|MRS?\.?|MS\.?|DR\.?|MISS\.?)\s+/i,'').trim());
+        selChipTypes.push(c.dataset.type||'adult');
+    });
+    if(selChipNames.length===0){alert(t('يرجى تحديد مسافر واحد على الأقل','Please select at least one passenger'));return;}
+
+    // ── 2. Apply POS / route / PNR type (matching panel logic) ───
     const pos=document.getElementById('posCountry');const cur=pos.value;const isDom=_matchFlightType==='Local';
     if(isDom){if(cur==='KSA_INT')pos.value='KSA_DOM';else if(cur==='BHR_INT')pos.value='BHR_DOM';else if(cur==='OMN_INT')pos.value='OMN_DOM';else if(!cur.includes('DOM'))pos.value='KSA_DOM';}
     else{if(cur==='KSA_DOM')pos.value='KSA_INT';else if(cur==='BHR_DOM')pos.value='BHR_INT';else if(cur==='OMN_DOM')pos.value='OMN_INT';}
+
+    // ── 3. Set pax count, route, PNR ─────────────────────────────
+    const selFlights=selIdxs.map(i=>ticketData.flights[i]);
+    const hasOB=selFlights.some(f=>f.direction==='outbound'||f.id==='OB');
+    const hasIB=selFlights.some(f=>f.direction==='inbound'||f.id==='IB');
+    const isRT=hasOB&&hasIB;
     document.getElementById('paxCount').value=_matchPax;
-    document.getElementById('routeType').value=ticketData.routeType||'OW';onRouteChange();
+    document.getElementById('routeType').value=isRT?'RT':'OW';onRouteChange();
     const pnrEl=document.getElementById('pnrType');if(pnrEl){pnrEl.value=_matchPnr;onPnrChange();}
     onServiceChange();_updateVatVisibility();
+    ticketData._selectedFlights=selFlights;
     ticketData._matchedFlightType=_matchFlightType;ticketData._matchedPnr=_matchPnr;
     buildPaxRows();
-    const allNames=(ticketData.passengers||[]).map(n=>n.replace(/^(?:MR\.?|MRS?\.?|MS\.?|DR\.?|MISS\.?)\s+/i,'').trim());
-    const paxTypes2=ticketData.passengerTypes||[];
-    const billableNames=allNames.filter((_,i)=>(paxTypes2[i]||'adult')!=='infant');
+
+    // ── 4. Fill passenger names from chip selection ───────────────
     setTimeout(()=>{
-        billableNames.slice(0,_matchPax).forEach((name,idx)=>{const el=document.getElementById(`pax_name_${idx+1}`);if(el){el.value=name;el.classList.add('auto-filled');setTimeout(()=>el.classList.remove('auto-filled'),3000);}});
+        selChipNames.slice(0,_matchPax).forEach((name,idx)=>{const el=document.getElementById(`pax_name_${idx+1}`);if(el){el.value=name;el.classList.add('auto-filled');setTimeout(()=>el.classList.remove('auto-filled'),3000);}});
         calculate();
         const toast=document.getElementById('toast');
-        toast.innerText=t('✅ تم تطبيق بيانات المطابقة','✅ Matched data applied');
+        toast.innerText=t('✅ تم تطبيق البيانات على النموذج','✅ Data applied to form');
         toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show');toast.innerText=t('✅ تم النسخ!','✅ Copied!');},2500);
     },120);
 }
