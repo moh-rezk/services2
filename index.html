@@ -1,114 +1,149 @@
 
-
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" id="htmlRoot">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AlMosafer Services Tool - v53.0</title>
+    <title>AlMosafer Services — Command Center v53.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        /* ══ COMMAND CENTER LIGHT THEME v53 ══ */
         :root{
+            --accent:#0099cc;--accent2:#0072ff;--accent-glow:rgba(0,153,204,0.15);
             --primary:#0a2463;--primary-mid:#1740a0;--primary-light:#2657cc;
-            --accent:#00c4e8;--accent-glow:rgba(0,196,232,.25);
-            --success:#0d9e5c;--danger:#d63031;--warning:#e67e22;
-            --scan-green:#00c896;
-            /* Rail */
-            --rail-bg:#1a2e52;--rail-w:72px;
-            --rail-icon:rgba(255,255,255,.45);--rail-icon-hov:rgba(255,255,255,.85);
-            --rail-active:#00c4e8;--rail-active-bg:rgba(0,196,232,.15);
-            /* Input panel */
-            --inp:#0d1b3e;--inp2:#111f46;--inp3:#162454;
-            --ib:rgba(255,255,255,.07);--ibf:rgba(0,196,232,.5);
-            --it:#e2e8f4;--itm:rgba(255,255,255,.35);--its:rgba(255,255,255,.55);
-            --ii:rgba(255,255,255,.06);--iib:rgba(255,255,255,.12);
-            /* Output panel */
-            --ob:#f0f4fa;--oc:#fff;--od:#dde5f0;--odl:#edf1f9;
-            --ot:#0d1b3e;--otm:#4a5a7a;--otl:#8a98b8;
-            --radius:12px;--rsm:8px;
-            --shc:0 2px 12px rgba(10,36,99,.08);
+            /* surfaces */
+            --shell-bg:#f0f2f5;
+            --panel-bg:#ffffff;--panel-bg2:#f7f9fc;--panel-bg3:#e8edf3;
+            --panel-border:rgba(0,0,0,0.08);--panel-border2:rgba(0,0,0,0.12);
+            /* text */
+            --panel-text:#1a2332;--panel-sub:#6b7c93;--panel-hint:#a0aec0;
+            /* inputs */
+            --input-bg:#ffffff;--input-border:rgba(0,0,0,0.15);
+            --input-focus:rgba(0,153,204,0.4);--input-text:#1a2332;
+            /* results */
+            --bg:var(--panel-bg);--bg-deep:var(--panel-bg3);--card:var(--panel-bg2);
+            /* semantic */
+            --success:#059669;--danger:#dc2626;--warning:#d97706;
+            --scan-green:#059669;--scan-green-bg:rgba(5,150,105,0.07);
+            /* legacy compat aliases */
+            --panel-subtext:var(--panel-sub);
+            --text-dark:var(--panel-text);--text-mid:var(--panel-sub);--text-light:var(--panel-hint);
+            --border:var(--panel-border2);--border-light:var(--panel-border);
+            --input-bg:#ffffff;--tag-bg:rgba(0,153,204,0.1);
+            /* sidebar stays dark */
+            --sidebar-bg:#1e293b;--sidebar-w:52px;
+            --radius:11px;--shadow:0 4px 28px rgba(0,0,0,0.12);--shadow-card:0 2px 16px rgba(0,0,0,0.08);
         }
         *{box-sizing:border-box;margin:0;padding:0;}
-        html,body{height:100%;overflow:hidden;}
-        body{font-family:'Cairo',sans-serif;background:var(--inp);color:var(--it);}
-        ::-webkit-scrollbar{width:4px;}
-        ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px;}
-        .out-panel::-webkit-scrollbar-thumb{background:rgba(10,36,99,.15);}
+        body{font-family:'Cairo',sans-serif;background:var(--shell-bg);color:var(--panel-text);min-height:100vh;display:flex;flex-direction:column;}
 
-        /* APP SHELL */
-        .app-shell{display:grid;grid-template-columns:var(--rail-w) 300px 1fr;height:100vh;overflow:hidden;}
+        /* scrollbar */
+        ::-webkit-scrollbar{width:3px;}
+        ::-webkit-scrollbar-track{background:transparent;}
+        ::-webkit-scrollbar-thumb{background:rgba(0,196,232,0.22);border-radius:99px;}
+        ::-webkit-scrollbar-thumb:hover{background:rgba(0,196,232,0.4);}
 
-        /* RAIL */
-        .rail{background:var(--rail-bg);display:flex;flex-direction:column;align-items:center;padding:16px 0 12px;gap:0;border-left:1px solid rgba(255,255,255,.08);z-index:10;flex-shrink:0;box-shadow:2px 0 16px rgba(0,0,0,.18);}
-        .rail-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#00c4e8,#0055ff);display:flex;align-items:center;justify-content:center;margin-bottom:20px;flex-shrink:0;box-shadow:0 4px 12px rgba(0,196,232,.35);}
-        .rail-nav{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;}
-        /* each nav item = icon + label stacked */
-        .r-item{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;padding:9px 4px 8px;cursor:pointer;position:relative;transition:background .18s;border-radius:0;}
-        .r-item:hover{background:rgba(255,255,255,.06);}
-        .r-item.active{background:rgba(0,196,232,.13);}
-        .r-item::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:3px;height:0;background:var(--rail-active);border-radius:3px 0 0 3px;transition:height .2s;}
-        .r-item.active::after{height:32px;}
-        .r-ico{font-size:1.2rem;color:var(--rail-icon);transition:color .18s;line-height:1;}
-        .r-item:hover .r-ico{color:var(--rail-icon-hov);}
-        .r-item.active .r-ico{color:var(--rail-active);}
-        .r-lbl{font-size:.56rem;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.02em;text-align:center;line-height:1.2;transition:color .18s;white-space:nowrap;}
-        .r-item:hover .r-lbl{color:rgba(255,255,255,.65);}
-        .r-item.active .r-lbl{color:var(--rail-active);font-weight:800;}
-        /* separator line between groups */
-        .rail-sep{width:32px;height:1px;background:rgba(255,255,255,.08);margin:8px auto;}
-        .rail-spacer{flex:1;}
-        .r-reset{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;padding:8px 4px;cursor:pointer;transition:background .18s;border-radius:0;}
-        .r-reset:hover{background:rgba(214,48,49,.12);}
-        .r-reset .r-ico{color:rgba(255,100,100,.5);}
-        .r-reset:hover .r-ico{color:#f87171;}
-        .r-reset .r-lbl{color:rgba(255,100,100,.4);}
-        .r-reset:hover .r-lbl{color:#f87171;}
-        .rail-ver{font-size:.48rem;color:rgba(255,255,255,.12);writing-mode:vertical-rl;letter-spacing:.06em;margin:8px 0 4px;font-family:'IBM Plex Mono',monospace;}
-        /* legacy r-icon kept for JS compat */
-        .r-icon{display:none;}
+        /* ── HEADER ── */
+        .header{background:#1e293b;color:white;padding:0 18px 0 14px;height:52px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,0.15);position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+        .header-logo{font-size:1rem;font-weight:900;letter-spacing:-0.5px;display:flex;align-items:center;gap:9px;}
+        .header-right{display:flex;align-items:center;gap:9px;}
+        .header-version{background:rgba(0,153,204,0.15);border:1px solid rgba(0,153,204,0.35);border-radius:20px;padding:2px 10px;font-size:0.64rem;font-weight:700;color:#7dd3f0;font-family:'IBM Plex Mono',monospace;}
+        .lang-toggle{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;cursor:pointer;display:flex;align-items:center;overflow:hidden;height:28px;}
+        .lang-opt{padding:0 11px;height:100%;display:flex;align-items:center;font-size:0.7rem;font-weight:700;color:rgba(255,255,255,0.5);transition:all 0.18s;white-space:nowrap;}
+        .lang-opt.active{background:rgba(255,255,255,0.2);color:white;border-radius:18px;}
 
-        /* INPUT PANEL */
-        .inp-panel{background:var(--inp);display:flex;flex-direction:column;overflow:hidden;border-left:1px solid var(--ib);flex-shrink:0;}
-        .inp-hdr{padding:13px 15px 11px;border-bottom:1px solid var(--ib);flex-shrink:0;}
-        .inp-hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1px;}
-        .inp-sec-label{font-size:.62rem;font-weight:700;color:var(--itm);text-transform:uppercase;letter-spacing:.08em;}
-        .inp-sec-name{font-size:.9rem;font-weight:800;color:var(--it);}
-        .inp-scroll{flex:1;overflow-y:auto;padding-bottom:80px;}
+        /* ── SHELL ── */
+        .app-shell{display:flex;flex:1;height:calc(100vh - 52px);overflow:hidden;margin-right:var(--sidebar-w);}
 
-        /* Dark sections */
-        .ds{padding:14px 16px;border-bottom:1px solid var(--ib);}
-        .ds-title{font-size:.65rem;font-weight:800;color:var(--itm);text-transform:uppercase;letter-spacing:.07em;margin-bottom:11px;display:flex;align-items:center;gap:6px;}
-        .ds-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+        /* ── ICON SIDEBAR ── */
+        .icon-sidebar{width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;border-left:1px solid rgba(255,255,255,0.12);flex-shrink:0;overflow-y:auto;overflow-x:hidden;z-index:100;position:fixed;top:52px;right:0;height:calc(100vh - 52px);}
+        [dir="ltr"] .icon-sidebar{border-left:none;border-right:1px solid rgba(255,255,255,0.04);right:auto;left:0;}
+        .icon-sidebar::-webkit-scrollbar{width:0;background:transparent;}
+        .sb-logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#0072ff);display:flex;align-items:center;justify-content:center;margin-bottom:8px;flex-shrink:0;}
+        .sb-divider{width:24px;height:1px;background:rgba(255,255,255,0.1);margin:3px 0;}
+        .sb-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:background 0.15s;color:rgba(255,255,255,0.55);position:relative;line-height:1;}
+        .sb-icon:hover{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);}
+        .sb-icon.active{background:rgba(0,196,232,0.22);color:#00c4e8;}
+        .sb-icon.active::before{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:2.5px;height:55%;background:#00c4e8;border-radius:3px 0 0 3px;}
+        [dir="ltr"] .sb-icon.active::before{right:auto;left:0;border-radius:0 3px 3px 0;}
 
-        /* Dark form controls */
-        .dl{display:block;font-size:.67rem;font-weight:700;color:var(--its);margin:10px 0 4px;letter-spacing:.02em;}
-        .dl:first-of-type{margin-top:0;}
-        .dl.req::after{content:" *";color:var(--accent);}
-        .di,.dsel{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:9px;padding:8px 12px;font-family:'Cairo',sans-serif;font-size:.82rem;color:var(--it);outline:none;transition:border-color .18s,background .18s,box-shadow .18s;}
-        .di:focus,.dsel:focus{border-color:rgba(0,196,232,0.55);background:rgba(0,196,232,0.06);box-shadow:0 0 0 3px rgba(0,196,232,0.1);}
-        .di::placeholder{color:var(--itm);}
-        .di.auto-filled{border-color:rgba(0,200,150,.55);background:rgba(0,200,150,.07);}
-        .dsel{cursor:pointer;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%235a7090' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 11px center;}
-        .dsel option{background:#0f1c30;color:#dde8f5;}
-        .d2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+        /* ── INPUT PANEL ── */
+        .input-panel{width:370px;flex-shrink:0;background:transparent;border:none;display:flex;flex-direction:column;overflow:hidden;position:relative;height:100%;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
+        [dir="ltr"] .input-panel{border-left:none;border-right:1px solid var(--panel-border);}
 
-        /* Upload zone */
-        .d-up{border:1.5px dashed rgba(0,196,232,0.28);border-radius:10px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(0,196,232,0.03);}
-        .d-up:hover{border-color:rgba(0,196,232,0.5);background:rgba(0,196,232,0.08);}
-        .d-up.has-file{border-color:rgba(0,200,150,0.45);background:rgba(0,200,150,0.06);cursor:default;border-style:solid;}
-        .d-up-ico{font-size:1.6rem;margin-bottom:6px;display:block;}
-        .d-up-lbl{font-size:.76rem;font-weight:800;color:var(--accent);}
-        .d-up.has-file .d-up-lbl{color:#00c896;}
-        .d-up-sub{font-size:.64rem;color:var(--itm);margin-top:3px;}
-        .d-spinner{width:14px;height:14px;border-radius:50%;border:2px solid rgba(0,196,232,.2);border-top-color:var(--accent);animation:spin .7s linear infinite;display:inline-block;}
-        .d-badge{font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:99px;}
-        .d-badge-ai{background:linear-gradient(135deg,#00c4e8,#0055ff);color:white;}
-        .d-badge-auto{background:rgba(0,200,150,.15);border:1px solid rgba(0,200,150,.3);color:#00c896;}
+        /* ── RESULTS PANEL (light gray) ── */
+        .results-panel{flex:1;background:#f0f2f5;overflow-y:auto;padding:16px 20px;}
 
-        /* ── FLIGHT CHIPS ── */
+        /* ── DARK PANEL CARDS ── */
+        .dcard{background:var(--panel-bg2);border-bottom:1px solid var(--panel-border);padding:14px 16px;}
+        .dcard-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid rgba(0,0,0,0.06);}
+        .dcard-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;}
+        .dicon-blue{background:rgba(38,87,204,0.18);}
+        .dicon-red{background:rgba(239,68,68,0.16);}
+        .dicon-orange{background:rgba(230,126,34,0.16);}
+        .dcard-title{font-size:0.79rem;font-weight:800;color:var(--panel-text);}
+        .dcard-subtitle{font-size:0.64rem;color:var(--panel-sub);margin-top:1px;}
 
-        
+        /* dark inputs */
+        .dcard label{display:block;font-weight:700;margin:9px 0 3px;font-size:0.67rem;color:var(--panel-sub);text-transform:uppercase;letter-spacing:0.4px;}
+        .dcard label.required::after{content:" *";color:#f87171;}
+        .dcard input[type="text"],.dcard input[type="number"],.dcard select,.dcard textarea,.dcard input[type="datetime-local"]{
+            width:100%;border:1px solid var(--input-border);border-radius:7px;padding:7px 10px;
+            font-family:'Cairo',sans-serif;font-size:0.8rem;
+            background:#ffffff;color:var(--input-text);
+            transition:border-color 0.18s,box-shadow 0.18s;outline:none;
+        }
+        .dcard input:focus,.dcard select:focus{border-color:var(--input-focus);background:#f0f9ff;box-shadow:0 0 0 3px rgba(0,196,232,0.09);}
+        .dcard select option{background:#ffffff;color:#1a2332;}
+        .dcard input.auto-filled{border-color:rgba(0,200,150,0.45);background:rgba(0,200,150,0.07);}
+        .dcard input[type="number"]{-moz-appearance:textfield;}
+        .dcard input[type="number"]::-webkit-inner-spin-button,.dcard input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;}
+        .dcard .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+        .dcard .pax-section-title{font-size:0.72rem;font-weight:800;color:var(--panel-text);background:rgba(0,0,0,0.04);border-radius:6px;padding:6px 10px;margin-bottom:9px;display:flex;align-items:center;gap:5px;}
+        .dcard .pax-row{background:#eef2f7;border:1px solid var(--panel-border2);border-radius:9px;padding:11px;margin-bottom:9px;}
+        .dcard .pax-row-header{font-size:0.7rem;font-weight:800;color:var(--panel-text);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+        .btn-reset-dark{width:100%;padding:9px;border:1px solid rgba(248,113,113,0.22);border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:800;font-size:0.78rem;margin-top:3px;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(239,68,68,0.06);color:#f87171;}
+        .btn-reset-dark:hover{background:rgba(239,68,68,0.14);border-color:rgba(248,113,113,0.4);}
+
+        /* ── RESULTS CARDS ── */
+        .card{background:#ffffff;border-radius:var(--radius);padding:16px 18px;border:1px solid rgba(0,0,0,0.08);margin-bottom:12px;transition:box-shadow 0.18s;box-shadow:0 1px 6px rgba(0,0,0,0.06);}
+        .card:hover{box-shadow:0 4px 18px rgba(0,0,0,0.12);}
+        .card-header{display:flex;align-items:center;gap:9px;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid rgba(0,0,0,0.07);}
+        .card-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+        .icon-blue{background:rgba(38,87,204,0.2);}
+        .icon-red{background:rgba(239,68,68,0.18);}
+        .icon-orange{background:rgba(230,126,34,0.18);}
+        .card-title{font-size:0.85rem;font-weight:800;color:var(--panel-text);}
+        .card-subtitle{font-size:0.68rem;color:var(--panel-sub);margin-top:2px;}
+
+        /* ── TICKET SCANNER ── */
+        @keyframes spin{to{transform:rotate(360deg);}}
+        @keyframes slideDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+        @keyframes pulse-green{0%,100%{box-shadow:0 0 0 0 rgba(0,200,150,0.4);}50%{box-shadow:0 0 0 5px rgba(0,200,150,0);}}
+
+        .ticket-scanner-card{background:var(--panel-bg2);border-bottom:2px solid var(--panel-border);position:fixed;top:52px;right:var(--sidebar-w);width:370px;height:auto;overflow:visible;z-index:50;box-shadow:0 2px 12px rgba(0,0,0,0.08);flex-shrink:0;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
+        [dir="ltr"] .ticket-scanner-card{right:auto;left:var(--sidebar-w);}
+        .ticket-scanner-card::-webkit-scrollbar{width:3px;}
+        .ticket-scanner-card::-webkit-scrollbar-thumb{background:var(--panel-border2);border-radius:3px;}
+        .tsc-topbar{background:rgba(0,153,204,0.05);border-bottom:1px solid var(--panel-border);padding:12px 15px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background 0.18s;}
+        .tsc-topbar:hover{background:rgba(0,153,204,0.1);}
+        .tsc-topbar.has-file{background:rgba(5,150,105,0.07);border-bottom-color:rgba(5,150,105,0.2);cursor:default;}
+        .tsc-topbar.has-file:hover{background:rgba(5,150,105,0.1);}
+        .tsc-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;background:rgba(38,87,204,0.22);}
+        .tsc-icon.success{background:rgba(0,200,150,0.22);}
+        .tsc-icon.scanning{background:rgba(230,126,34,0.22);}
+        .tsc-text{flex:1;min-width:0;}
+        .tsc-title{font-size:0.79rem;font-weight:800;color:var(--panel-text);display:flex;align-items:center;gap:6px;}
+        .tsc-sub{font-size:0.64rem;color:var(--panel-sub);margin-top:2px;}
+        .scanner-badge{background:linear-gradient(135deg,var(--accent),#0099ff);color:white;font-size:0.57rem;font-weight:700;padding:2px 7px;border-radius:99px;flex-shrink:0;}
+        .tsc-clear-btn{background:rgba(239,68,68,0.1);border:1px solid rgba(248,113,113,0.25);color:#f87171;border-radius:7px;padding:4px 10px;font-size:0.66rem;font-family:'Cairo',sans-serif;cursor:pointer;font-weight:700;flex-shrink:0;transition:all 0.15s;}
+        .tsc-clear-btn:hover{background:rgba(239,68,68,0.2);}
+        .scan-spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(0,196,232,0.18);border-top-color:var(--accent);animation:spin 0.7s linear infinite;flex-shrink:0;}
+        #ticketFileInput{display:none;}
+        .ticket-info-panel{display:none;animation:slideDown 0.25s ease;}
+        .ticket-info-panel.visible{display:block;}
+
+        /* flight chips */
         .tip-section{padding:10px 15px;border-bottom:1px solid var(--panel-border);}
         .tip-section-header{display:flex;align-items:center;gap:7px;margin-bottom:9px;}
         .tip-section-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.63rem;font-weight:900;flex-shrink:0;}
@@ -118,10 +153,10 @@
         .tip-section-label{font-size:0.72rem;font-weight:800;color:var(--panel-text);}
         .tip-section-hint{font-size:0.62rem;color:var(--panel-sub);margin-right:auto;}
         .flights-grid{display:flex;flex-direction:column;gap:5px;}
-        .flight-chip{border:1px solid var(--panel-border2);border-radius:8px;padding:8px 10px;cursor:pointer;transition:all 0.15s;background:rgba(255,255,255,0.03);display:flex;align-items:center;gap:9px;}
+        .flight-chip{border:1px solid var(--panel-border2);border-radius:8px;padding:8px 10px;cursor:pointer;transition:all 0.15s;background:#ffffff;display:flex;align-items:center;gap:9px;}
         .flight-chip:hover{border-color:rgba(0,196,232,0.3);background:rgba(0,196,232,0.05);}
         .flight-chip.selected{border-color:rgba(0,196,232,0.45);background:rgba(0,196,232,0.08);box-shadow:0 0 0 2px rgba(0,196,232,0.06);}
-        .flight-chip-check{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.15);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+        .flight-chip-check{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.18);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
         .flight-chip.selected .flight-chip-check{background:var(--accent);border-color:var(--accent);color:white;font-size:0.6rem;}
         .flight-chip-info{flex:1;}
         .flight-chip-route{font-size:0.76rem;font-weight:800;color:var(--panel-text);}
@@ -135,15 +170,14 @@
         .dir-ob{background:rgba(38,87,204,0.22);color:#93c5fd;}
         .dir-ib{background:rgba(180,83,9,0.22);color:#fbbf24;}
         .pax-chips{display:flex;flex-wrap:wrap;gap:5px;}
-        .pax-chip{border:1px solid var(--panel-border2);border-radius:18px;padding:4px 11px;cursor:pointer;transition:all 0.15s;background:rgba(255,255,255,0.03);font-size:0.7rem;font-weight:600;display:flex;align-items:center;gap:4px;color:var(--panel-sub);}
+        .pax-chip{border:1px solid var(--panel-border2);border-radius:18px;padding:4px 11px;cursor:pointer;transition:all 0.15s;background:#ffffff;font-size:0.7rem;font-weight:600;display:flex;align-items:center;gap:4px;color:var(--panel-sub);}
         .pax-chip:hover{border-color:rgba(0,196,232,0.3);color:var(--panel-text);}
         .pax-chip.selected{background:rgba(0,196,232,0.12);border-color:rgba(0,196,232,0.35);color:var(--accent);}
 
-        
         /* live match */
-        .live-match-section{padding:10px 15px;background:rgba(180,83,9,0.05);border-bottom:1px solid rgba(180,83,9,0.12);}
+        .live-match-section{padding:10px 15px;background:rgba(217,119,6,0.04);border-bottom:1px solid rgba(217,119,6,0.1);}
         .lms-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px;}
-        .lms-cell{background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid var(--panel-border2);padding:8px 10px;transition:border-color 0.18s,box-shadow 0.18s;}
+        .lms-cell{background:#ffffff;border-radius:8px;border:1px solid var(--panel-border2);padding:8px 10px;transition:border-color 0.18s,box-shadow 0.18s;}
         .lms-cell.live-updated{border-color:rgba(0,200,150,0.45);box-shadow:0 0 0 2px rgba(0,200,150,0.08);animation:pulse-green 0.6s ease;}
         .lms-cell.mismatch{border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.05);}
         .lms-cell-label{font-size:0.57rem;font-weight:700;color:var(--panel-sub);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;display:flex;align-items:center;gap:3px;}
@@ -151,7 +185,7 @@
         .lms-cell-value{font-size:0.84rem;font-weight:900;color:var(--panel-text);line-height:1.2;}
         .lms-cell-override{margin-top:5px;}
         .lms-toggle-row{display:flex;gap:4px;margin-top:4px;}
-        .lms-toggle-btn{flex:1;padding:3px 5px;border:1px solid var(--panel-border2);border-radius:5px;background:rgba(255,255,255,0.03);cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.64rem;font-weight:700;color:var(--panel-sub);transition:all 0.12s;text-align:center;}
+        .lms-toggle-btn{flex:1;padding:3px 5px;border:1px solid var(--panel-border2);border-radius:5px;background:#ffffff;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.64rem;font-weight:700;color:var(--panel-sub);transition:all 0.12s;text-align:center;}
         .lms-toggle-btn:hover{border-color:rgba(245,158,11,0.4);color:#fbbf24;}
         .lms-toggle-btn.active-dom{border-color:rgba(0,200,150,0.45);background:rgba(0,200,150,0.12);color:#6ee7b7;}
         .lms-toggle-btn.active-int{border-color:rgba(59,130,246,0.45);background:rgba(59,130,246,0.12);color:#93c5fd;}
@@ -173,40 +207,52 @@
         .apply-ticket-btn{display:none;}
         .match-section-label,.match-row,.match-summary-strip,.match-pax-counter,.match-confirm-btn,.match-toggle-group,.match-toggle-btn,.match-pax-btn,.match-pax-num,.match-pax-info,.match-extracted,.match-divider,.match-input-col,.match-extracted-label,.match-extracted-value,.match-inline-divider,.match-inline-header,.mih-badge{display:none!important;}
 
-        
+        /* ── GLOBAL INPUTS (fallback for non-dcard) ── */
+        label{display:block;font-weight:700;margin:9px 0 3px;font-size:0.71rem;color:var(--panel-sub);}
+        label.required::after{content:" *";color:#f87171;}
+        input[type="text"],input[type="number"],select,textarea{
+            width:100%;border:1px solid var(--input-border);border-radius:8px;
+            padding:8px 11px;font-family:'Cairo',sans-serif;font-size:0.82rem;
+            background:#ffffff;color:var(--input-text);
+            transition:border-color 0.18s,box-shadow 0.18s;outline:none;
+        }
+        input[type="number"]{-moz-appearance:textfield;}
+        input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;}
+        input:focus,select:focus{border-color:var(--input-focus);background:#f0f9ff;box-shadow:0 0 0 3px rgba(0,153,204,0.1);}
+        input.auto-filled{border-color:rgba(0,200,150,0.42);background:rgba(0,200,150,0.06);}
+        select option{background:#ffffff;color:#1a2332;}
+        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+        .pax-section-title{font-size:0.75rem;font-weight:800;color:var(--panel-text);background:rgba(0,0,0,0.04);border-radius:7px;padding:6px 11px;margin-bottom:9px;display:flex;align-items:center;gap:5px;}
+        .pax-row{background:#eef2f7;border:1px solid var(--panel-border2);border-radius:10px;padding:12px;margin-bottom:9px;}
+        .pax-row-header{font-size:0.72rem;font-weight:800;color:var(--panel-text);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+        .pax-badge{background:linear-gradient(135deg,rgba(0,196,232,0.3),rgba(0,114,255,0.3));color:var(--accent);width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.66rem;font-weight:800;flex-shrink:0;}
 
-        /* ── PAX CHIPS ── */
-        .d-pchips{display:flex;flex-wrap:wrap;gap:6px;}
-        .d-pc{border:1px solid rgba(255,255,255,0.1);border-radius:99px;padding:5px 13px;cursor:pointer;transition:all .18s;background:rgba(255,255,255,0.04);font-size:.72rem;font-weight:600;color:var(--itm);display:flex;align-items:center;gap:4px;}
-        .d-pc:hover{border-color:rgba(0,196,232,0.4);color:var(--it);background:rgba(0,196,232,0.06);}
-        .d-pc.selected{background:rgba(0,196,232,0.15);border-color:rgba(0,196,232,0.5);color:var(--accent);font-weight:800;}
+        /* ── BUTTONS ── */
+        .btn{width:100%;padding:10px;border:none;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:800;font-size:0.85rem;margin-top:7px;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:6px;}
+        .btn:hover{opacity:0.9;transform:translateY(-1px);}
+        .btn-primary{background:linear-gradient(135deg,#0d1d45,#1740a0);color:white;}
+        .btn-success{background:linear-gradient(135deg,#064e3b,#065f46);color:white;}
+        .btn-accept{background:rgba(0,196,232,0.1);border:1px solid rgba(0,196,232,0.3)!important;color:var(--accent);font-size:0.9rem;}
+        .btn-accept:hover{background:rgba(0,196,232,0.18);}
+        .btn-dark{background:#f0f4f8;border:1px solid var(--panel-border2)!important;color:var(--panel-text);}
+        .btn-reset{background:rgba(239,68,68,0.07);color:#f87171;border:1px solid rgba(239,68,68,0.22)!important;}
+        .btn-copy{background:rgba(0,196,232,0.07);color:var(--accent);border:1px solid rgba(0,196,232,0.22)!important;}
 
-        /* ── LMS GRID (auto-match section) ── */
-        .d-lms{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
-        .d-lc{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:11px;padding:10px 12px;transition:border-color .2s,box-shadow .2s;min-height:86px;display:flex;flex-direction:column;}
-        .d-lc.live-updated{border-color:rgba(0,200,150,0.5);box-shadow:0 0 0 2px rgba(0,200,150,0.1);animation:pulse-g .6s ease;}
-        .d-lc-lbl{font-size:.6rem;font-weight:700;color:var(--itm);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
-        .d-lc-src{font-size:.57rem;background:rgba(0,196,232,0.15);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:800;}
-        .d-lc-val{font-size:.9rem;font-weight:900;color:var(--it);line-height:1.2;margin-bottom:4px;}
-        .d-pax-row{display:flex;align-items:center;gap:8px;margin-top:6px;}
-        .d-pax-b{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(0,196,232,0.4);background:rgba(0,196,232,0.1);font-size:1rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--accent);transition:all .15s;flex-shrink:0;}
-        .d-pax-b:hover{background:rgba(0,196,232,0.22);transform:scale(1.08);}
-        .d-pax-n{font-size:1.25rem;font-weight:900;color:var(--accent);min-width:24px;text-align:center;}
-        .d-tog{display:flex;gap:5px;margin-top:6px;}
-        .d-tb{flex:1;padding:5px 4px;border:1px solid rgba(255,255,255,0.1);border-radius:7px;background:rgba(255,255,255,0.03);cursor:pointer;font-family:'Cairo',sans-serif;font-size:.66rem;font-weight:800;color:var(--its);transition:all .15s;text-align:center;white-space:nowrap;}
-        .d-tb:hover{border-color:rgba(0,196,232,0.4);color:var(--it);background:rgba(0,196,232,0.06);}
-        .d-tb.active-dom{border-color:rgba(0,200,150,0.5);background:rgba(0,200,150,0.14);color:#00c896;}
-        .d-tb.active-int{border-color:rgba(0,196,232,0.5);background:rgba(0,196,232,0.14);color:var(--accent);}
-        .d-tb.active-single{border-color:rgba(139,92,246,0.5);background:rgba(139,92,246,0.14);color:#a78bfa;}
-        .d-tb.active-multi{border-color:rgba(239,68,68,0.5);background:rgba(239,68,68,0.14);color:#f87171;}
-        .d-st{border-radius:8px;padding:7px 11px;font-size:.71rem;font-weight:700;display:flex;align-items:center;gap:6px;margin-top:2px;}
-        .d-st.ok{background:rgba(0,200,150,0.1);border:1px solid rgba(0,200,150,0.28);color:#00c896;}
-        .d-st.warn{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.28);color:#f59e0b;}
+        /* ── RESULTS ELEMENTS ── */
+        .waiting-msg{background:rgba(217,119,6,0.07);border:1px solid rgba(217,119,6,0.2);border-radius:10px;padding:20px;text-align:center;color:#b45309;font-weight:700;font-size:0.84rem;}
+        .waiting-msg .icon{font-size:1.8rem;display:block;margin-bottom:7px;}
+        .msg-box{background:#ffffff;border:1px solid rgba(0,0,0,0.1);border-radius:9px;padding:14px;margin-bottom:10px;white-space:pre-wrap;line-height:1.9;font-size:0.84rem;color:var(--panel-text);box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+        .internal-box{background:#0f172a;color:#7dd3fc;font-family:'IBM Plex Mono',monospace;font-size:0.76rem;line-height:1.7;border:none;border-radius:8px;}
+        .section-title{font-size:0.9rem;font-weight:900;color:var(--panel-text);margin:16px 0 10px;padding-bottom:7px;border-bottom:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;gap:6px;}
+        .hidden-section{display:none;margin-top:16px;}
+        .divider{border:none;border-top:1px dashed rgba(0,0,0,0.1);margin:16px 0;}
+        .result-card{background:#ffffff;border-radius:11px;border:1px solid rgba(0,0,0,0.09);overflow:hidden;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,0.07);}
+        .result-card-header{background:#f0f4f8;color:var(--panel-text);padding:10px 15px;font-weight:800;font-size:0.8rem;display:flex;align-items:center;gap:7px;border-bottom:1px solid rgba(0,0,0,0.07);}
+        .result-card-body{padding:14px;}
+        @keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+        .animate-in{animation:slideIn 0.28s ease;}
 
-        /* NS boxes */
-
-
-        
+        /* ── NO-SHOW ── */
         .ns-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px;}
         .ns-info-box{border-radius:9px;padding:11px 13px;}
         .ns-box-airline{background:linear-gradient(135deg,rgba(10,36,99,0.75),rgba(23,64,160,0.75));border:1px solid rgba(38,87,204,0.25);}
@@ -227,156 +273,49 @@
         .badge-danger{background:rgba(127,29,29,0.55);color:#fecaca;}
         .ns-auto-tag{display:inline-flex;align-items:center;gap:3px;background:rgba(0,196,232,0.1);border:1px solid rgba(0,196,232,0.25);border-radius:18px;font-size:0.58rem;font-weight:800;padding:2px 7px;color:var(--accent);margin-bottom:7px;}
 
-        /* Apply btn */
-        .d-apply{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:900;font-size:.9rem;background:linear-gradient(90deg,#0055ff,#00c4e8,#0055ff);background-size:200%;background-position:right;color:white;transition:background-position .4s,transform .15s,box-shadow .15s;box-shadow:0 3px 16px rgba(0,100,255,.25);margin-top:10px;}
-        .d-apply:hover{background-position:left;transform:translateY(-1px);box-shadow:0 5px 22px rgba(0,196,232,.35);}
-        .d-apply .arr{transition:transform .2s;font-size:1rem;}
-        .d-apply:hover .arr{transform:translateX(-4px);}
-
-        /* Dark btn */
-        .d-btn{width:100%;padding:9px;border:1px solid rgba(255,255,255,0.12);border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;font-size:.8rem;margin-top:6px;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:5px;background:rgba(255,255,255,0.05);color:var(--it);}
-        .d-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);}
-        .d-btn-danger{background:rgba(214,48,49,0.1);border-color:rgba(214,48,49,0.3);color:#f87171;}
-        .d-btn-danger:hover{background:rgba(214,48,49,0.18);border-color:rgba(248,113,113,0.45);}
-
-        /* OUTPUT PANEL */
-        .out-panel{background:var(--ob);display:flex;flex-direction:column;overflow-y:auto;padding:20px 22px 40px;}
-        .out-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-        .out-logo{font-size:1.05rem;font-weight:900;color:var(--ot);}
-        .out-logo span{color:var(--accent);}
-        .out-ver{font-size:.66rem;font-weight:700;color:var(--otl);font-family:'IBM Plex Mono',monospace;background:white;border:1px solid var(--od);padding:3px 9px;border-radius:99px;}
-        .lang-toggle{background:white;border:1px solid var(--od);border-radius:22px;cursor:pointer;display:flex;align-items:center;overflow:hidden;height:29px;box-shadow:var(--shc);}
-        .lang-opt{padding:0 11px;height:100%;display:flex;align-items:center;font-size:.7rem;font-weight:700;color:var(--otm);transition:all .18s;white-space:nowrap;}
-        .lang-opt.active{background:var(--ot);color:white;border-radius:20px;}
-        .out-wait{background:white;border:1px solid var(--od);border-radius:var(--radius);padding:36px 22px;text-align:center;}
-        .out-wait-ico{font-size:2rem;display:block;margin-bottom:9px;}
-        .out-wait-ttl{font-size:.88rem;font-weight:700;color:var(--ot);margin-bottom:5px;}
-        .out-wait-sub{font-size:.75rem;line-height:1.7;color:var(--otl);}
-        .out-card{background:var(--oc);border:1px solid var(--od);border-radius:var(--radius);overflow:hidden;margin-bottom:13px;box-shadow:var(--shc);}
-        .out-ch{padding:10px 15px;border-bottom:1px solid var(--odl);display:flex;align-items:center;justify-content:space-between;}
-        .out-ch-l{display:flex;align-items:center;gap:7px;font-size:.78rem;font-weight:800;color:var(--ot);}
-        .out-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-        .out-cb{padding:14px 15px;}
-        .out-msg{background:#f8faff;border:1px solid var(--odl);border-radius:var(--rsm);padding:13px;margin-bottom:9px;white-space:pre-wrap;line-height:1.9;font-size:.82rem;color:var(--ot);}
-        .out-msg-dark{background:#0d1117;border:none;color:#38bdf8;font-family:'IBM Plex Mono',monospace;font-size:.74rem;line-height:1.7;}
-        .out-stitle{font-size:.86rem;font-weight:900;color:var(--ot);margin:14px 0 9px;padding-bottom:6px;border-bottom:1.5px solid var(--odl);display:flex;align-items:center;gap:6px;}
-        .out-divider{border:none;border-top:2px dashed var(--od);margin:14px 0;}
-        .out-btn{padding:7px 14px;border-radius:var(--rsm);border:1px solid var(--od);background:white;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;font-size:.75rem;color:var(--otm);transition:all .18s;display:inline-flex;align-items:center;gap:5px;}
-        .out-btn:hover{border-color:var(--primary-light);color:var(--primary);background:#f0f4ff;}
-        .out-btn-full{width:100%;justify-content:center;margin-top:7px;}
-        .out-btn-accept{width:100%;padding:11px;border:none;border-radius:var(--rsm);background:linear-gradient(135deg,#e67e22,#f39c12);color:white;font-family:'Cairo',sans-serif;font-weight:800;font-size:.88rem;cursor:pointer;margin-top:7px;transition:opacity .18s;display:flex;align-items:center;justify-content:center;gap:6px;}
-        .out-btn-accept:hover{opacity:.91;}
-        .out-btn-success{background:linear-gradient(135deg,#0d9e5c,#16a34a);color:white;border:none;}
-        .out-btn-success:hover{opacity:.91;border:none;color:white;}
-        .out-btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border:none;}
-        .out-btn-primary:hover{opacity:.91;border:none;color:white;}
-        .out-btn-dark{background:linear-gradient(135deg,#0d1117,#1e293b);color:white;border:none;}
-        .out-btn-dark:hover{opacity:.91;border:none;color:white;}
-
-        /* MODAL */
-        .modal-overlay{position:fixed;inset:0;background:rgba(8,19,42,.72);backdrop-filter:blur(4px);z-index:9000;display:none;align-items:center;justify-content:center;}
+        /* ── MODAL ── */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:9000;display:none;align-items:center;justify-content:center;}
         .modal-overlay.show{display:flex;}
-        .modal-box{background:white;border-radius:18px;padding:28px 24px;max-width:420px;width:92%;text-align:center;position:relative;}
+        .modal-box{background:#ffffff;border:1px solid rgba(0,0,0,0.1);border-radius:18px;padding:30px 26px;max-width:420px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:slideIn 0.28s ease;text-align:center;position:relative;}
+        .modal-icon{font-size:3rem;margin-bottom:10px;display:block;}
+        .modal-title{font-size:1.05rem;font-weight:900;color:#fca5a5;margin-bottom:7px;}
+        .modal-body{font-size:0.82rem;color:#4a5568;line-height:1.7;margin-bottom:18px;}
+        .modal-body strong{color:#1a2332;}
+        .modal-btn{width:100%;padding:11px;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:900;font-size:0.87rem;background:linear-gradient(135deg,#dc2626,#b91c1c);color:white;}
+        .modal-btn:hover{opacity:0.9;}
         .modal-stripe{position:absolute;top:0;left:0;right:0;height:4px;border-radius:18px 18px 0 0;background:linear-gradient(90deg,#dc2626,#f59e0b,#dc2626);}
-        .modal-icon{font-size:2.8rem;display:block;margin-bottom:8px;}
-        .modal-title{font-size:.96rem;font-weight:900;color:#7f1d1d;margin-bottom:6px;}
-        .modal-body{font-size:.8rem;color:var(--otm);line-height:1.7;margin-bottom:16px;}
-        .modal-btn{width:100%;padding:10px;border:none;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:900;font-size:.86rem;background:linear-gradient(135deg,#dc2626,#b91c1c);color:white;}
 
-        /* TOAST */
-        .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0d1b3e;color:white;padding:9px 20px;border-radius:99px;font-weight:700;font-size:.76rem;opacity:0;pointer-events:none;transition:all .25s;z-index:9999;display:flex;align-items:center;gap:6px;border:1px solid rgba(0,196,232,.3);}
+        /* ── TOAST ── */
+        .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1e293b;color:#f0f4f8;padding:10px 22px;border-radius:28px;font-weight:700;font-size:0.8rem;opacity:0;pointer-events:none;transition:all 0.28s;z-index:9999;display:flex;align-items:center;gap:7px;border:1px solid rgba(0,153,204,0.3);}
         .toast.show{opacity:1;}
 
-
-        /* ── DARK PANEL CARDS ── */
-        .dcard{background:var(--panel-bg2);border-bottom:1px solid var(--panel-border);padding:14px 16px;}
-        .dcard-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,0.04);}
-        .dcard-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;}
-        .dicon-blue{background:rgba(38,87,204,0.18);}
-        .dicon-red{background:rgba(239,68,68,0.16);}
-        .dicon-orange{background:rgba(230,126,34,0.16);}
-        .dcard-title{font-size:0.79rem;font-weight:800;color:var(--panel-text);}
-        .dcard-subtitle{font-size:0.64rem;color:var(--panel-sub);margin-top:1px;}
-
-        /* dark inputs */
-        .dcard label{display:block;font-weight:700;margin:9px 0 3px;font-size:0.67rem;color:var(--panel-sub);text-transform:uppercase;letter-spacing:0.4px;}
-        .dcard label.required::after{content:" *";color:#f87171;}
-        .dcard input[type="text"],.dcard input[type="number"],.dcard select,.dcard textarea,.dcard input[type="datetime-local"]{
-            width:100%;border:1px solid var(--input-border);border-radius:7px;padding:7px 10px;
-            font-family:'Cairo',sans-serif;font-size:0.8rem;
-            background:rgba(255,255,255,0.05);color:var(--input-text);
-            transition:border-color 0.18s,box-shadow 0.18s;outline:none;
+        .scan-status{display:none;}
+        .ticket-scanner-card.minimized .ticket-info-panel{display:none!important;}
+        .ticket-scanner-card.minimized{height:auto;}
+        .tsc-minimize-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:7px;padding:3px 8px;font-size:0.7rem;font-family:'Cairo',sans-serif;cursor:pointer;font-weight:700;flex-shrink:0;transition:all 0.15s;line-height:1;}
+        .tsc-minimize-btn:hover{background:rgba(255,255,255,0.18);color:white;}
+        select option{font-family:'Cairo',sans-serif;}
+        /* scrollable form area below ticket scanner — also fixed */
+        .input-panel-scroll{
+            position:relative;
+            flex:1;
+            width:100%;
+            overflow-y:auto;
+            overflow-x:hidden;
+            display:flex;
+            flex-direction:column;
+            scroll-behavior:smooth;
+            -webkit-overflow-scrolling:touch;
+            background:var(--panel-bg2);
         }
-        .dcard input:focus,.dcard select:focus{border-color:var(--input-focus);background:rgba(255,255,255,0.08);box-shadow:0 0 0 3px rgba(0,196,232,0.09);}
-        .dcard select option{background:#0d1a2e;color:#dde8f5;}
-        .dcard input.auto-filled{border-color:rgba(0,200,150,0.45);background:rgba(0,200,150,0.07);}
-        .dcard input[type="number"]{-moz-appearance:textfield;}
-        .dcard input[type="number"]::-webkit-inner-spin-button,.dcard input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;}
-        .dcard .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-        .dcard .pax-section-title{font-size:0.72rem;font-weight:800;color:var(--panel-text);background:rgba(255,255,255,0.04);border-radius:6px;padding:6px 10px;margin-bottom:9px;display:flex;align-items:center;gap:5px;}
-        .dcard .pax-row{background:rgba(0,0,0,0.2);border:1px solid var(--panel-border);border-radius:9px;padding:11px;margin-bottom:9px;}
-        .dcard .pax-row-header{font-size:0.7rem;font-weight:800;color:var(--panel-text);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
-        .btn-reset-dark{width:100%;padding:9px;border:1px solid rgba(248,113,113,0.22);border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:800;font-size:0.78rem;margin-top:3px;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(239,68,68,0.06);color:#f87171;}
-        .btn-reset-dark:hover{background:rgba(239,68,68,0.14);border-color:rgba(248,113,113,0.4);}
-        
-        /* PAXROW */
-        .pax-section-title{font-size:.75rem;font-weight:800;color:var(--primary);background:#e4eeff;border-radius:7px;padding:6px 11px;margin-bottom:9px;display:flex;align-items:center;gap:5px;}
-        .pax-row{background:#f7faff;border:1px solid var(--odl);border-radius:10px;padding:12px;margin-bottom:9px;}
-        .pax-row-header{font-size:.73rem;font-weight:800;color:var(--primary);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
-        .pax-badge{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:800;flex-shrink:0;}
+        [dir="ltr"] .input-panel-scroll{right:auto;left:auto;}
 
-        @keyframes spin{to{transform:rotate(360deg);}}
-        @keyframes slideDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
-        @keyframes slideIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-        @keyframes pulse-g{0%,100%{box-shadow:0 0 0 0 rgba(0,200,150,.3);}50%{box-shadow:0 0 0 4px rgba(0,200,150,0);}}
-        .animate-in{animation:slideIn .3s ease;}
-        .hidden-section{display:none;margin-top:14px;}
-
-        /* legacy compat */
-        #ticketFileInput{display:none;}
-        .scan-status,.matching-panel,.apply-ticket-btn{display:none;}
-        .match-section-label,.match-row,.match-summary-strip,.match-pax-counter,.match-confirm-btn,.match-toggle-group,.match-toggle-btn,.match-pax-btn,.match-pax-num,.match-pax-info,.match-extracted,.match-divider,.match-input-col,.match-extracted-label,.match-extracted-value,.match-inline-divider,.match-inline-header,.mih-badge{display:none!important;}
-
-        /* ══ TICKET SECTION — tip-block system ══ */
-        .ticket-info-panel{display:none;animation:slideDown .25s ease;}
-        .ticket-info-panel.visible{display:block;}
-
-        .tip-block{border:1px solid rgba(255,255,255,0.07);border-radius:11px;padding:11px 12px;margin-bottom:9px;background:rgba(255,255,255,0.02);}
-        .tip-block-match{border-color:rgba(167,139,250,0.18);background:rgba(167,139,250,0.04);}
-        .tip-block-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-        .tip-step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:900;flex-shrink:0;}
-        .tip-block-title{font-size:.73rem;font-weight:800;color:var(--it);}
-        .tip-block-hint{margin-right:auto;font-size:.6rem;color:var(--itm);font-weight:400;}
-
-        /* ══ NO-SHOW SECTION ══ */
-        /* auto-pill */
-        .ns-auto-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(0,196,232,0.1);border:1px solid rgba(0,196,232,0.25);border-radius:20px;font-size:.62rem;font-weight:800;padding:3px 10px;color:var(--accent);}
-
-        /* info cards row */
-        .ns-info-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
-        .ns-info-card{border-radius:10px;padding:10px 12px;}
-        .ns-card-airline{background:linear-gradient(135deg,rgba(10,36,99,0.8),rgba(23,64,160,0.8));border:1px solid rgba(38,87,204,0.3);}
-        .ns-card-bag{background:linear-gradient(135deg,rgba(6,78,59,0.8),rgba(6,95,70,0.8));border:1px solid rgba(0,200,150,0.25);}
-        .ns-card-label{font-size:.57rem;font-weight:700;letter-spacing:.06em;color:rgba(255,255,255,0.45);margin-bottom:4px;}
-        .ns-card-value{font-size:.88rem;font-weight:900;color:white;line-height:1.2;}
-        .ns-card-sub{font-size:.62rem;color:rgba(255,255,255,0.5);margin-top:3px;}
-
-        /* deadline rows */
-        .ns-deadline{border-radius:9px;padding:9px 12px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
-        .ns-deadline.ok{background:rgba(0,200,150,0.08);border:1px solid rgba(0,200,150,0.22);}
-        .ns-deadline.warn{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.22);}
-        .ns-deadline.danger{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.22);}
-        .ns-deadline.ns-hidden{display:none;}
-        .ns-deadline-info{}
-        .ns-deadline-label{font-size:.67rem;font-weight:700;color:var(--its);margin-bottom:3px;}
-        .ns-deadline-time{font-size:.78rem;font-weight:900;font-family:'IBM Plex Mono',monospace;color:var(--it);}
-        .ns-deadline-badge{font-size:.65rem;font-weight:800;padding:3px 10px;border-radius:20px;flex-shrink:0;}
-        .ns-deadline.ok .ns-deadline-badge{background:rgba(0,200,150,0.2);color:#6ee7b7;}
-        .ns-deadline.warn .ns-deadline-badge{background:rgba(245,158,11,0.2);color:#fbbf24;}
-        .ns-deadline.danger .ns-deadline-badge{background:rgba(239,68,68,0.2);color:#fca5a5;}
-
-        /* divider */
-        .ns-divider{border:none;border-top:1px dashed rgba(255,255,255,0.07);margin:12px 0 10px;}
+                @media(max-width:860px){
+            .icon-sidebar{display:none;}
+            .input-panel{width:100%;max-width:100%;border:none;}
+            .app-shell{flex-direction:column;height:auto;overflow:visible;}
+            .results-panel{flex:none;min-height:auto;}
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
@@ -388,406 +327,400 @@
 
 <!-- NO-SHOW MODAL -->
 <div class="modal-overlay" id="nsModal">
-  <div class="modal-box">
-    <div class="modal-stripe"></div>
-    <span class="modal-icon">🚫</span>
-    <div class="modal-title" id="nsModalTitle">تحذير: وضع No-Show</div>
-    <div class="modal-body" id="nsModalBody"></div>
-    <button class="modal-btn" onclick="document.getElementById('nsModal').classList.remove('show')" id="nsModalBtn">حسناً – فهمت</button>
-  </div>
+    <div class="modal-box">
+        <div class="modal-stripe"></div>
+        <span class="modal-icon">🚫</span>
+        <div class="modal-title" id="nsModalTitle">تحذير: وضع No-Show</div>
+        <div class="modal-body" id="nsModalBody"></div>
+        <button class="modal-btn" onclick="document.getElementById('nsModal').classList.remove('show')" id="nsModalBtn">حسناً – فهمت</button>
+    </div>
 </div>
 
+<!-- HEADER -->
+<div class="header">
+    <div class="header-logo">
+        <svg width="30" height="30" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+            <rect width="36" height="36" rx="9" fill="url(#lg)"/>
+            <defs><linearGradient id="lg" x1="0" y1="0" x2="36" y2="36"><stop offset="0%" stop-color="#00c4e8"/><stop offset="100%" stop-color="#0072ff"/></linearGradient></defs>
+            <path d="M8 24L18 10L28 24" stroke="white" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+            <path d="M11.5 20L24.5 20" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="18" cy="10" r="2" fill="white"/>
+        </svg>
+        <span><span style="color:white;font-weight:900;">al</span><span style="color:var(--accent);font-weight:900;">mosafer</span></span>
+        <span style="color:rgba(255,255,255,0.2);font-weight:300;margin:0 2px;">|</span>
+        <span style="color:rgba(255,255,255,0.55);font-size:0.78rem;font-weight:600;" id="logoToolLabel">أداة الخدمات</span>
+    </div>
+    <div class="header-right">
+        <div class="lang-toggle" onclick="toggleLang()">
+            <div class="lang-opt active" id="langAr">🇸🇦 AR</div>
+            <div class="lang-opt" id="langEn">🇬🇧 EN</div>
+        </div>
+        <div class="header-version">v53.0</div>
+    </div>
+</div>
+
+<!-- APP SHELL -->
 <div class="app-shell">
 
-  <!-- ══ RAIL ══ -->
-  <div class="rail">
-    <!-- Logo -->
-    <div class="rail-logo">
-      <svg width="18" height="18" viewBox="0 0 36 36" fill="none"><path d="M8 24L18 10L28 24" stroke="white" stroke-width="2.5" stroke-linejoin="round" fill="none"/><path d="M11.5 20L24.5 20" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="18" cy="10" r="2" fill="white"/></svg>
-    </div>
-    <div class="rail-nav">
-      <div class="r-item active" id="rl-ticket" onclick="railNav('ticket')">
-        <span class="r-ico">🎫</span>
-        <span class="r-lbl" data-ar="التذكرة" data-en="Ticket">التذكرة</span>
-      </div>
-      <div class="r-item" id="rl-service" onclick="railNav('service')">
-        <span class="r-ico">✈️</span>
-        <span class="r-lbl" data-ar="الخدمة" data-en="Service">الخدمة</span>
-      </div>
-      <div class="r-item" id="rl-details" onclick="railNav('details')">
-        <span class="r-ico">📋</span>
-        <span class="r-lbl" data-ar="المسافرون" data-en="Pax">المسافرون</span>
-      </div>
-      <div class="r-item" id="rl-noshow" onclick="railNav('noshow')">
-        <span class="r-ico">⏱️</span>
-        <span class="r-lbl" data-ar="النو شو" data-en="No-Show">النو شو</span>
-      </div>
-    </div>
-    <div class="rail-spacer"></div>
-    <div class="rail-sep"></div>
-    <div class="r-reset" onclick="resetAll()">
-      <span class="r-ico">🔄</span>
-      <span class="r-lbl" data-ar="تعيين" data-en="Reset">تعيين</span>
-    </div>
-    <div class="rail-ver">v53</div>
-  </div>
-
-  <!-- ══ INPUT PANEL ══ -->
-  <div class="inp-panel">
-
-    <!-- Header -->
-    <div class="inp-hdr">
-      <div class="inp-hdr-top">
-        <span class="inp-sec-label" id="inpSecLabel" data-ar="التذكرة" data-en="Ticket">التذكرة</span>
-        <span class="d-badge d-badge-ai">AI</span>
-      </div>
-      <div class="inp-sec-name" id="inpSecName" data-ar="مسح التذكرة الإلكترونية" data-en="Scan E-Ticket">مسح التذكرة الإلكترونية</div>
-    </div>
-    <div class="inp-scroll" id="inpScroll">
-
-      <!-- ── TICKET SECTION ── -->
-      <div class="ds" id="sec-ticket">
-
-        <!-- Upload zone -->
-        <div class="d-up" id="tscTopbar"
-             onclick="if(!ticketData)document.getElementById('ticketFileInput').click()"
-             ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-          <input type="file" id="ticketFileInput" accept=".pdf" onchange="handleTicketFile(this.files[0])">
-          <span class="d-up-ico" id="tscIcon">🎫</span>
-          <div class="d-up-lbl" id="tscTitle" data-ar="ارفع التذكرة (PDF)" data-en="Upload Ticket (PDF)">ارفع التذكرة (PDF)</div>
-          <div class="d-up-sub" id="tscSub" data-ar="اسحب وأفلت أو اضغط للاختيار" data-en="Drag & drop or click to select">اسحب وأفلت أو اضغط للاختيار</div>
+    <!-- ── ICON SIDEBAR (rightmost in RTL) ── -->
+    <nav class="icon-sidebar">
+        <div class="sb-logo">
+            <svg width="20" height="20" viewBox="0 0 36 36" fill="none"><path d="M8 24L18 10L28 24" stroke="white" stroke-width="2.8" stroke-linejoin="round" fill="none"/><path d="M11.5 20L24.5 20" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="18" cy="10" r="2" fill="white"/></svg>
+        </div>
+        <div class="sb-divider"></div>
+        <div class="sb-icon" id="sb-flight-icon" title="الرحلات" data-target="section-flights" onclick="sbScrollTo(this,'section-flights')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92V19a2 2 0 01-2.73 1.86L4.27 15a2 2 0 01-1.27-1.87V9a2 2 0 011.27-1.87L19.27 2.14A2 2 0 0122 4v12.92z"/><line x1="12" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <div class="sb-icon active" title="الخدمات" data-target="section-service" onclick="sbScrollTo(this,'section-service')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92V19a2 2 0 01-2 2H4a2 2 0 01-2-2v-2.08"/><path d="M2 9h20v5H2z"/><path d="M8 9V5a2 2 0 012-2h4a2 2 0 012 2v4"/></svg>
+        </div>
+        <div class="sb-icon" title="تفاصيل الخدمة" data-target="section-details" onclick="sbScrollTo(this,'section-details')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="sb-icon" title="المسافرون" data-target="section-pax" onclick="sbScrollTo(this,'section-details')" data-scroll-to="paxRowsContainer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="sb-divider"></div>
+        <div class="sb-icon" title="نافذة الحقائب وكشف النو شو" data-target="section-noshow" onclick="sbScrollTo(this,'section-noshow')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
 
-        <div style="display:flex;justify-content:flex-end;margin-top:6px;">
-          <button class="d-btn d-btn-danger" id="tscClearBtn" style="display:none;width:auto;padding:4px 12px;margin-top:0;font-size:.7rem;" onclick="clearTicket()" data-ar="مسح ✕" data-en="Clear ✕">مسح ✕</button>
+        <div class="sb-icon" style="margin-top:auto;" title="الإعدادات">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         </div>
+    </nav>
 
-        <!-- Expanded after scan -->
-        <div class="ticket-info-panel" id="ticketInfoPanel" style="margin-top:10px;">
+    <!-- ── INPUT PANEL (dark) ── -->
+    <div class="input-panel">
 
-          <!-- ① Flights -->
-          <div class="tip-block">
-            <div class="tip-block-header">
-              <span class="tip-step-num" style="background:rgba(0,196,232,0.18);color:var(--accent);">①</span>
-              <span class="tip-block-title" data-ar="اختر الرحلة / الرحلات" data-en="Select Flight(s)">اختر الرحلة / الرحلات</span>
-              <span id="flightSelHint" class="tip-block-hint"></span>
-            </div>
-            <div class="d-flights" id="flightChipsContainer"></div>
-          </div>
-
-          <!-- ② Passengers -->
-          <div class="tip-block">
-            <div class="tip-block-header">
-              <span class="tip-step-num" style="background:rgba(245,158,11,0.18);color:#f59e0b;">②</span>
-              <span class="tip-block-title" data-ar="اختر المسافرين" data-en="Select Passengers">اختر المسافرين</span>
-              <span id="paxSelHint" class="tip-block-hint"></span>
-            </div>
-            <div class="d-pchips" id="paxChipsContainer"></div>
-          </div>
-
-          <!-- ③ Auto match -->
-          <div class="tip-block tip-block-match">
-            <div class="tip-block-header">
-              <span class="tip-step-num" style="background:rgba(167,139,250,0.18);color:#a78bfa;">③</span>
-              <span class="tip-block-title" style="color:#a78bfa;" data-ar="مطابقة تلقائية — راجع وعدّل إن لزم" data-en="Auto Match — review & adjust">مطابقة تلقائية — راجع وعدّل إن لزم</span>
-            </div>
-            <div class="d-lms">
-              <div class="d-lc" id="lmsCellPax">
-                <div class="d-lc-lbl">👥 <span data-ar="عدد المسافرين" data-en="Pax Count">عدد المسافرين</span> <span class="d-lc-src" id="lmsPaxSrc">—</span></div>
-                <div class="d-lc-val" id="lmsPaxVal">—</div>
-                <div class="d-pax-row">
-                  <button class="d-pax-b" onclick="matchPaxChange(-1)">−</button>
-                  <div class="d-pax-n" id="matchPaxNum">1</div>
-                  <button class="d-pax-b" onclick="matchPaxChange(+1)">+</button>
-                  <div style="font-size:.6rem;color:var(--itm);" id="matchPaxInfo"></div>
+        <!-- TICKET SCANNER -->
+        <div class="ticket-scanner-card">
+            <div class="tsc-topbar" id="tscTopbar"
+                 onclick="if(!ticketData)document.getElementById('ticketFileInput').click()"
+                 ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+                <input type="file" id="ticketFileInput" accept=".pdf" onchange="handleTicketFile(this.files[0])">
+                <div class="tsc-icon" id="tscIcon">🎫</div>
+                <div class="tsc-text">
+                    <div class="tsc-title" id="tscTitle">
+                        <span data-ar="مسح التذكرة" data-en="Scan Ticket">مسح التذكرة</span>
+                        <span class="scanner-badge">AI</span>
+                    </div>
+                    <div class="tsc-sub" id="tscSub" data-ar="ارفع ملف PDF – اسحب وأفلت أو اضغط للاختيار" data-en="Upload PDF – drag & drop or click to select">ارفع ملف PDF – اسحب وأفلت أو اضغط للاختيار</div>
                 </div>
-              </div>
-              <div class="d-lc" id="lmsCellRoute">
-                <div class="d-lc-lbl">✈️ <span data-ar="مسار الرحلة" data-en="Route">مسار الرحلة</span> <span class="d-lc-src" id="lmsRouteSrc">—</span></div>
-                <div class="d-lc-val" id="lmsRouteVal">—</div>
-              </div>
-              <div class="d-lc" id="lmsCellType">
-                <div class="d-lc-lbl">🌍 <span data-ar="نوع الرحلة" data-en="Flight Type">نوع الرحلة</span> <span class="d-lc-src" id="lmsTypeSrc">—</span></div>
-                <div class="d-lc-val" id="lmsTypeVal">—</div>
-                <div class="d-tog">
-                  <button class="d-tb" id="btnDom" onclick="setFlightType('Local')">🏠 <span data-ar="محلي" data-en="Local">محلي</span></button>
-                  <button class="d-tb" id="btnInt" onclick="setFlightType('International')">🌍 <span data-ar="دولي" data-en="Intl">دولي</span></button>
-                </div>
-              </div>
-              <div class="d-lc" id="lmsCellPnr">
-                <div class="d-lc-lbl">📋 <span data-ar="نوع الحجز" data-en="PNR Type">نوع الحجز</span> <span class="d-lc-src" id="lmsPnrSrc">—</span></div>
-                <div class="d-lc-val" id="lmsPnrVal">—</div>
-                <div class="d-tog">
-                  <button class="d-tb" id="btnSingle" onclick="setMatchPnr('single')">🔖 Single</button>
-                  <button class="d-tb" id="btnMulti"  onclick="setMatchPnr('multi')">📑 Multi</button>
-                </div>
-              </div>
+                <div id="tscSpinner" class="scan-spinner" style="display:none;"></div>
+                <button class="tsc-minimize-btn" id="tscMinBtn" style="display:none;" onclick="event.stopPropagation();minimizeScanner()" title="Minimize">−</button>
+                <button class="tsc-clear-btn" id="tscClearBtn" style="display:none;" onclick="event.stopPropagation();clearTicket()" data-ar="مسح ✕" data-en="Clear ✕">مسح ✕</button>
             </div>
-            <div class="d-st ok" id="matchStatusRow" style="display:none;"><span id="matchStatusText"></span></div>
-          </div>
 
-          <!-- Apply btn -->
-          <button class="d-apply" onclick="applyMatchedData()">
-            <span>✅</span>
-            <span data-ar="تطبيق البيانات على النموذج" data-en="Apply Data to Form">تطبيق البيانات على النموذج</span>
-            <span class="arr">←</span>
-          </button>
-
-        </div>
-      </div>
-
-      <!-- ── SERVICE SECTION ── -->
-      <div class="ds" id="sec-service">
-        <div class="ds-title"><span class="ds-dot" style="background:#60a5fa;"></span><span data-ar="نوع الخدمة والمنطقة" data-en="Service & Region">نوع الخدمة والمنطقة</span></div>
-        <label class="dl req" data-ar="نوع الخدمة" data-en="Service Type">نوع الخدمة</label>
-        <select class="dsel" id="serviceType" onchange="onServiceChange()">
-          <option value="Baggage" data-ar="🧳 إضافة حقيبة"           data-en="🧳 Add Baggage">🧳 إضافة حقيبة</option>
-          <option value="Seat"    data-ar="💺 اختيار مقاعد"           data-en="💺 Seat Selection">💺 اختيار مقاعد</option>
-          <option value="Meal"    data-ar="🍽️ إضافة وجبة"             data-en="🍽️ Add Meal">🍽️ إضافة وجبة</option>
-          <option value="CheckIn" data-ar="🎫 إنهاء إجراءات السفر"   data-en="🎫 Check-in">🎫 إنهاء إجراءات السفر</option>
-        </select>
-        <label class="dl req" data-ar="عدد المسافرين" data-en="Passenger Count">عدد المسافرين</label>
-        <input class="di" type="number" id="paxCount" value="1" min="1" max="10" oninput="buildPaxRows()" onwheel="event.preventDefault()">
-        <label class="dl" data-ar="الدولة (POS)" data-en="Country (POS)">الدولة (POS)</label>
-        <select class="dsel" id="posCountry" onchange="onServiceChange();_updateVatVisibility();">
-          <option value="KSA_DOM" data-ar="🇸🇦 السعودية (داخلي)"      data-en="🇸🇦 KSA (Domestic)">🇸🇦 السعودية (داخلي)</option>
-          <option value="KSA_INT" data-ar="🇸🇦 السعودية (دولي)"       data-en="🇸🇦 KSA (International)">🇸🇦 السعودية (دولي)</option>
-          <option value="UAE"     data-ar="🇦🇪 الإمارات"               data-en="🇦🇪 UAE">🇦🇪 الإمارات</option>
-          <option value="KWT"     data-ar="🇰🇼 الكويت"                 data-en="🇰🇼 Kuwait">🇰🇼 الكويت</option>
-          <option value="BHR_DOM" data-ar="🇧🇭 البحرين (داخلي)"       data-en="🇧🇭 Bahrain (Domestic)">🇧🇭 البحرين (داخلي)</option>
-          <option value="BHR_INT" data-ar="🇧🇭 البحرين (دولي)"        data-en="🇧🇭 Bahrain (International)">🇧🇭 البحرين (دولي)</option>
-          <option value="OMN_DOM" data-ar="🇴🇲 عُمان (داخلي)"         data-en="🇴🇲 Oman (Domestic)">🇴🇲 عُمان (داخلي)</option>
-          <option value="OMN_INT" data-ar="🇴🇲 عُمان (دولي)"          data-en="🇴🇲 Oman (International)">🇴🇲 عُمان (دولي)</option>
-          <option value="QTR"     data-ar="🇶🇦 قطر"                    data-en="🇶🇦 Qatar">🇶🇦 قطر</option>
-          <option value="INT"     data-ar="🌍 دولي (USD)"              data-en="🌍 International (USD)">🌍 دولي (USD)</option>
-        </select>
-        <label class="dl" data-ar="مسار الرحلة" data-en="Route Type">مسار الرحلة</label>
-        <select class="dsel" id="routeType" onchange="onRouteChange()">
-          <option value="OW" data-ar="اتجاه واحد" data-en="One Way">اتجاه واحد</option>
-          <option value="RT" data-ar="ذهاب وعودة" data-en="Return">ذهاب وعودة</option>
-        </select>
-        <div id="vatContainer" style="display:none;">
-          <label class="dl" data-ar="الضريبة (VAT)" data-en="VAT">الضريبة (VAT)</label>
-          <select class="dsel" id="vatOption" onchange="calculate()">
-            <option value="Y" data-ar="شامل الضريبة 15%" data-en="Include VAT 15%">شامل الضريبة 15%</option>
-            <option value="N" data-ar="بدون ضريبة"       data-en="No VAT">بدون ضريبة</option>
-          </select>
-        </div>
-        <div id="pnrTypeContainer" style="display:none;">
-          <label class="dl" data-ar="نوع الحجز" data-en="PNR Type">نوع الحجز</label>
-          <select class="dsel" id="pnrType" onchange="onPnrChange()">
-            <option value="single" data-ar="حجز واحد (Single PNR)" data-en="Single PNR">حجز واحد (Single PNR)</option>
-            <option value="multi"  data-ar="حجزين منفصلين (Multi PNR)" data-en="Multi PNR">حجزين منفصلين (Multi PNR)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- ── DETAILS SECTION ── -->
-      <div class="ds" id="sec-details">
-        <div class="ds-title"><span class="ds-dot" style="background:#f59e0b;"></span><span data-ar="تفاصيل الخدمة والمسافرين" data-en="Service & Passenger Details">تفاصيل الخدمة والمسافرين</span></div>
-        <div id="baggageFields">
-          <label class="dl req" data-ar="وزن الحقيبة (كجم)" data-en="Bag Weight (KG)">وزن الحقيبة (كجم)</label>
-          <input class="di" type="number" id="bagWeight" value="23" min="1" oninput="calculate()" onwheel="event.preventDefault()">
-          <label class="dl req" id="bagPriceLabel" data-ar="إجمالي سعر الطيران لجميع المسافرين" data-en="Total Airline Price (All Pax)">إجمالي سعر الطيران لجميع المسافرين</label>
-          <input class="di" type="number" id="airlinePrice" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
-          <div id="bagInboundBlock" style="display:none;">
-            <label class="dl req" data-ar="إجمالي سعر الطيران Inbound" data-en="Total Inbound Airline Price">إجمالي سعر الطيران Inbound</label>
-            <input class="di" type="number" id="airlinePriceInbound" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
-          </div>
-        </div>
-        <div id="seatGlobalFields" style="display:none;">
-          <label class="dl req" id="seatPriceLabel" data-ar="إجمالي سعر الطيران لجميع المقاعد" data-en="Total Airline Price (All Seats)">إجمالي سعر الطيران لجميع المقاعد</label>
-          <input class="di" type="number" id="seatAirlinePrice" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
-          <div id="seatInboundBlock" style="display:none;">
-            <label class="dl req" data-ar="إجمالي سعر الطيران Inbound" data-en="Total Inbound Airline Price">إجمالي سعر الطيران Inbound</label>
-            <input class="di" type="number" id="seatAirlinePriceInbound" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
-          </div>
-        </div>
-        <div id="mealGlobalFields" style="display:none;">
-          <div style="background:rgba(0,196,232,.06);border-radius:var(--rsm);padding:10px;margin-bottom:4px;border:1px solid rgba(0,196,232,.12);">
-            <div style="font-weight:800;color:var(--accent);margin-bottom:6px;font-size:.75rem;">🛫 <span data-ar="ذهاب" data-en="Outbound">ذهاب</span></div>
-            <label class="dl req" data-ar="إجمالي سعر الوجبات – ذهاب" data-en="Total Meal Price – Outbound">إجمالي سعر الوجبات – ذهاب</label>
-            <input class="di" type="number" id="mealAirlinePrice" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
-          </div>
-          <div id="mealInboundBlock" style="display:none;background:rgba(245,158,11,.06);border-radius:var(--rsm);padding:10px;margin-top:7px;border:1px solid rgba(245,158,11,.15);">
-            <div style="font-weight:800;color:#f59e0b;margin-bottom:6px;font-size:.75rem;">🛬 <span data-ar="عودة" data-en="Inbound">عودة</span></div>
-            <label class="dl req" data-ar="إجمالي سعر الوجبات – عودة" data-en="Total Meal Price – Inbound">إجمالي سعر الوجبات – عودة</label>
-            <input class="di" type="number" id="mealAirlinePriceInbound" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
-          </div>
-        </div>
-        <div id="paxRowsContainer" style="margin-top:12px;"></div>
-      </div>
-
-      <!-- ── NO-SHOW SECTION ── -->
-      <div class="ds" id="sec-noshow">
-        <div class="ds-title">
-          <span class="ds-dot" style="background:#f87171;"></span>
-          <span data-ar="نافذة الحقائب وكشف النو شو" data-en="Baggage Window & No-Show">نافذة الحقائب وكشف النو شو</span>
+            <div class="ticket-info-panel" id="ticketInfoPanel"><span id="section-flights" style="display:block;height:0;overflow:hidden;"></span>
+                <div class="tip-section">
+                    <div class="tip-section-header">
+                        <div class="tip-section-num sn-blue">①</div>
+                        <div class="tip-section-label" data-ar="اختر الرحلة / الرحلات" data-en="Select Flight(s)">اختر الرحلة / الرحلات</div>
+                        <div class="tip-section-hint" id="flightSelHint"></div>
+                    </div>
+                    <div class="flights-grid" id="flightChipsContainer"></div>
+                </div>
+                <div class="tip-section">
+                    <div class="tip-section-header">
+                        <div class="tip-section-num sn-blue">②</div>
+                        <div class="tip-section-label" data-ar="اختر المسافرين" data-en="Select Passengers">اختر المسافرين</div>
+                        <div class="tip-section-hint" id="paxSelHint"></div>
+                    </div>
+                    <div class="pax-chips" id="paxChipsContainer"></div>
+                </div>
+                <div class="live-match-section">
+                    <div class="tip-section-header" style="margin-bottom:12px;">
+                        <div class="tip-section-num sn-amber">③</div>
+                        <div class="tip-section-label" style="color:#fbbf24;" data-ar="مطابقة تلقائية — تحقق وعدّل إن لزم" data-en="Auto Match — review & adjust if needed">مطابقة تلقائية — تحقق وعدّل إن لزم</div>
+                    </div>
+                    <div class="lms-grid">
+                        <div class="lms-cell" id="lmsCellPax">
+                            <div class="lms-cell-label">👥 <span data-ar="عدد المسافرين" data-en="Pax Count">عدد المسافرين</span> <span class="lms-src" id="lmsPaxSrc">—</span></div>
+                            <div class="lms-cell-value" id="lmsPaxVal">—</div>
+                            <div class="lms-pax-counter lms-cell-override">
+                                <button class="lms-pax-btn" onclick="matchPaxChange(-1)">−</button>
+                                <div class="lms-pax-num" id="matchPaxNum">1</div>
+                                <button class="lms-pax-btn" onclick="matchPaxChange(+1)">+</button>
+                                <div class="lms-pax-info" id="matchPaxInfo"></div>
+                            </div>
+                        </div>
+                        <div class="lms-cell" id="lmsCellRoute">
+                            <div class="lms-cell-label">✈️ <span data-ar="مسار الرحلة" data-en="Route">مسار الرحلة</span> <span class="lms-src" id="lmsRouteSrc">—</span></div>
+                            <div class="lms-cell-value" id="lmsRouteVal">—</div>
+                        </div>
+                        <div class="lms-cell" id="lmsCellType">
+                            <div class="lms-cell-label">🌍 <span data-ar="نوع الرحلة" data-en="Flight Type">نوع الرحلة</span> <span class="lms-src" id="lmsTypeSrc">—</span></div>
+                            <div class="lms-cell-value" id="lmsTypeVal">—</div>
+                            <div class="lms-toggle-row lms-cell-override">
+                                <button class="lms-toggle-btn" id="btnDom" onclick="setFlightType('Local')">🏠 <span data-ar="محلي" data-en="Local">محلي</span></button>
+                                <button class="lms-toggle-btn" id="btnInt" onclick="setFlightType('International')">🌍 <span data-ar="دولي" data-en="International">دولي</span></button>
+                            </div>
+                        </div>
+                        <div class="lms-cell" id="lmsCellPnr">
+                            <div class="lms-cell-label">📋 <span data-ar="نوع الحجز" data-en="PNR Type">نوع الحجز</span> <span class="lms-src" id="lmsPnrSrc">—</span></div>
+                            <div class="lms-cell-value" id="lmsPnrVal">—</div>
+                            <div class="lms-toggle-row lms-cell-override">
+                                <button class="lms-toggle-btn" id="btnSingle" onclick="setMatchPnr('single')">🔖 Single</button>
+                                <button class="lms-toggle-btn" id="btnMulti"  onclick="setMatchPnr('multi')">📑 Multi</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lms-status ok" id="matchStatusRow" style="display:none;">
+                        <span id="matchStatusText"></span>
+                    </div>
+                </div>
+                <button class="tip-apply-btn" onclick="applyMatchedData()">
+                    <span>✅</span>
+                    <span data-ar="تطبيق البيانات على النموذج" data-en="Apply Data to Form">تطبيق البيانات على النموذج</span>
+                    <span class="tab-arrow">←</span>
+                </button>
+            </div>
         </div>
 
-        <!-- Auto-extracted tag -->
-        <div id="nsAutoTag" style="display:none;margin-bottom:10px;">
-          <span class="ns-auto-pill">🤖 <span data-ar="تم الاستخراج تلقائياً من التذكرة" data-en="Auto-extracted from ticket">تم الاستخراج تلقائياً من التذكرة</span></span>
-        </div>
+        <!-- scrollable form area -->
+        <div class="input-panel-scroll">
 
-        <!-- Airline + baggage window info cards -->
-        <div class="ns-info-row" id="nsInfoGrid" style="display:none;">
-          <div class="ns-info-card ns-card-airline">
-            <div class="ns-card-label">✈️ AIRLINE</div>
-            <div class="ns-card-value" id="nsBoxAirlineName">—</div>
-            <div class="ns-card-sub" id="nsBoxAirlineCode2">—</div>
-          </div>
-          <div class="ns-info-card ns-card-bag">
-            <div class="ns-card-label">🧳 BAGGAGE WINDOW</div>
-            <div class="ns-card-value" id="nsBoxBagHours">—</div>
-            <div class="ns-card-sub" id="nsBoxBagType">—</div>
-          </div>
+        <!-- hidden legacy stubs -->
+        <div id="matchingPanel" style="display:none;"></div>
+        <div class="scan-status" id="scanStatus" style="display:none;">
+            <div class="scan-spinner" id="scanSpinner" style="display:none;"></div>
+            <span id="scanStatusIcon"></span>
+            <div class="scan-status-text" id="scanStatusText"></div>
         </div>
+        <span id="sumRoute" style="display:none;"></span>
+        <span id="sumPax" style="display:none;"></span>
+        <span id="sumFlightType" style="display:none;"></span>
+        <span id="sumPnr" style="display:none;"></span>
+        <span id="mxPaxExtracted" style="display:none;"></span>
+        <span id="mxFlightTypeExtracted" style="display:none;"></span>
+        <span id="mxPnrExtracted" style="display:none;"></span>
 
-        <!-- Deadline rows -->
-        <div class="ns-deadline ns-hidden" id="nsBagDeadlineRow">
-          <div class="ns-deadline-info">
-            <div class="ns-deadline-label">🧳 <span data-ar="آخر موعد لإضافة الحقيبة" data-en="Baggage add deadline">آخر موعد لإضافة الحقيبة</span></div>
-            <div class="ns-deadline-time" id="nsBagDeadlineTime">—</div>
-          </div>
-          <span class="ns-deadline-badge" id="nsBagDeadlineBadge">—</span>
-        </div>
-        <div class="ns-deadline ns-hidden" id="nsNsDeadlineRow">
-          <div class="ns-deadline-info">
-            <div class="ns-deadline-label">🚫 <span data-ar="موعد النو شو" data-en="No-show cutoff">موعد النو شو</span></div>
-            <div class="ns-deadline-time" id="nsNsDeadlineTime">—</div>
-          </div>
-          <span class="ns-deadline-badge" id="nsNsDeadlineBadge">—</span>
-        </div>
-
-        <!-- Divider -->
-        <div class="ns-divider"></div>
-
-        <!-- Inputs grid -->
-        <div class="d2">
-          <div>
-            <label class="dl" data-ar="📅 تاريخ ووقت الإقلاع" data-en="📅 Departure Date & Time">📅 تاريخ الإقلاع</label>
-            <input class="di" type="datetime-local" id="departureDateTime" oninput="runNoShowDetect()" style="font-size:.76rem;">
-          </div>
-          <div>
-            <label class="dl" data-ar="✈️ شركة الطيران (IATA)" data-en="✈️ Airline (IATA)">✈️ الطيران (IATA)</label>
-            <input class="di" type="text" id="nsAirlineCode" placeholder="SV / MS" maxlength="3" oninput="this.value=this.value.toUpperCase();runNoShowDetect()" style="font-weight:800;letter-spacing:3px;text-transform:uppercase;">
-          </div>
-        </div>
-        <div class="d2" style="margin-top:6px;">
-          <div>
-            <label class="dl req" data-ar="وقت النو شو" data-en="No-Show Cutoff">وقت النو شو</label>
-            <input class="di" type="number" id="nsValue" placeholder="24" oninput="runNoShowDetect();calculate()" onwheel="event.preventDefault()">
-          </div>
-          <div>
-            <label class="dl" data-ar="الوحدة" data-en="Unit">الوحدة</label>
-            <select class="dsel" id="nsUnit" onchange="runNoShowDetect();calculate()">
-              <option value="ساعه" data-ar="ساعة" data-en="Hours">ساعة</option>
-              <option value="دقيقه" data-ar="دقيقة" data-en="Minutes">دقيقة</option>
+        <!-- SERVICE INFO -->
+        <div class="dcard" id="section-service">
+            <div class="dcard-header">
+                <div class="dcard-icon dicon-blue">✈️</div>
+                <div>
+                    <div class="dcard-title" data-ar="معلومات الخدمة" data-en="Service Info">معلومات الخدمة</div>
+                    <div class="dcard-subtitle" data-ar="اختر نوع الخدمة وعدد المسافرين" data-en="Select service type and passenger count">اختر نوع الخدمة وعدد المسافرين</div>
+                </div>
+            </div>
+            <label class="required" data-ar="نوع الخدمة" data-en="Service Type">نوع الخدمة</label>
+            <select id="serviceType" onchange="onServiceChange()">
+                <option value="Baggage" data-ar="🧳 إضافة حقيبة" data-en="🧳 Add Baggage">🧳 إضافة حقيبة</option>
+                <option value="Seat"    data-ar="💺 اختيار مقاعد" data-en="💺 Seat Selection">💺 اختيار مقاعد</option>
+                <option value="Meal"    data-ar="🍽️ إضافة وجبة"  data-en="🍽️ Add Meal">🍽️ إضافة وجبة</option>
+                <option value="CheckIn" data-ar="🎫 إنهاء إجراءات السفر" data-en="🎫 Check-in">🎫 إنهاء إجراءات السفر</option>
             </select>
-          </div>
+            <label class="required" data-ar="عدد المسافرين" data-en="Passenger Count">عدد المسافرين</label>
+            <input type="number" id="paxCount" value="1" min="1" max="10" oninput="buildPaxRows()" onwheel="event.preventDefault()">
+            <label data-ar="الدولة (POS)" data-en="Country (POS)">الدولة (POS)</label>
+            <select id="posCountry" onchange="onServiceChange();_updateVatVisibility();">
+                <option value="KSA_DOM" data-ar="🇸🇦 السعودية (داخلي)" data-en="🇸🇦 KSA (Domestic)">🇸🇦 السعودية (داخلي)</option>
+                <option value="KSA_INT" data-ar="🇸🇦 السعودية (دولي)" data-en="🇸🇦 KSA (International)">🇸🇦 السعودية (دولي)</option>
+                <option value="UAE"     data-ar="🇦🇪 الإمارات" data-en="🇦🇪 UAE">🇦🇪 الإمارات</option>
+                <option value="KWT"     data-ar="🇰🇼 الكويت" data-en="🇰🇼 Kuwait">🇰🇼 الكويت</option>
+                <option value="BHR_DOM" data-ar="🇧🇭 البحرين (داخلي)" data-en="🇧🇭 Bahrain (Domestic)">🇧🇭 البحرين (داخلي)</option>
+                <option value="BHR_INT" data-ar="🇧🇭 البحرين (دولي)" data-en="🇧🇭 Bahrain (International)">🇧🇭 البحرين (دولي)</option>
+                <option value="OMN_DOM" data-ar="🇴🇲 عُمان (داخلي)" data-en="🇴🇲 Oman (Domestic)">🇴🇲 عُمان (داخلي)</option>
+                <option value="OMN_INT" data-ar="🇴🇲 عُمان (دولي)" data-en="🇴🇲 Oman (International)">🇴🇲 عُمان (دولي)</option>
+                <option value="QTR"     data-ar="🇶🇦 قطر" data-en="🇶🇦 Qatar">🇶🇦 قطر</option>
+                <option value="INT"     data-ar="🌍 دولي (USD)" data-en="🌍 International (USD)">🌍 دولي (USD)</option>
+            </select>
+            <label data-ar="مسار الرحلة" data-en="Route Type">مسار الرحلة</label>
+            <select id="routeType" onchange="onRouteChange()">
+                <option value="OW" data-ar="اتجاه واحد" data-en="One Way">اتجاه واحد</option>
+                <option value="RT" data-ar="ذهاب وعودة" data-en="Return">ذهاب وعودة</option>
+            </select>
+            <div id="vatContainer" style="display:none;">
+                <label data-ar="الضريبة (VAT)" data-en="VAT">الضريبة (VAT)</label>
+                <select id="vatOption" onchange="calculate()">
+                    <option value="Y" data-ar="شامل الضريبة 15%" data-en="Include VAT 15%">شامل الضريبة 15%</option>
+                    <option value="N" data-ar="بدون ضريبة" data-en="No VAT">بدون ضريبة</option>
+                </select>
+            </div>
+            <div id="pnrTypeContainer" style="display:none;">
+                <label data-ar="نوع الحجز" data-en="PNR Type">نوع الحجز</label>
+                <select id="pnrType" onchange="onPnrChange()">
+                    <option value="single" data-ar="حجز واحد (Single PNR)" data-en="Single PNR">حجز واحد (Single PNR)</option>
+                    <option value="multi"  data-ar="حجزين منفصلين (Multi PNR)" data-en="Multi PNR">حجزين منفصلين (Multi PNR)</option>
+                </select>
+            </div>
         </div>
-      </div>
 
-    </div><!-- /inp-scroll -->
-  </div><!-- /inp-panel -->
+        <!-- SERVICE DETAILS -->
+        <div class="dcard" id="section-details">
+            <div class="dcard-header">
+                <div class="dcard-icon dicon-orange">📋</div>
+                <div>
+                    <div class="dcard-title" data-ar="تفاصيل الخدمة والمسافرين" data-en="Service & Passenger Details">تفاصيل الخدمة والمسافرين</div>
+                    <div class="dcard-subtitle" data-ar="أدخل البيانات لكل مسافر" data-en="Enter data for each passenger">أدخل البيانات لكل مسافر</div>
+                </div>
+            </div>
+            <div id="baggageFields">
+                <label class="required" data-ar="وزن الحقيبة (كجم)" data-en="Bag Weight (KG)">وزن الحقيبة (كجم)</label>
+                <input type="number" id="bagWeight" value="23" min="1" oninput="calculate()" onwheel="event.preventDefault()">
+                <label class="required" id="bagPriceLabel" data-ar="إجمالي سعر الطيران لجميع المسافرين" data-en="Total Airline Price (All Pax)">إجمالي سعر الطيران لجميع المسافرين</label>
+                <input type="number" id="airlinePrice" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
+                <div id="bagInboundBlock" style="display:none;">
+                    <label class="required" data-ar="إجمالي سعر الطيران Inbound" data-en="Total Inbound Airline Price">إجمالي سعر الطيران Inbound</label>
+                    <input type="number" id="airlinePriceInbound" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
+                </div>
+            </div>
+            <div id="seatGlobalFields" style="display:none;">
+                <label class="required" id="seatPriceLabel" data-ar="إجمالي سعر الطيران لجميع المقاعد" data-en="Total Airline Price (All Seats)">إجمالي سعر الطيران لجميع المقاعد</label>
+                <input type="number" id="seatAirlinePrice" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
+                <div id="seatInboundBlock" style="display:none;">
+                    <label class="required" data-ar="إجمالي سعر الطيران Inbound" data-en="Total Inbound Airline Price">إجمالي سعر الطيران Inbound</label>
+                    <input type="number" id="seatAirlinePriceInbound" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
+                </div>
+            </div>
+            <div id="mealGlobalFields" style="display:none;">
+                <div style="background:rgba(0,196,232,0.06);border-radius:9px;padding:12px;margin-bottom:4px;">
+                    <div style="font-weight:800;color:var(--panel-text);margin-bottom:8px;font-size:0.78rem;">🛫 <span data-ar="ذهاب" data-en="Outbound">ذهاب</span></div>
+                    <label class="required" data-ar="إجمالي سعر الوجبات – ذهاب" data-en="Total Meal Price – Outbound">إجمالي سعر الوجبات – ذهاب</label>
+                    <input type="number" id="mealAirlinePrice" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
+                </div>
+                <div id="mealInboundBlock" style="display:none;background:rgba(180,83,9,0.08);border-radius:9px;padding:12px;margin-top:8px;">
+                    <div style="font-weight:800;color:#fbbf24;margin-bottom:8px;font-size:0.78rem;">🛬 <span data-ar="عودة" data-en="Inbound">عودة</span></div>
+                    <label class="required" data-ar="إجمالي سعر الوجبات – عودة" data-en="Total Meal Price – Inbound">إجمالي سعر الوجبات – عودة</label>
+                    <input type="number" id="mealAirlinePriceInbound" placeholder="0.00" oninput="calculate()" onwheel="event.preventDefault()">
+                </div>
+            </div>
+            <div id="paxRowsContainer" style="margin-top:14px;"></div>
+        </div>
 
-  <!-- ══ OUTPUT PANEL ══ -->
-  <div class="out-panel">
-    <div class="out-hdr">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div class="out-logo"><span>al</span>mosafer <span style="color:var(--otl);font-weight:300;font-size:.8rem;margin-right:4px;">|</span> <span style="font-size:.78rem;font-weight:600;color:var(--otm);" id="logoToolLabel">أداة الخدمات</span></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div class="lang-toggle" onclick="toggleLang()">
-          <div class="lang-opt active" id="langAr">🇸🇦 AR</div>
-          <div class="lang-opt" id="langEn">🇬🇧 EN</div>
+        <!-- NO-SHOW CARD -->
+        <div class="dcard" id="section-noshow">
+            <div class="dcard-header">
+                <div class="dcard-icon dicon-red">⏱️</div>
+                <div>
+                    <div class="dcard-title" data-ar="نافذة الحقائب وكشف النو شو" data-en="Baggage Window & No-Show Detection">نافذة الحقائب وكشف النو شو</div>
+                    <div class="dcard-subtitle" data-ar="تُستخرج تلقائياً من التذكرة · يمكن التعديل يدوياً" data-en="Auto-extracted from ticket · Manual override available">تُستخرج تلقائياً من التذكرة · يمكن التعديل يدوياً</div>
+                </div>
+            </div>
+            <div id="nsAutoTag" style="display:none;" class="ns-auto-tag">🤖 <span data-ar="تم الاستخراج من التذكرة تلقائياً" data-en="Auto-extracted from ticket">تم الاستخراج من التذكرة تلقائياً</span></div>
+            <div class="ns-info-grid" id="nsInfoGrid" style="display:none;">
+                <div class="ns-info-box ns-box-airline">
+                    <div class="ns-box-label">✈️ AIRLINE</div>
+                    <div class="ns-box-main" id="nsBoxAirlineName">—</div>
+                    <div class="ns-box-sub" id="nsBoxAirlineCode2">—</div>
+                </div>
+                <div class="ns-info-box ns-box-bag">
+                    <div class="ns-box-label">🧳 BAGGAGE WINDOW</div>
+                    <div class="ns-box-main" id="nsBoxBagHours">—</div>
+                    <div class="ns-box-sub" id="nsBoxBagType">—</div>
+                </div>
+            </div>
+            <div class="ns-deadline-row ns-hidden" id="nsBagDeadlineRow">
+                <div>
+                    <div class="ns-deadline-label">🧳 <span data-ar="آخر موعد لإضافة الحقيبة" data-en="Baggage add deadline">آخر موعد لإضافة الحقيبة</span></div>
+                    <div class="ns-deadline-time" id="nsBagDeadlineTime">—</div>
+                </div>
+                <span class="ns-deadline-badge" id="nsBagDeadlineBadge">—</span>
+            </div>
+            <div class="ns-deadline-row ns-hidden" id="nsNsDeadlineRow">
+                <div>
+                    <div class="ns-deadline-label">🚫 <span data-ar="موعد النو شو" data-en="No-show cutoff">موعد النو شو</span></div>
+                    <div class="ns-deadline-time" id="nsNsDeadlineTime">—</div>
+                </div>
+                <span class="ns-deadline-badge" id="nsNsDeadlineBadge">—</span>
+            </div>
+            <div class="grid-2" style="margin-top:12px;">
+                <div>
+                    <label data-ar="📅 تاريخ ووقت الإقلاع" data-en="📅 Departure Date & Time">📅 تاريخ ووقت الإقلاع</label>
+                    <input type="datetime-local" id="departureDateTime" oninput="runNoShowDetect()">
+                </div>
+                <div>
+                    <label data-ar="✈️ شركة الطيران (IATA)" data-en="✈️ Airline (IATA)">✈️ شركة الطيران (IATA)</label>
+                    <input type="text" id="nsAirlineCode" placeholder="e.g. SV, MS, XY" maxlength="3"
+                           oninput="this.value=this.value.toUpperCase();runNoShowDetect()"
+                           style="font-weight:800;letter-spacing:2px;text-transform:uppercase;">
+                </div>
+            </div>
+            <div class="grid-2" style="margin-top:4px;">
+                <div>
+                    <label class="required" data-ar="وقت النو شو (ساعات)" data-en="No-Show Cutoff (hours)">وقت النو شو</label>
+                    <input type="number" id="nsValue" placeholder="24" oninput="runNoShowDetect();calculate()" onwheel="event.preventDefault()">
+                </div>
+                <div>
+                    <label data-ar="الوحدة" data-en="Unit">الوحدة</label>
+                    <select id="nsUnit" onchange="runNoShowDetect();calculate()">
+                        <option value="ساعه" data-ar="ساعة" data-en="Hours">ساعة</option>
+                        <option value="دقيقه" data-ar="دقيقة" data-en="Minutes">دقيقة</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <div class="out-ver">v53.0</div>
-      </div>
-    </div>
 
-    <!-- Waiting state -->
-    <div id="waitingMsg" class="out-wait">
-      <span class="out-wait-ico">⚠️</span>
-      <div class="out-wait-ttl" data-ar="يرجى إدخال البيانات المطلوبة" data-en="Please fill in required fields">يرجى إدخال البيانات المطلوبة</div>
-      <div class="out-wait-sub" data-ar="ارفع التذكرة وأدخل البيانات في اللوحة اليسرى للحصول على عروض الأسعار" data-en="Upload the ticket and fill in the left panel to generate quotes">ارفع التذكرة وأدخل البيانات في اللوحة اليسرى للحصول على عروض الأسعار</div>
-    </div>
+        <!-- RESET -->
+        <div class="dcard" id="section-prices" style="padding-bottom:20px;">
+            <button class="btn-reset-dark" onclick="resetAll()" data-ar="🔄 إعادة تعيين جميع البيانات" data-en="🔄 Reset All Data">🔄 إعادة تعيين جميع البيانات</button>
+        </div>
 
-    <!-- Results -->
-    <div id="calcResults" style="display:none;">
-      <div id="quoteSection">
-        <div class="out-stitle">📤 <span data-ar="عرض السعر للعميل" data-en="Customer Quote">عرض السعر للعميل</span></div>
-        <div class="out-card">
-          <div class="out-ch">
-            <div class="out-ch-l"><span class="out-dot" style="background:#16a34a;"></span>🇸🇦 العرض بالعربية</div>
-          </div>
-          <div class="out-cb">
-            <div id="quoteAr" class="out-msg"></div>
-            <button class="out-btn out-btn-full" onclick="copyText('quoteAr')">📋 نسخ</button>
-          </div>
-        </div>
-        <div class="out-card">
-          <div class="out-ch">
-            <div class="out-ch-l"><span class="out-dot" style="background:#2563eb;"></span>🇬🇧 English Quote</div>
-          </div>
-          <div class="out-cb">
-            <div id="quoteEn" class="out-msg" dir="ltr"></div>
-            <button class="out-btn out-btn-full" onclick="copyText('quoteEn')">📋 Copy</button>
-          </div>
-        </div>
-        <button id="acceptBtn" class="out-btn-accept" onclick="showHiddenDetails()" data-ar="✅ العميل وافق على الرسوم – اعرض التأكيد" data-en="✅ Customer Accepted – Show Confirmation">✅ العميل وافق على الرسوم – اعرض التأكيد</button>
-      </div>
+        </div><!-- /input-panel-scroll -->
+    </div><!-- /input-panel -->
 
-      <div id="detailsSection" class="hidden-section animate-in">
-        <hr class="out-divider">
-        <div class="out-stitle">🔒 Internal Log</div>
-        <div class="out-card">
-          <div class="out-ch">
-            <div class="out-ch-l"><span class="out-dot" style="background:#334155;"></span>⚙️ INTERNAL RECORD</div>
-          </div>
-          <div class="out-cb" style="background:#0d1117;border-radius:0 0 var(--radius) var(--radius);">
-            <div id="internalLog" class="out-msg out-msg-dark"></div>
-            <button class="out-btn out-btn-full out-btn-dark" style="margin-top:8px;" onclick="copyText('internalLog')">📋 Copy Internal Log</button>
-          </div>
+    <!-- ── RESULTS PANEL (light) ── -->
+    <div class="results-panel">
+        <div class="card" style="margin-bottom:16px;">
+            <div id="waitingMsg" class="waiting-msg">
+                <span class="icon">⚠️</span>
+                <span data-ar="يرجى إدخال جميع البيانات المطلوبة للمتابعة..." data-en="Please fill in all required fields to continue...">يرجى إدخال جميع البيانات المطلوبة للمتابعة...</span>
+            </div>
+            <div id="calcResults" style="display:none;">
+                <div id="quoteSection">
+                    <div class="section-title">📤 <span data-ar="عرض السعر للعميل" data-en="Customer Quote">عرض السعر للعميل</span></div>
+                    <div class="result-card">
+                        <div class="result-card-header">🇸🇦 العرض بالعربية</div>
+                        <div class="result-card-body">
+                            <div id="quoteAr" class="msg-box" style="margin:0;"></div>
+                            <button class="btn btn-copy" onclick="copyText('quoteAr')">📋 نسخ</button>
+                        </div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-card-header">🇬🇧 English Quote</div>
+                        <div class="result-card-body">
+                            <div id="quoteEn" class="msg-box" dir="ltr" style="margin:0;"></div>
+                            <button class="btn btn-copy" onclick="copyText('quoteEn')">📋 Copy</button>
+                        </div>
+                    </div>
+                    <button id="acceptBtn" class="btn btn-accept" onclick="showHiddenDetails()" data-ar="✅ العميل وافق على الرسوم – اعرض التأكيد" data-en="✅ Customer Accepted – Show Confirmation">✅ العميل وافق على الرسوم – اعرض التأكيد</button>
+                </div>
+                <div id="detailsSection" class="hidden-section animate-in">
+                    <hr class="divider">
+                    <div class="section-title">🔒 Internal Log</div>
+                    <div class="result-card">
+                        <div class="result-card-header" style="background:linear-gradient(135deg,#0d1117,#1e293b);">⚙️ INTERNAL RECORD</div>
+                        <div class="result-card-body" style="background:#0d1117;border-radius:0 0 14px 14px;">
+                            <div id="internalLog" class="msg-box internal-box" style="margin:0;"></div>
+                            <button class="btn btn-dark" style="margin-top:10px;" onclick="copyText('internalLog')">📋 Copy Internal Log</button>
+                        </div>
+                    </div>
+                    <hr class="divider">
+                    <div class="section-title">✅ <span data-ar="التأكيد النهائي للعميل" data-en="Final Customer Confirmation">التأكيد النهائي للعميل</span></div>
+                    <div class="result-card">
+                        <div class="result-card-header" style="background:linear-gradient(135deg,#0d9e5c,#16a34a);">🇸🇦 تأكيد عربي</div>
+                        <div class="result-card-body">
+                            <div id="confirmAr" class="msg-box" style="margin:0;"></div>
+                            <button class="btn btn-success" onclick="copyText('confirmAr')">📋 نسخ التأكيد العربي</button>
+                        </div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-card-header" style="background:linear-gradient(135deg,#0369a1,#0284c7);">🇬🇧 English Confirmation</div>
+                        <div class="result-card-body">
+                            <div id="confirmEn" class="msg-box" dir="ltr" style="margin:0;"></div>
+                            <button class="btn btn-primary" onclick="copyText('confirmEn')">📋 Copy English Confirmation</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <hr class="out-divider">
-        <div class="out-stitle">✅ <span data-ar="التأكيد النهائي للعميل" data-en="Final Customer Confirmation">التأكيد النهائي للعميل</span></div>
-        <div class="out-card">
-          <div class="out-ch">
-            <div class="out-ch-l"><span class="out-dot" style="background:#16a34a;"></span>🇸🇦 تأكيد عربي</div>
-          </div>
-          <div class="out-cb">
-            <div id="confirmAr" class="out-msg"></div>
-            <button class="out-btn out-btn-full out-btn-success" onclick="copyText('confirmAr')">📋 نسخ التأكيد العربي</button>
-          </div>
-        </div>
-        <div class="out-card">
-          <div class="out-ch">
-            <div class="out-ch-l"><span class="out-dot" style="background:#2563eb;"></span>🇬🇧 English Confirmation</div>
-          </div>
-          <div class="out-cb">
-            <div id="confirmEn" class="out-msg" dir="ltr"></div>
-            <button class="out-btn out-btn-full out-btn-primary" onclick="copyText('confirmEn')">📋 Copy English Confirmation</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div><!-- /out-panel -->
+    </div><!-- /results-panel -->
+
 </div><!-- /app-shell -->
 
-<!-- hidden legacy stubs -->
-<div id="matchingPanel" style="display:none;"></div>
-<div class="scan-status" id="scanStatus" style="display:none;"><div class="scan-spinner" id="scanSpinner" style="display:none;"></div><span id="scanStatusIcon"></span><div class="scan-status-text" id="scanStatusText"></div></div>
-<span id="sumRoute" style="display:none;"></span>
-<span id="sumPax" style="display:none;"></span>
-<span id="sumFlightType" style="display:none;"></span>
-<span id="sumPnr" style="display:none;"></span>
-<span id="mxPaxExtracted" style="display:none;"></span>
-<span id="mxFlightTypeExtracted" style="display:none;"></span>
-<span id="mxPnrExtracted" style="display:none;"></span>
-
-<div class="toast" id="toast">✅ تم النسخ!</div>
+<div class="toast" id="toast">✅ Copied!</div>
 
 <script>
 // ─── STATE ──────────────────────────────────────────────────────
@@ -1135,6 +1068,8 @@ async function handleTicketFile(file){
         renderTicketPanel(result);
         // Auto-fill airline + datetime directly from raw text
         _autoFillNsFromTicket(result);
+        // Also sync from flight chips if available
+        setTimeout(_syncNoShowFromSelectedFlights, 100);
     }catch(err){
         console.error(err);
         setScanStatus('error',t('❌ تعذر قراءة التذكرة. تأكد أن الملف PDF نصي وليس صورة.','❌ Could not read ticket. Make sure it is a text-based PDF.'),false);
@@ -1431,7 +1366,8 @@ function _extractAllPNRs(text){
         const bare=[...text.matchAll(/\b([A-Z][A-Z0-9]{5})\b/g)];
         bare.forEach(m=>{const code=m[1].toUpperCase();if(!found.includes(code)&&!/^\d+$/.test(code)&&!_PNR_STOPWORDS.has(code))found.push(code);});
     }
-    return found.filter(code=>/[A-Z]/.test(code)&&/[0-9]/.test(code)).slice(0,2);
+    // Accept codes with letters+digits (e.g. ND8FFG) OR all-letters (e.g. WFYQKH)
+    return found.filter(code=>/^[A-Z0-9]{5,7}$/.test(code)).slice(0,2);
 }
 
 // Passenger validation
@@ -1544,18 +1480,21 @@ function setScanStatus(type,message,showSpinner){
         sub.textContent=message;
         if(spinner)spinner.style.display='flex';
         if(clearBtn)clearBtn.style.display='none';
+        const minBtnH=document.getElementById('tscMinBtn');if(minBtnH)minBtnH.style.display='none';
     } else if(type==='success'){
         topbar.classList.add('has-file');
         icon.textContent='✅';icon.className='tsc-icon success';
         sub.textContent=message;
         if(spinner)spinner.style.display='none';
         if(clearBtn)clearBtn.style.display='flex';
+        const minBtn=document.getElementById('tscMinBtn');if(minBtn)minBtn.style.display='flex';
     } else {
         topbar.classList.remove('has-file');
         icon.textContent='❌';icon.className='tsc-icon';
         sub.textContent=message;
         if(spinner)spinner.style.display='none';
         if(clearBtn)clearBtn.style.display='flex';
+        const minBtn2=document.getElementById('tscMinBtn');if(minBtn2)minBtn2.style.display='flex';
     }
 }
 
@@ -1587,6 +1526,7 @@ function renderTicketPanel(data){
             chip.classList.toggle('selected');
             chip.querySelector('.flight-chip-check').textContent=chip.classList.contains('selected')?'✓':'';
             _liveUpdateFromSelections();
+            _syncNoShowFromSelectedFlights();
         };
         fc.appendChild(chip);
     });
@@ -1597,7 +1537,7 @@ function renderTicketPanel(data){
         const pType=(data.passengerTypes||[])[idx]||'adult';
         const typeLabel=pType==='infant'?' 👶':pType==='child'?' 🧒':'';
         const chip=document.createElement('div');
-        chip.className=pType==='infant'?'d-pc':'d-pc selected';
+        chip.className=pType==='infant'?'pax-chip':'pax-chip selected';
         chip.dataset.idx=idx;chip.dataset.type=pType;
         chip.innerHTML=`<span>👤</span> ${displayName}${typeLabel}`;
         chip.onclick=()=>{chip.classList.toggle('selected');_liveUpdateFromSelections();};
@@ -1612,7 +1552,7 @@ function _liveUpdateFromSelections(){
     if(!ticketData)return;
     // Count selected non-infant pax
     let selPaxCount=0;
-    document.querySelectorAll('#paxChipsContainer .d-pc.selected').forEach(c=>{if((c.dataset.type||'adult')!=='infant')selPaxCount++;});
+    document.querySelectorAll('#paxChipsContainer .pax-chip.selected').forEach(c=>{if((c.dataset.type||'adult')!=='infant')selPaxCount++;});
     if(selPaxCount>0&&selPaxCount!==_matchPax){_matchPax=selPaxCount;updateMatchPaxDisplay();}
     // Detect route from selected flights
     const selChips=[...document.querySelectorAll('#flightChipsContainer .flight-chip.selected')];
@@ -1720,8 +1660,8 @@ function updateMatchPaxDisplay(){
 function setFlightType(type,silent){
     _matchFlightType=type;
     const btnDom=document.getElementById('btnDom');const btnInt=document.getElementById('btnInt');
-    if(btnDom)btnDom.className='d-tb'+(type==='Local'?' active-dom':'');
-    if(btnInt)btnInt.className='d-tb'+(type==='International'?' active-int':'');
+    if(btnDom)btnDom.className='lms-toggle-btn'+(type==='Local'?' active-dom':'');
+    if(btnInt)btnInt.className='lms-toggle-btn'+(type==='International'?' active-int':'');
     const typeVal=document.getElementById('lmsTypeVal');
     if(typeVal)typeVal.innerHTML=type==='Local'?`🏠 ${t('محلي','Local')}`:`🌍 ${t('دولي','International')}`;
     if(!silent){updateMatchSummary();runMatchValidation();_flashCell('lmsCellType');}
@@ -1729,8 +1669,8 @@ function setFlightType(type,silent){
 function setMatchPnr(type,silent){
     _matchPnr=type;
     const btnS=document.getElementById('btnSingle');const btnM=document.getElementById('btnMulti');
-    if(btnS)btnS.className='d-tb'+(type==='single'?' active-single':'');
-    if(btnM)btnM.className='d-tb'+(type==='multi'?' active-multi':'');
+    if(btnS)btnS.className='lms-toggle-btn'+(type==='single'?' active-single':'');
+    if(btnM)btnM.className='lms-toggle-btn'+(type==='multi'?' active-multi':'');
     const pnrVal=document.getElementById('lmsPnrVal');
     if(pnrVal)pnrVal.innerHTML=type==='multi'?'📑 Multi PNR':'🔖 Single PNR';
     if(!silent){updateMatchSummary();runMatchValidation();_flashCell('lmsCellPnr');}
@@ -1755,54 +1695,103 @@ function runMatchValidation(){
     if(_matchPnr!==(ticketData.hasMultiPNR?'multi':'single'))warnings.push(`⚠️ ${t('نوع PNR يختلف','PNR type differs')}`);
     statusRow.style.display='flex';
     if(warnings.length>0){
-        statusRow.className='d-st warn';
+        statusRow.className='lms-status warn';
         statusText.innerHTML=warnings.join(' &nbsp;·&nbsp; ');
     } else {
-        statusRow.className='d-st ok';
+        statusRow.className='lms-status ok';
         statusText.innerHTML=`✅ ${t('جميع البيانات متطابقة','All data matches')}`;
     }
 }
 function applyMatchedData(){
     if(!ticketData)return;
 
-    // ── 1. Validate chips selection (from ticket panel) ──────────
+    // ── 1. Collect chip selections ───────────────────────────────
     const selIdxs=[];
     document.querySelectorAll('#flightChipsContainer .flight-chip.selected').forEach(c=>selIdxs.push(parseInt(c.dataset.idx)));
     if(selIdxs.length===0){alert(t('يرجى تحديد رحلة واحدة على الأقل','Please select at least one flight'));return;}
     const selChipNames=[],selChipTypes=[];
-    document.querySelectorAll('#paxChipsContainer .d-pc.selected').forEach(c=>{
+    document.querySelectorAll('#paxChipsContainer .pax-chip.selected').forEach(c=>{
         const raw=c.textContent.trim().replace('👤','').replace('👶','').replace('🧒','').trim();
         selChipNames.push(raw.replace(/^(?:MR\.?|MRS?\.?|MS\.?|DR\.?|MISS\.?)\s+/i,'').trim());
         selChipTypes.push(c.dataset.type||'adult');
     });
     if(selChipNames.length===0){alert(t('يرجى تحديد مسافر واحد على الأقل','Please select at least one passenger'));return;}
 
-    // ── 2. Apply POS / route / PNR type (matching panel logic) ───
-    const pos=document.getElementById('posCountry');const cur=pos.value;const isDom=_matchFlightType==='Local';
-    if(isDom){if(cur==='KSA_INT')pos.value='KSA_DOM';else if(cur==='BHR_INT')pos.value='BHR_DOM';else if(cur==='OMN_INT')pos.value='OMN_DOM';else if(!cur.includes('DOM'))pos.value='KSA_DOM';}
-    else{if(cur==='KSA_DOM')pos.value='KSA_INT';else if(cur==='BHR_DOM')pos.value='BHR_INT';else if(cur==='OMN_DOM')pos.value='OMN_INT';}
-
-    // ── 3. Set pax count, route, PNR ─────────────────────────────
+    // ── 2. Set fields WITHOUT triggering intermediate buildPaxRows ─
     const selFlights=selIdxs.map(i=>ticketData.flights[i]);
     const hasOB=selFlights.some(f=>f.direction==='outbound'||f.id==='OB');
     const hasIB=selFlights.some(f=>f.direction==='inbound'||f.id==='IB');
     const isRT=hasOB&&hasIB;
-    document.getElementById('paxCount').value=_matchPax;
-    document.getElementById('routeType').value=isRT?'RT':'OW';onRouteChange();
-    const pnrEl=document.getElementById('pnrType');if(pnrEl){pnrEl.value=_matchPnr;onPnrChange();}
-    onServiceChange();_updateVatVisibility();
+
+    // POS
+    const pos=document.getElementById('posCountry');const cur=pos.value;const isDom=_matchFlightType==='Local';
+    if(isDom){if(cur==='KSA_INT')pos.value='KSA_DOM';else if(cur==='BHR_INT')pos.value='BHR_DOM';else if(cur==='OMN_INT')pos.value='OMN_DOM';else if(!cur.includes('DOM'))pos.value='KSA_DOM';}
+    else{if(cur==='KSA_DOM')pos.value='KSA_INT';else if(cur==='BHR_DOM')pos.value='BHR_INT';else if(cur==='OMN_DOM')pos.value='OMN_INT';}
+
+    // Set route/pax/pnr silently (no side-effect calls)
+    document.getElementById('paxCount').value = _matchPax;
+    document.getElementById('routeType').value = isRT?'RT':'OW';
+    const pnrEl=document.getElementById('pnrType');if(pnrEl) pnrEl.value=_matchPnr;
+
+    // Update inbound visibility without rebuilding rows yet
+    updateInboundFields();
+    _updateVatVisibility();
+
     ticketData._selectedFlights=selFlights;
-    ticketData._matchedFlightType=_matchFlightType;ticketData._matchedPnr=_matchPnr;
+    ticketData._matchedFlightType=_matchFlightType;
+    ticketData._matchedPnr=_matchPnr;
+
+    // ── 3. Build pax rows ONCE ───────────────────────────────────
     buildPaxRows();
 
-    // ── 4. Fill passenger names from chip selection ───────────────
-    setTimeout(()=>{
-        selChipNames.slice(0,_matchPax).forEach((name,idx)=>{const el=document.getElementById(`pax_name_${idx+1}`);if(el){el.value=name;el.classList.add('auto-filled');setTimeout(()=>el.classList.remove('auto-filled'),3000);}});
-        calculate();
-        const toast=document.getElementById('toast');
-        toast.innerText=t('✅ تم تطبيق البيانات على النموذج','✅ Data applied to form');
-        toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show');toast.innerText=t('✅ تم النسخ!','✅ Copied!');},2500);
-    },120);
+    // ── 4. Fill names SYNCHRONOUSLY right after buildPaxRows ────
+    selChipNames.slice(0,_matchPax).forEach((name,idx)=>{
+        const el=document.getElementById('pax_name_'+(idx+1));
+        if(el){
+            el.value=name;
+            el.classList.add('auto-filled');
+            setTimeout(()=>el.classList.remove('auto-filled'),3000);
+        }
+    });
+
+    calculate();
+
+    // ── 5. Scroll to pax rows ────────────────────────────────────
+    const scrollArea=document.querySelector('.input-panel-scroll');
+    const paxTarget=document.getElementById('paxRowsContainer');
+    if(scrollArea && paxTarget){
+        setTimeout(()=>scrollArea.scrollTo({top:paxTarget.offsetTop - 8,behavior:'smooth'}),80);
+    }
+
+    // ── 6. Minimize scanner & scroll input-panel ────────────────
+    minimizeScanner();
+    const inputPanel=document.querySelector('.input-panel');
+    if(inputPanel) setTimeout(()=>inputPanel.scrollTo({top:0,behavior:'smooth'}),120);
+
+    // ── 7. Toast ─────────────────────────────────────────────────
+    const toast=document.getElementById('toast');
+    toast.innerText=t('✅ تم تطبيق البيانات على النموذج','✅ Data applied to form');
+    toast.classList.add('show');
+    setTimeout(()=>{toast.classList.remove('show');toast.innerText=t('✅ تم النسخ!','✅ Copied!');},2500);
+}
+
+function minimizeScanner(){
+    const card=document.querySelector('.ticket-scanner-card');
+    if(card) card.classList.add('minimized');
+    // update topbar style to show it's collapsed
+    const topbar=document.getElementById('tscTopbar');
+    if(topbar){
+        topbar.style.cursor='pointer';
+        topbar.onclick=function(){ expandScanner(); };
+    }
+}
+function expandScanner(){
+    const card=document.querySelector('.ticket-scanner-card');
+    if(card) card.classList.remove('minimized');
+    const topbar=document.getElementById('tscTopbar');
+    if(topbar){
+        topbar.onclick=function(){ if(!ticketData)document.getElementById('ticketFileInput').click(); };
+    }
 }
 
 // ─── NO-SHOW DETECT ──────────────────────────────────────────
@@ -1814,9 +1803,115 @@ const NO_BOOK_BEFORE_NS_MINS = 30;
 let _lastAlertKey = ''; // prevent repeat alerts for same departure
 
 function _hideNsDeadlines(){
-    document.getElementById('nsBagDeadlineRow').className='d-dl ns-hidden';
-    document.getElementById('nsNsDeadlineRow').className='d-dl ns-hidden';
+    document.getElementById('nsBagDeadlineRow').className='ns-deadline-row ns-hidden';
+    document.getElementById('nsNsDeadlineRow').className='ns-deadline-row ns-hidden';
     document.getElementById('nsInfoGrid').style.display='none';
+}
+
+// ── Sync No-Show fields from selected flight chips ──────────────
+function _syncNoShowFromSelectedFlights(){
+    if(!ticketData || !ticketData.flights) return;
+    const selChips=[...document.querySelectorAll('#flightChipsContainer .flight-chip.selected')];
+    if(selChips.length===0) return;
+    const selIdxs = selChips.map(c=>parseInt(c.dataset.idx));
+    const selFlights = selIdxs.map(i=>ticketData.flights[i]).filter(Boolean);
+    if(selFlights.length===0) return;
+
+    // For multi-ticket: use the OUTBOUND flight for airline/time,
+    // but for no-show hours: take the MAXIMUM hours across all selected flights' airlines
+    const pad = n=>String(n).padStart(2,'0');
+
+    // Determine airline codes for all selected flights
+    const allCodes = selFlights.map(f=>f.airlineCode||'').filter(Boolean);
+
+    // Pick the outbound (or first) flight for departure datetime
+    const ob = selFlights.find(f=>f.direction==='outbound'||f.id==='OB') || selFlights[0];
+
+    // Fill airline code from outbound/first flight
+    if(ob && ob.airlineCode){
+        const codeEl = document.getElementById('nsAirlineCode');
+        if(!codeEl.dataset.manualOverride){
+            codeEl.value = ob.airlineCode;
+            codeEl.classList.add('auto-filled');
+            setTimeout(()=>codeEl.classList.remove('auto-filled'),2000);
+        }
+    }
+
+    // Fill departure datetime from outbound/first flight
+    if(ob){
+        const dtEl = document.getElementById('departureDateTime');
+        if(!dtEl.value || dtEl.dataset.autoSet){
+            const rawDate=(ob.date||'').trim();
+            const rawTime=(ob.departureTime||'').trim();
+            const monthMap={JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11,
+                JANUARY:0,FEBRUARY:1,MARCH:2,APRIL:3,JUNE:5,JULY:6,AUGUST:7,SEPTEMBER:8,OCTOBER:9,NOVEMBER:10,DECEMBER:11};
+            function _parseTime(s){
+                if(!s)return null;
+                const pm=/PM/i.test(s),am=/AM/i.test(s);
+                const [hS,mS]=(s.replace(/[APM\s]/gi,'').split(':'));
+                let h=parseInt(hS)||0,m=parseInt(mS)||0;
+                if(pm&&h<12)h+=12; if(am&&h===12)h=0;
+                return{h,m};
+            }
+            function _parseDate(s){
+                if(!s)return null;
+                // "May 24, 2026" or "24 May 2026" or "2026-05-24"
+                let m2=s.match(/(\d{4})-(\d{2})-(\d{2})/);
+                if(m2)return{y:+m2[1],mo:+m2[2]-1,d:+m2[3]};
+                m2=s.match(/([A-Za-z]+)\s+(\d{1,2}),?\s*(\d{4})/);
+                if(m2){const mo=monthMap[m2[1].toUpperCase().slice(0,3)];if(mo!==undefined)return{y:+m2[3],mo,d:+m2[2]};}
+                m2=s.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+                if(m2){const mo=monthMap[m2[2].toUpperCase().slice(0,3)];if(mo!==undefined)return{y:+m2[3],mo,d:+m2[1]};}
+                return null;
+            }
+            const pd=_parseDate(rawDate), pt=_parseTime(rawTime);
+            if(pd && pt){
+                const iso=`${pd.y}-${pad(pd.mo+1)}-${pad(pd.d)}T${pad(pt.h)}:${pad(pt.m)}`;
+                dtEl.value=iso; dtEl.dataset.autoSet='1';
+                dtEl.classList.add('auto-filled');
+                setTimeout(()=>dtEl.classList.remove('auto-filled'),2000);
+            }
+        }
+    }
+
+    // For multi-ticket: calculate max no-show hours across all airlines
+    if(allCodes.length > 1){
+        let maxHours = 0;
+        let maxCode = '';
+        allCodes.forEach(code=>{
+            const entry = AIRLINE_NS_TABLE[code.toUpperCase()];
+            if(entry && entry.baggageHours > maxHours){
+                maxHours = entry.baggageHours;
+                maxCode = code;
+            }
+        });
+        if(maxHours > 0){
+            const nsValEl = document.getElementById('nsValue');
+            if(!nsValEl.dataset.manualOverride){
+                nsValEl.value = maxHours;
+                document.getElementById('nsUnit').value = 'ساعه';
+                // Show a multi-ticket note
+                let noteEl = document.getElementById('nsMultiNote');
+                if(!noteEl){
+                    noteEl = document.createElement('div');
+                    noteEl.id = 'nsMultiNote';
+                    noteEl.style.cssText = 'font-size:0.7rem;padding:6px 10px;margin-top:6px;border-radius:8px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#b45309;font-weight:700;';
+                    const nsValParent = nsValEl.closest('.grid-2');
+                    if(nsValParent) nsValParent.parentNode.insertBefore(noteEl, nsValParent.nextSibling);
+                }
+                const codesStr = allCodes.join(' + ');
+                noteEl.textContent = `⚠️ Multi-ticket: أعلى نو شو (${maxCode} = ${maxHours}h) من [${codesStr}]`;
+                noteEl.style.display='block';
+            }
+        }
+    } else {
+        // Hide multi note if single airline
+        const noteEl = document.getElementById('nsMultiNote');
+        if(noteEl) noteEl.style.display='none';
+    }
+
+    // Trigger no-show recalculation
+    runNoShowDetect();
 }
 
 function runNoShowDetect(){
@@ -1844,8 +1939,8 @@ function runNoShowDetect(){
     document.getElementById('nsBoxBagType').textContent=t('نافذة الحقيبة','Baggage window');
 
     if(!depInput){
-        document.getElementById('nsBagDeadlineRow').className='d-dl ns-hidden';
-        document.getElementById('nsNsDeadlineRow').className='d-dl ns-hidden';
+        document.getElementById('nsBagDeadlineRow').className='ns-deadline-row ns-hidden';
+        document.getElementById('nsNsDeadlineRow').className='ns-deadline-row ns-hidden';
         calculate();return;
     }
 
@@ -1870,7 +1965,7 @@ function runNoShowDetect(){
         bagBadge.className='ns-deadline-badge '+(bagMinsLeft>WARNING_BUFFER_MINS?'badge-ok':'badge-warn');
     } else {
         bagBadge.textContent=`🚫 ${t('النافذة مغلقة','Window closed')}`;
-        bagBadge.className='d-dl-bdd';
+        bagBadge.className='ns-deadline-badge badge-danger';
     }
 
     // ── No-show deadline row ────────────────────────────────
@@ -1884,10 +1979,10 @@ function runNoShowDetect(){
     if(nsMinsLeft>0){
         const h=Math.floor(nsMinsLeft/60),m=nsMinsLeft%60;
         nsBadge.textContent=`⚠️ ${h}h ${m}m ${t('حتى النو شو','to no-show')}`;
-        nsBadge.className='d-dl-bdw';
+        nsBadge.className='ns-deadline-badge badge-warn';
     } else {
         nsBadge.textContent=`🚫 No-Show`;
-        nsBadge.className='d-dl-bdd';
+        nsBadge.className='ns-deadline-badge badge-danger';
     }
 
     // ════════════════════════════════════════════════════════
@@ -1978,58 +2073,45 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
 });
 
-// ══ RAIL NAV ══
-const _railLabels = {
-  ticket: {ar:'التذكرة', en:'Ticket'},
-  service:{ar:'معلومات الخدمة', en:'Service Info'},
-  details:{ar:'تفاصيل المسافرين', en:'Passenger Details'},
-  noshow: {ar:'النو شو', en:'No-Show'}
-};
-const _railNames = {
-  ticket: {ar:'مسح التذكرة الإلكترونية', en:'Scan E-Ticket'},
-  service:{ar:'نوع الخدمة والمنطقة', en:'Service & Region'},
-  details:{ar:'تفاصيل الخدمة والمسافرين', en:'Service & Passenger Details'},
-  noshow: {ar:'نافذة النو شو والمواعيد', en:'No-Show Window & Deadlines'}
-};
-window.railNav = function(key) {
-  ['ticket','service','details','noshow'].forEach(k => {
-    const el = document.getElementById('rl-' + k);
-    if (el) el.classList.toggle('active', k === key);
-  });
-  // also handle legacy r-icon class
-  document.querySelectorAll('.r-icon').forEach(el => el.classList.remove('active'));
-  const lbl  = document.getElementById('inpSecLabel');
-  const name = document.getElementById('inpSecName');
-  if (lbl)  { lbl.innerText = currentLang==='ar' ? _railLabels[key].ar : _railLabels[key].en; }
-  if (name) { name.innerText = currentLang==='ar' ? _railNames[key].ar  : _railNames[key].en; }
-  const scroll = document.getElementById('inpScroll');
-  const sec    = document.getElementById('sec-' + key);
-  if (scroll && sec) scroll.scrollTo({top: sec.offsetTop - 4, behavior:'smooth'});
-};
-
-// ── Fix flight chip rendering ──
-function renderFlightChip(fl, idx, selected) {
-  const dirClass = fl.direction==='IB'?'dtag-ib':'dtag-ob';
-  const dirTxt   = fl.direction==='IB'?t('عودة','IB'):t('ذهاب','OB');
-  return `<div class="d-fc${selected?' selected':''}" onclick="toggleFlightChip(${idx})">
-    <div class="d-fc-chk">${selected?'✓':''}</div>
-    <div class="d-fc-info">
-      <div class="d-fc-route">${fl.from||'?'} → ${fl.to||'?'}</div>
-      <div class="d-fc-cities">${fl.fromCity||''} → ${fl.toCity||''}</div>
-      <div class="d-fc-det">
-        ${fl.flightNum?`<span class="dtag dtag-fn">${fl.airline||''}${fl.flightNum}</span>`:''}
-        ${fl.date?`<span class="dtag dtag-dt">${fl.date}</span>`:''}
-        ${fl.depTime?`<span class="dtag dtag-fn">${fl.depTime}</span>`:''}
-        <span class="dtag ${dirClass}">${dirTxt}</span>
-      </div>
-    </div>
-  </div>`;
-}
-
-// ── Fix pax chips to use new dark class ──
-const _origRenderTP = window.renderTicketPanel;
-
 // ─── INIT ─────────────────────────────────────────────────────
 onServiceChange();
+
+    // ── SIDEBAR SCROLL NAV ──
+    function sbScrollTo(el, targetId) {
+        document.querySelectorAll('.sb-icon[data-target]').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+        const scrollContainer = document.querySelector('.input-panel-scroll');
+        // Use data-scroll-to for precise target (e.g. paxRowsContainer)
+        const preciseId = el.dataset.scrollTo || targetId;
+        const target = document.getElementById(preciseId);
+        if (scrollContainer && target) {
+            scrollContainer.scrollTo({ top: target.offsetTop - 8, behavior: 'smooth' });
+            // Focus first input inside target
+            const firstInput = target.querySelector('input[type="text"],input[type="number"],select');
+            if (firstInput) setTimeout(()=>firstInput.focus(), 350);
+        }
+    }
+
+    // Auto-update active sidebar icon on scroll
+    document.addEventListener('DOMContentLoaded', function() {
+        const scrollEl = document.querySelector('.input-panel-scroll');
+        if (!scrollEl) return;
+        scrollEl.addEventListener('scroll', function() {
+            const sections = ['section-flights','section-service','section-details','section-noshow','section-prices'];
+            let current = sections[0];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.offsetTop - 20 <= scrollEl.scrollTop) current = id;
+            });
+            document.querySelectorAll('.sb-icon[data-target]').forEach(icon => {
+                icon.classList.toggle('active', icon.dataset.target === current);
+            });
+        });
+    });
+
+
+    // _syncScannerPos removed — ticket-scanner-card is now in normal document flow
+
 </script>
 </body>
+</html>
