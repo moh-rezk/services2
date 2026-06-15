@@ -29,6 +29,28 @@
             /* frozen state accent */
             --frozen:#7c3aed;--frozen-bg:rgba(124,58,237,0.07);--frozen-border:rgba(124,58,237,0.25);
         }
+
+        /* ══ DARK MODE ══ */
+        .dark-mode{
+            --shell-bg:#0f1117;
+            --panel-bg:#1a1d27;--panel-bg2:#1e2130;--panel-bg3:#141720;
+            --panel-border:rgba(255,255,255,0.07);--panel-border2:rgba(255,255,255,0.11);
+            --panel-text:#e2e8f0;--panel-sub:#8892a4;--panel-hint:#4a5568;
+            --input-bg:#1e2130;--input-border:rgba(255,255,255,0.13);
+            --input-text:#e2e8f0;
+            --bg:var(--panel-bg);--bg-deep:var(--panel-bg3);--card:var(--panel-bg2);
+            --sidebar-bg:#0d1020;
+        }
+        .dark-mode body{background:var(--shell-bg);}
+        .dark-mode .input-panel,.dark-mode .ticket-scanner-card,.dark-mode .output-col{background:var(--panel-bg);}
+        .dark-mode .tsc-topbar{background:rgba(0,153,204,0.06);}
+        .dark-mode select,.dark-mode input[type=text],.dark-mode input[type=number],.dark-mode input[type=datetime-local],.dark-mode textarea{background:var(--input-bg)!important;color:var(--input-text)!important;border-color:var(--input-border)!important;}
+        .dark-mode .pax-chip,.dark-mode .flight-chip{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);}
+        .dark-mode .btn-dark{background:#1e2130;color:var(--panel-text);border-color:var(--panel-border2)!important;}
+        .dark-mode .dcard,.dark-mode .pax-section-title,.dark-mode .section-title{background:var(--panel-bg2)!important;}
+        .dark-mode .tip-section{border-color:var(--panel-border);}
+        .dark-mode .output-text{background:var(--panel-bg2)!important;color:var(--panel-text);}
+
         *{box-sizing:border-box;margin:0;padding:0;}
         body{font-family:'Cairo',sans-serif;background:var(--shell-bg);color:var(--panel-text);min-height:100vh;display:flex;flex-direction:column;}
 
@@ -349,7 +371,8 @@
             <div class="lang-opt active" id="langAr">🇸🇦 AR</div>
             <div class="lang-opt" id="langEn">🇬🇧 EN</div>
         </div>
-        <div class="header-version">v54.0</div>
+        <button onclick="toggleDarkMode()" id="darkModeBtn" title="وضع ليلي" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:2px 10px;font-size:0.72rem;cursor:pointer;color:rgba(255,255,255,0.7);font-family:Cairo,sans-serif;font-weight:700;transition:all 0.2s;">🌙 ليلي</button>
+        <div class="header-version">v55.0</div>
     </div>
 </div>
 
@@ -383,10 +406,28 @@
         <div class="sb-icon" title="نافذة الحقائب والنو شو" data-target="section-noshow" onclick="sbScrollTo(this,'section-noshow')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
+        <div class="sb-icon" title="سجل التذاكر" id="sbHistoryIcon" onclick="toggleHistory()" style="position:relative;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h6l2 3h10a2 2 0 012 2v9a2 2 0 01-2 2H3a2 2 0 01-2-2V5a2 2 0 012-2z"/></svg>
+            <span id="historyBadge" style="display:none;position:absolute;top:3px;left:3px;width:8px;height:8px;background:#f59e0b;border-radius:50%;"></span>
+        </div>
+        <div class="sb-divider"></div>
         <div class="sb-icon" style="margin-top:auto;" title="الإعدادات">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         </div>
     </nav>
+
+
+        <!-- TICKET HISTORY PANEL -->
+        <div id="historyPanel" style="display:none;position:absolute;top:54px;right:calc(var(--sidebar-w) + 8px);width:280px;max-height:420px;overflow-y:auto;background:var(--panel-bg);border:1px solid var(--panel-border2);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.18);z-index:500;padding:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--panel-border);position:sticky;top:0;background:var(--panel-bg);z-index:1;">
+                <span style="font-size:0.78rem;font-weight:900;color:var(--panel-text);">📂 سجل التذاكر</span>
+                <div style="display:flex;gap:6px;">
+                    <button onclick="clearHistory()" style="font-size:0.63rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:6px;padding:2px 8px;cursor:pointer;font-family:Cairo,sans-serif;font-weight:700;">حذف الكل</button>
+                    <button onclick="closeHistory()" style="font-size:0.8rem;background:transparent;border:none;color:var(--panel-sub);cursor:pointer;">✕</button>
+                </div>
+            </div>
+            <div id="historyList" style="padding:8px;"></div>
+        </div>
 
     <!-- INPUT PANEL -->
     <div class="input-panel">
@@ -396,7 +437,7 @@
             <div class="tsc-topbar" id="tscTopbar"
                  onclick="if(!ticketData)document.getElementById('ticketFileInput').click()"
                  ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-                <input type="file" id="ticketFileInput" accept=".pdf" onchange="handleTicketFile(this.files[0])">
+                <input type="file" id="ticketFileInput" accept=".pdf,.PDF" multiple onchange="handleBatchFiles(this.files)">
                 <div class="tsc-icon" id="tscIcon">🎫</div>
                 <div class="tsc-text">
                     <div class="tsc-title" id="tscTitle">
@@ -406,6 +447,7 @@
                     <div class="tsc-sub" id="tscSub" data-ar="ارفع ملف PDF – اسحب وأفلت أو اضغط للاختيار" data-en="Upload PDF – drag & drop or click to select">ارفع ملف PDF – اسحب وأفلت أو اضغط للاختيار</div>
                 </div>
                 <div id="tscSpinner" class="scan-spinner" style="display:none;"></div>
+                <button id="pasteBtn" onclick="event.stopPropagation();pasteFromClipboard()" title="لصق نص من الحافظة" style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.28);color:#818cf8;border-radius:7px;padding:4px 9px;font-size:0.63rem;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700;flex-shrink:0;transition:all 0.15s;" data-ar="📋 لصق" data-en="📋 Paste">📋 لصق</button>
                 <button class="tsc-minimize-btn" id="tscMinBtn" style="display:none;" onclick="event.stopPropagation();minimizeScanner()" title="Minimize">−</button>
                 <button class="tsc-clear-btn" id="tscClearBtn" style="display:none;" onclick="event.stopPropagation();clearTicket()" data-ar="مسح ✕" data-en="Clear ✕">مسح ✕</button>
             </div>
@@ -706,6 +748,32 @@
                         <div class="result-card-body">
                             <div id="confirmAr" class="msg-box" style="margin:0;"></div>
                             <button class="btn btn-success" onclick="copyText('confirmAr')">📋 نسخ التأكيد العربي</button>
+
+                                <!-- ── TOOLS BAR ── -->
+                                <div id="toolsBar" style="margin-top:10px;padding:10px;background:rgba(0,0,0,0.025);border-radius:9px;border:1px solid var(--panel-border);">
+                                    <div style="font-size:0.68rem;font-weight:900;color:var(--panel-sub);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+                                        <span>⚙️</span><span>أدوات إضافية</span>
+                                    </div>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+                                        <button onclick="exportCSV()" style="padding:7px;border-radius:7px;border:1px solid rgba(5,150,105,0.25);background:rgba(5,150,105,0.06);color:#059669;font-family:Cairo,sans-serif;font-size:0.7rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;">📊 تصدير CSV</button>
+                                        <button onclick="toggleDebugPanel()" style="padding:7px;border-radius:7px;border:1px solid rgba(99,102,241,0.25);background:rgba(99,102,241,0.06);color:#818cf8;font-family:Cairo,sans-serif;font-size:0.7rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;">🔍 تفاصيل التحليل</button>
+                                    </div>
+                                    <!-- WhatsApp Template Editor -->
+                                    <div style="margin-top:8px;">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+                                            <span style="font-size:0.65rem;font-weight:800;color:var(--panel-sub);">📝 قالب رسالة واتساب</span>
+                                            <button onclick="resetWaTemplate()" style="font-size:0.6rem;background:none;border:none;color:var(--panel-hint);cursor:pointer;font-family:Cairo,sans-serif;">↺ افتراضي</button>
+                                        </div>
+                                        <textarea id="waTemplateEditor" rows="3" style="width:100%;font-family:Cairo,sans-serif;font-size:0.68rem;padding:6px 8px;border-radius:7px;border:1px solid var(--panel-border2);background:var(--input-bg);color:var(--input-text);resize:vertical;line-height:1.5;" placeholder="متغيرات: {airline} {from} {to} {date} {flight} {dep} {arr} {pax}"></textarea>
+                                        <button onclick="applyWaTemplate()" style="width:100%;margin-top:5px;padding:7px;border-radius:7px;border:1px solid rgba(37,211,102,0.3);background:rgba(37,211,102,0.07);color:#25d366;font-family:Cairo,sans-serif;font-size:0.7rem;font-weight:800;cursor:pointer;">💬 تطبيق القالب ونسخه</button>
+                                    </div>
+                                    <!-- Debug Panel -->
+                                    <div id="debugPanel" style="display:none;margin-top:8px;background:rgba(0,0,0,0.04);border-radius:7px;padding:8px;border:1px solid var(--panel-border);">
+                                        <div style="font-size:0.63rem;font-weight:900;color:var(--panel-sub);margin-bottom:6px;">🔍 تفاصيل التحليل</div>
+                                        <div id="debugContent" style="font-family:IBM Plex Mono,monospace;font-size:0.6rem;color:var(--panel-sub);line-height:1.7;white-space:pre-wrap;max-height:180px;overflow-y:auto;"></div>
+                                    </div>
+                                </div>
+
                         </div>
                     </div>
                     <div class="result-card">
@@ -736,9 +804,8 @@ let ticketData  = null;
 let _ghDbLoaded = false;
 
 async function _loadGithubDB(){
-    // Data is baked-in from github.com/moh-rezk/GDS2 — no fetch needed
-    const el=document.getElementById('dbLoadStatus');
-    if(el){el.innerHTML='<span style="color:var(--success);">✅ قاعدة البيانات v3.0.0 مدمجة — '+Object.keys(_airportMap).length+' مطار · '+Object.keys(AIRLINE_NS_TABLE).length+' شركة</span>';setTimeout(()=>el.style.display='none',3000);}
+    // Delegates to the real loader defined below; updates the UI status badge once done.
+    // Safe to call multiple times — the real loader de-duplicates the request.
 }
 // ═══════════════════════════════════════════════════════════════
 // FROZEN DATA — Applied ONCE from ticket, survives pax/route changes
@@ -1188,18 +1255,114 @@ function extractTextFromPDF(file){
     });
 }
 
-// ─── Airport / Airline databases (same as v53) ────────────────
-const _airportMap={"RUH":{"ar":"الرياض","en":"Riyadh","country":"SA"},"JED":{"ar":"جدة","en":"Jeddah","country":"SA"},"DMM":{"ar":"الدمام","en":"Dammam","country":"SA"},"MED":{"ar":"المدينة المنورة","en":"Madinah","country":"SA"},"TIF":{"ar":"الطائف","en":"Taif","country":"SA"},"AHB":{"ar":"أبها","en":"Abha","country":"SA"},"GIZ":{"ar":"جازان","en":"Jazan","country":"SA"},"YNB":{"ar":"ينبع","en":"Yanbu","country":"SA"},"TUU":{"ar":"تبوك","en":"Tabuk","country":"SA"},"AJF":{"ar":"الجوف","en":"Al-Jouf","country":"SA"},"EAM":{"ar":"نجران","en":"Najran","country":"SA"},"HOF":{"ar":"الأحساء","en":"Al-Ahsa","country":"SA"},"RAE":{"ar":"رفحاء","en":"Rafha","country":"SA"},"WAE":{"ar":"وادي الدواسر","en":"Wadi Al-Dawasir","country":"SA"},"SHW":{"ar":"شرورة","en":"Sharurah","country":"SA"},"ABT":{"ar":"الباحة","en":"Al-Baha","country":"SA"},"BHH":{"ar":"بيشة","en":"Bisha","country":"SA"},"DWD":{"ar":"الدوادمي","en":"Dawadmi","country":"SA"},"AKH":{"ar":"القيصومة","en":"Al-Qaysumah","country":"SA"},"TUI":{"ar":"طريف","en":"Turaif","country":"SA"},"ULH":{"ar":"العُلا","en":"Al-Ula","country":"SA"},"URY":{"ar":"القريات","en":"Gurayat","country":"SA"},"DXB":{"ar":"دبي","en":"Dubai","country":"AE"},"SHJ":{"ar":"الشارقة","en":"Sharjah","country":"AE"},"AUH":{"ar":"أبوظبي","en":"Abu Dhabi","country":"AE"},"AAN":{"ar":"العين","en":"Al Ain","country":"AE"},"RKT":{"ar":"رأس الخيمة","en":"Ras Al Khaimah","country":"AE"},"FJR":{"ar":"الفجيرة","en":"Fujairah","country":"AE"},"DOH":{"ar":"الدوحة","en":"Doha","country":"QA"},"BAH":{"ar":"البحرين","en":"Bahrain","country":"BH"},"KWI":{"ar":"الكويت","en":"Kuwait City","country":"KW"},"MCT":{"ar":"مسقط","en":"Muscat","country":"OM"},"SLL":{"ar":"صلالة","en":"Salalah","country":"OM"},"MSH":{"ar":"مصيرة","en":"Masirah","country":"OM"},"DQM":{"ar":"دقم","en":"Duqm","country":"OM"},"SUR":{"ar":"صور","en":"Sur","country":"OM"},"OHS":{"ar":"صحار","en":"Sohar","country":"OM"},"KHS":{"ar":"خصب","en":"Khasab","country":"OM"},"CAI":{"ar":"القاهرة","en":"Cairo","country":"EG"},"HBE":{"ar":"الإسكندرية","en":"Alexandria","country":"EG"},"HRG":{"ar":"الغردقة","en":"Hurghada","country":"EG"},"SSH":{"ar":"شرم الشيخ","en":"Sharm El Sheikh","country":"EG"},"LXR":{"ar":"الأقصر","en":"Luxor","country":"EG"},"ASW":{"ar":"أسوان","en":"Aswan","country":"EG"},"HMB":{"ar":"سوهاج","en":"Sohag","country":"EG"},"SPX":{"ar":"سفنكس","en":"Sphinx","country":"EG"},"PSD":{"ar":"بورسعيد","en":"Port Said","country":"EG"},"EMY":{"ar":"المنيا","en":"El Minya","country":"EG"},"TCP":{"ar":"طابا","en":"Taba","country":"EG"},"AAC":{"ar":"العريش","en":"Al Arish","country":"EG"},"AMM":{"ar":"عمّان","en":"Amman","country":"JO"},"AQJ":{"ar":"العقبة","en":"Aqaba","country":"JO"},"BEY":{"ar":"بيروت","en":"Beirut","country":"LB"},"DAM":{"ar":"دمشق","en":"Damascus","country":"SY"},"ALP":{"ar":"حلب","en":"Aleppo","country":"SY"},"BGW":{"ar":"بغداد","en":"Baghdad","country":"IQ"},"BSR":{"ar":"البصرة","en":"Basra","country":"IQ"},"NJF":{"ar":"النجف","en":"Najaf","country":"IQ"},"EBL":{"ar":"أربيل","en":"Erbil","country":"IQ"},"ISU":{"ar":"السليمانية","en":"Sulaymaniyah","country":"IQ"},"TLV":{"ar":"تل أبيب","en":"Tel Aviv","country":"IL"},"KRT":{"ar":"الخرطوم","en":"Khartoum","country":"SD"},"IST":{"ar":"إسطنبول","en":"Istanbul","country":"TR"},"SAW":{"ar":"إسطنبول صبيحة","en":"Istanbul Sabiha","country":"TR"},"AYT":{"ar":"أنطاليا","en":"Antalya","country":"TR"},"ESB":{"ar":"أنقرة","en":"Ankara","country":"TR"},"ADB":{"ar":"إزمير","en":"Izmir","country":"TR"},"THR":{"ar":"طهران","en":"Tehran","country":"IR"},"IKA":{"ar":"طهران إمام","en":"Tehran Imam Khomeini","country":"IR"},"MHD":{"ar":"مشهد","en":"Mashhad","country":"IR"},"SYZ":{"ar":"شيراز","en":"Shiraz","country":"IR"},"LHR":{"ar":"لندن هيثرو","en":"London Heathrow","country":"GB"},"LGW":{"ar":"لندن غاتويك","en":"London Gatwick","country":"GB"},"STN":{"ar":"لندن ستانستد","en":"London Stansted","country":"GB"},"MAN":{"ar":"مانشستر","en":"Manchester","country":"GB"},"BHX":{"ar":"برمنغهام","en":"Birmingham","country":"GB"},"GLA":{"ar":"غلاسكو","en":"Glasgow","country":"GB"},"CDG":{"ar":"باريس شارل ديغول","en":"Paris CDG","country":"FR"},"ORY":{"ar":"باريس أورلي","en":"Paris Orly","country":"FR"},"NCE":{"ar":"نيس","en":"Nice","country":"FR"},"MRS":{"ar":"مرسيليا","en":"Marseille","country":"FR"},"FRA":{"ar":"فرانكفورت","en":"Frankfurt","country":"DE"},"MUC":{"ar":"ميونخ","en":"Munich","country":"DE"},"BER":{"ar":"برلين","en":"Berlin","country":"DE"},"DUS":{"ar":"دوسلدورف","en":"Dusseldorf","country":"DE"},"HAM":{"ar":"هامبورغ","en":"Hamburg","country":"DE"},"AMS":{"ar":"أمستردام","en":"Amsterdam","country":"NL"},"BRU":{"ar":"بروكسل","en":"Brussels","country":"BE"},"ZRH":{"ar":"زيوريخ","en":"Zurich","country":"CH"},"GVA":{"ar":"جنيف","en":"Geneva","country":"CH"},"VIE":{"ar":"فيينا","en":"Vienna","country":"AT"},"FCO":{"ar":"روما","en":"Rome","country":"IT"},"MXP":{"ar":"ميلانو مالبنسا","en":"Milan Malpensa","country":"IT"},"LIN":{"ar":"ميلانو لينات","en":"Milan Linate","country":"IT"},"MAD":{"ar":"مدريد","en":"Madrid","country":"ES"},"BCN":{"ar":"برشلونة","en":"Barcelona","country":"ES"},"ATH":{"ar":"أثينا","en":"Athens","country":"GR"},"SKG":{"ar":"تسالونيكي","en":"Thessaloniki","country":"GR"},"CPH":{"ar":"كوبنهاغن","en":"Copenhagen","country":"DK"},"ARN":{"ar":"ستوكهولم","en":"Stockholm","country":"SE"},"OSL":{"ar":"أوسلو","en":"Oslo","country":"NO"},"HEL":{"ar":"هلسنكي","en":"Helsinki","country":"FI"},"WAW":{"ar":"وارسو","en":"Warsaw","country":"PL"},"PRG":{"ar":"براغ","en":"Prague","country":"CZ"},"BUD":{"ar":"بودابست","en":"Budapest","country":"HU"},"OTP":{"ar":"بوخارست","en":"Bucharest","country":"RO"},"SOF":{"ar":"صوفيا","en":"Sofia","country":"BG"},"SVO":{"ar":"موسكو شيريميتيفو","en":"Moscow Sheremetyevo","country":"RU"},"DME":{"ar":"موسكو دوموديدوفو","en":"Moscow Domodedovo","country":"RU"},"LED":{"ar":"سانت بطرسبرغ","en":"St. Petersburg","country":"RU"},"GYD":{"ar":"باكو","en":"Baku","country":"AZ"},"TBS":{"ar":"تبليسي","en":"Tbilisi","country":"GE"},"EVN":{"ar":"يريفان","en":"Yerevan","country":"AM"},"TAS":{"ar":"طشقند","en":"Tashkent","country":"UZ"},"ALA":{"ar":"ألماتي","en":"Almaty","country":"KZ"},"NQZ":{"ar":"أستانا","en":"Astana","country":"KZ"},"BOM":{"ar":"مومباي","en":"Mumbai","country":"IN"},"DEL":{"ar":"دلهي","en":"Delhi","country":"IN"},"BLR":{"ar":"بنغالور","en":"Bengaluru","country":"IN"},"MAA":{"ar":"تشيناي","en":"Chennai","country":"IN"},"HYD":{"ar":"حيدراباد","en":"Hyderabad","country":"IN"},"CCJ":{"ar":"كاليكوت","en":"Kozhikode","country":"IN"},"COK":{"ar":"كوتشي","en":"Kochi","country":"IN"},"AMD":{"ar":"أحمداباد","en":"Ahmedabad","country":"IN"},"CCU":{"ar":"كولكاتا","en":"Kolkata","country":"IN"},"TRV":{"ar":"تيروفانانتابورام","en":"Thiruvananthapuram","country":"IN"},"IXE":{"ar":"مانغالور","en":"Mangaluru","country":"IN"},"GOI":{"ar":"غوا","en":"Goa","country":"IN"},"PNQ":{"ar":"بونا","en":"Pune","country":"IN"},"NAG":{"ar":"ناغبور","en":"Nagpur","country":"IN"},"JAI":{"ar":"جيبور","en":"Jaipur","country":"IN"},"LKO":{"ar":"لاكناو","en":"Lucknow","country":"IN"},"PAT":{"ar":"باتنا","en":"Patna","country":"IN"},"GAU":{"ar":"غواهاتي","en":"Guwahati","country":"IN"},"IXC":{"ar":"شانديغار","en":"Chandigarh","country":"IN"},"ATQ":{"ar":"أمريتسار","en":"Amritsar","country":"IN"},"SXR":{"ar":"سرينغار","en":"Srinagar","country":"IN"},"IDR":{"ar":"إندور","en":"Indore","country":"IN"},"IXJ":{"ar":"جامو","en":"Jammu","country":"IN"},"VNS":{"ar":"فاراناسي","en":"Varanasi","country":"IN"},"IXR":{"ar":"رانشي","en":"Ranchi","country":"IN"},"GOP":{"ar":"غوراكبور","en":"Gorakhpur","country":"IN"},"BBI":{"ar":"بوبانيسوار","en":"Bhubaneswar","country":"IN"},"KHI":{"ar":"كراتشي","en":"Karachi","country":"PK"},"LHE":{"ar":"لاهور","en":"Lahore","country":"PK"},"ISB":{"ar":"إسلام آباد","en":"Islamabad","country":"PK"},"PEW":{"ar":"بيشاور","en":"Peshawar","country":"PK"},"MUX":{"ar":"ملتان","en":"Multan","country":"PK"},"SKT":{"ar":"سيالكوت","en":"Sialkot","country":"PK"},"DAC":{"ar":"دكا","en":"Dhaka","country":"BD"},"KTM":{"ar":"كاتماندو","en":"Kathmandu","country":"NP"},"MLE":{"ar":"ماليه","en":"Male","country":"MV"},"CMB":{"ar":"كولومبو","en":"Colombo","country":"LK"},"KUL":{"ar":"كوالالمبور","en":"Kuala Lumpur","country":"MY"},"SIN":{"ar":"سنغافورة","en":"Singapore","country":"SG"},"BKK":{"ar":"بانكوك سوفارنابهومي","en":"Bangkok Suvarnabhumi","country":"TH"},"DMK":{"ar":"بانكوك دون مواينغ","en":"Bangkok Don Mueang","country":"TH"},"CNX":{"ar":"شيانغ ماي","en":"Chiang Mai","country":"TH"},"HKT":{"ar":"فوكيت","en":"Phuket","country":"TH"},"CGK":{"ar":"جاكرتا","en":"Jakarta","country":"ID"},"DPS":{"ar":"بالي","en":"Bali","country":"ID"},"SUB":{"ar":"سورابايا","en":"Surabaya","country":"ID"},"MNL":{"ar":"مانيلا","en":"Manila","country":"PH"},"CEB":{"ar":"سيبو","en":"Cebu","country":"PH"},"SGN":{"ar":"هوشي مينه","en":"Ho Chi Minh City","country":"VN"},"HAN":{"ar":"هانوي","en":"Hanoi","country":"VN"},"DAD":{"ar":"دا نانغ","en":"Da Nang","country":"VN"},"PNH":{"ar":"بنوم بنه","en":"Phnom Penh","country":"KH"},"REP":{"ar":"سيام ريب","en":"Siem Reap","country":"KH"},"RGN":{"ar":"يانغون","en":"Yangon","country":"MM"},"HKG":{"ar":"هونغ كونغ","en":"Hong Kong","country":"HK"},"PEK":{"ar":"بكين","en":"Beijing","country":"CN"},"PVG":{"ar":"شنغهاي بودونغ","en":"Shanghai Pudong","country":"CN"},"SHA":{"ar":"شنغهاي هونقياو","en":"Shanghai Hongqiao","country":"CN"},"CAN":{"ar":"غوانغتشو","en":"Guangzhou","country":"CN"},"SZX":{"ar":"شنزن","en":"Shenzhen","country":"CN"},"CTU":{"ar":"تشنغدو","en":"Chengdu","country":"CN"},"XIY":{"ar":"شيان","en":"Xi'an","country":"CN"},"TPE":{"ar":"تايبيه","en":"Taipei","country":"TW"},"KHH":{"ar":"كاوهسيونغ","en":"Kaohsiung","country":"TW"},"ICN":{"ar":"سيول إنتشون","en":"Seoul Incheon","country":"KR"},"GMP":{"ar":"سيول غيمبو","en":"Seoul Gimpo","country":"KR"},"PUS":{"ar":"بوسان","en":"Busan","country":"KR"},"NRT":{"ar":"طوكيو ناريتا","en":"Tokyo Narita","country":"JP"},"HND":{"ar":"طوكيو هانيدا","en":"Tokyo Haneda","country":"JP"},"KIX":{"ar":"أوساكا","en":"Osaka Kansai","country":"JP"},"NGO":{"ar":"ناغويا","en":"Nagoya","country":"JP"},"CTS":{"ar":"سابورو","en":"Sapporo","country":"JP"},"CMN":{"ar":"الدار البيضاء","en":"Casablanca","country":"MA"},"RAK":{"ar":"مراكش","en":"Marrakech","country":"MA"},"AGA":{"ar":"أكادير","en":"Agadir","country":"MA"},"FEZ":{"ar":"فاس","en":"Fez","country":"MA"},"TNG":{"ar":"طنجة","en":"Tangier","country":"MA"},"OZZ":{"ar":"ورزازات","en":"Ouarzazate","country":"MA"},"TUN":{"ar":"تونس","en":"Tunis","country":"TN"},"SFA":{"ar":"صفاقس","en":"Sfax","country":"TN"},"DJE":{"ar":"جربة","en":"Djerba","country":"TN"},"ALG":{"ar":"الجزائر","en":"Algiers","country":"DZ"},"ORN":{"ar":"وهران","en":"Oran","country":"DZ"},"CZL":{"ar":"قسنطينة","en":"Constantine","country":"DZ"},"TRI":{"ar":"طرابلس","en":"Tripoli","country":"LY"},"MJI":{"ar":"مصراتة","en":"Misrata","country":"LY"},"BEN":{"ar":"بنغازي","en":"Benghazi","country":"LY"},"ADD":{"ar":"أديس أبابا","en":"Addis Ababa","country":"ET"},"NBO":{"ar":"نيروبي","en":"Nairobi","country":"KE"},"MBA":{"ar":"مومباسا","en":"Mombasa","country":"KE"},"DAR":{"ar":"دار السلام","en":"Dar es Salaam","country":"TZ"},"ZNZ":{"ar":"زنجبار","en":"Zanzibar","country":"TZ"},"JNB":{"ar":"جوهانسبرغ","en":"Johannesburg","country":"ZA"},"CPT":{"ar":"كيب تاون","en":"Cape Town","country":"ZA"},"DUR":{"ar":"دوربان","en":"Durban","country":"ZA"},"ACC":{"ar":"أكرا","en":"Accra","country":"GH"},"LOS":{"ar":"لاغوس","en":"Lagos","country":"NG"},"ABV":{"ar":"أبوجا","en":"Abuja","country":"NG"},"DKR":{"ar":"داكار","en":"Dakar","country":"SN"},"COO":{"ar":"كوتونو","en":"Cotonou","country":"BJ"},"KGL":{"ar":"كيغالي","en":"Kigali","country":"RW"},"EBB":{"ar":"كمبالا","en":"Kampala","country":"UG"},"JFK":{"ar":"نيويورك كيندي","en":"New York JFK","country":"US"},"EWR":{"ar":"نيويورك نيوارك","en":"New York Newark","country":"US"},"LGA":{"ar":"نيويورك لاغوارديا","en":"New York LaGuardia","country":"US"},"LAX":{"ar":"لوس أنجلوس","en":"Los Angeles","country":"US"},"ORD":{"ar":"شيكاغو أوهير","en":"Chicago O'Hare","country":"US"},"MDW":{"ar":"شيكاغو ميدواي","en":"Chicago Midway","country":"US"},"ATL":{"ar":"أتلانتا","en":"Atlanta","country":"US"},"DFW":{"ar":"دالاس فورت ورث","en":"Dallas Fort Worth","country":"US"},"MIA":{"ar":"ميامي","en":"Miami","country":"US"},"IAH":{"ar":"هيوستن","en":"Houston","country":"US"},"SFO":{"ar":"سان فرانسيسكو","en":"San Francisco","country":"US"},"BOS":{"ar":"بوسطن","en":"Boston","country":"US"},"SEA":{"ar":"سياتل","en":"Seattle","country":"US"},"LAS":{"ar":"لاس فيغاس","en":"Las Vegas","country":"US"},"DEN":{"ar":"دنفر","en":"Denver","country":"US"},"MCO":{"ar":"أورلاندو","en":"Orlando","country":"US"},"IAD":{"ar":"واشنطن دلاس","en":"Washington Dulles","country":"US"},"DCA":{"ar":"واشنطن ريغان","en":"Washington Reagan","country":"US"},"MSP":{"ar":"مينيابوليس","en":"Minneapolis","country":"US"},"DTW":{"ar":"ديترويت","en":"Detroit","country":"US"},"CLT":{"ar":"شارلوت","en":"Charlotte","country":"US"},"PHX":{"ar":"فينيكس","en":"Phoenix","country":"US"},"YYZ":{"ar":"تورنتو","en":"Toronto","country":"CA"},"YVR":{"ar":"فانكوفر","en":"Vancouver","country":"CA"},"YUL":{"ar":"مونتريال","en":"Montreal","country":"CA"},"MEX":{"ar":"مكسيكو سيتي","en":"Mexico City","country":"MX"},"CUN":{"ar":"كانكون","en":"Cancun","country":"MX"},"BOG":{"ar":"بوغوتا","en":"Bogota","country":"CO"},"LIM":{"ar":"ليما","en":"Lima","country":"PE"},"SCL":{"ar":"سانتياغو","en":"Santiago","country":"CL"},"EZE":{"ar":"بوينس آيرس","en":"Buenos Aires","country":"AR"},"GRU":{"ar":"ساو باولو","en":"São Paulo","country":"BR"},"GIG":{"ar":"ريو دي جانيرو","en":"Rio de Janeiro","country":"BR"},"BSB":{"ar":"برازيليا","en":"Brasilia","country":"BR"},"SYD":{"ar":"سيدني","en":"Sydney","country":"AU"},"MEL":{"ar":"ملبورن","en":"Melbourne","country":"AU"},"BNE":{"ar":"بريسبان","en":"Brisbane","country":"AU"},"PER":{"ar":"بيرث","en":"Perth","country":"AU"},"AKL":{"ar":"أوكلاند","en":"Auckland","country":"NZ"},"WLG":{"ar":"ويلينغتون","en":"Wellington","country":"NZ"},"CHC":{"ar":"كرايستشيرش","en":"Christchurch","country":"NZ"}};
-const _airDB={"SV":{"ar":"الخطوط السعودية","en":"Saudia"},"F3":{"ar":"طيران أديل","en":"Flyadeal"},"XY":{"ar":"طيران ناس","en":"flynas"},"G9":{"ar":"العربية للطيران","en":"Air Arabia"},"E5":{"ar":"العربية للطيران مصر","en":"Air Arabia Egypt"},"3O":{"ar":"العربية للطيران المغرب","en":"Air Arabia Maroc"},"3L":{"ar":"العربية للطيران المغرب","en":"Air Arabia Maroc"},"FZ":{"ar":"فلاي دبي","en":"Flydubai"},"J9":{"ar":"طيران الجزيرة","en":"Jazeera Airways"},"OV":{"ar":"طيران السلام","en":"SalamAir"},"WY":{"ar":"عُمانية","en":"Oman Air"},"GF":{"ar":"طيران الخليج","en":"Gulf Air"},"KU":{"ar":"الخطوط الكويتية","en":"Kuwait Airways"},"QR":{"ar":"الخطوط القطرية","en":"Qatar Airways"},"EK":{"ar":"طيران الإمارات","en":"Emirates"},"EY":{"ar":"الاتحاد","en":"Etihad Airways"},"WZ":{"ar":"ويز إير أبوظبي","en":"Wizz Air Abu Dhabi"},"MS":{"ar":"مصر للطيران","en":"EgyptAir"},"SM":{"ar":"إير كايرو","en":"Air Cairo"},"NP":{"ar":"النيل للطيران","en":"Nile Air"},"UJ":{"ar":"المصرية العالمية","en":"AlMasria Universal"},"AT":{"ar":"المغربية","en":"Royal Air Maroc"},"TU":{"ar":"تونسية","en":"Tunisair"},"AH":{"ar":"الجزائرية","en":"Air Algérie"},"8U":{"ar":"أفريكيا","en":"Afriqiyah Airways"},"ME":{"ar":"طيران الشرق الأوسط","en":"Middle East Airlines"},"RJ":{"ar":"الملكية الأردنية","en":"Royal Jordanian"},"IY":{"ar":"اليمنية","en":"Yemenia"},"J2":{"ar":"أذربيجان","en":"Azerbaijan Airlines"},"6E":{"ar":"إنديغو","en":"IndiGo"},"AI":{"ar":"إير إنديا","en":"Air India"},"UK":{"ar":"فيستارا","en":"Vistara"},"IX":{"ar":"إير إنديا إكسبريس","en":"Air India Express"},"SG":{"ar":"سبايسجيت","en":"SpiceJet"},"I5":{"ar":"إير آسيا إنديا","en":"AirAsia India"},"QP":{"ar":"أكاسا إير","en":"Akasa Air"},"G8":{"ar":"غو فيرست","en":"Go First"},"PK":{"ar":"باكستان إنترناشيونال","en":"PIA"},"PA":{"ar":"إير بلو","en":"Airblue"},"AK":{"ar":"إير آسيا","en":"AirAsia"},"FD":{"ar":"إير آسيا تايلاند","en":"Thai AirAsia"},"QZ":{"ar":"إير آسيا إندونيسيا","en":"Indonesia AirAsia"},"Z2":{"ar":"إير آسيا فلبين","en":"Philippines AirAsia"},"D7":{"ar":"إير آسيا إكس","en":"AirAsia X"},"MH":{"ar":"ماليزيا","en":"Malaysia Airlines"},"SQ":{"ar":"سنغافورة","en":"Singapore Airlines"},"MI":{"ar":"سيلك إير","en":"SilkAir"},"TR":{"ar":"سكوت","en":"Scoot"},"TG":{"ar":"تايلاند","en":"Thai Airways"},"WE":{"ar":"تايلاند سمايل","en":"Thai Smile"},"SL":{"ar":"تايلاند ليون","en":"Thai Lion Air"},"VJ":{"ar":"فيت جيت","en":"VietJet"},"VN":{"ar":"فيتنام","en":"Vietnam Airlines"},"PR":{"ar":"فلبين","en":"Philippine Airlines"},"5J":{"ar":"سيبو باسيفيك","en":"Cebu Pacific"},"GA":{"ar":"غارودا","en":"Garuda Indonesia"},"JT":{"ar":"ليون إير","en":"Lion Air"},"ID":{"ar":"باتيك","en":"Batik Air"},"BI":{"ar":"رويال برونيي","en":"Royal Brunei"},"CX":{"ar":"كاثاي باسيفيك","en":"Cathay Pacific"},"UO":{"ar":"هونغ كونغ إكسبريس","en":"HK Express"},"JL":{"ar":"جابان إيرلاينز","en":"Japan Airlines"},"NH":{"ar":"أول نيبون","en":"ANA"},"MM":{"ar":"بيتش","en":"Peach Aviation"},"GK":{"ar":"جيت ستار جابان","en":"Jetstar Japan"},"BC":{"ar":"سكاي مارك","en":"Skymark"},"KE":{"ar":"كوريان إيرلاينز","en":"Korean Air"},"OZ":{"ar":"أسيانا","en":"Asiana Airlines"},"LJ":{"ar":"جين إير","en":"Jin Air"},"BX":{"ar":"إير بوسان","en":"Air Busan"},"TW":{"ar":"تي-واي","en":"T'way Air"},"CI":{"ar":"تشاينا","en":"China Airlines"},"BR":{"ar":"إيفا","en":"EVA Air"},"MU":{"ar":"تشاينا إيسترن","en":"China Eastern"},"CZ":{"ar":"تشاينا ساوذرن","en":"China Southern"},"CA":{"ar":"إير تشاينا","en":"Air China"},"HU":{"ar":"هاينان","en":"Hainan Airlines"},"MF":{"ar":"شيامن","en":"Xiamen Airlines"},"ZH":{"ar":"شنزن","en":"Shenzhen Airlines"},"UL":{"ar":"سيريلانكان","en":"SriLankan Airlines"},"BG":{"ar":"بيمان","en":"Biman Bangladesh"},"RA":{"ar":"نيبال","en":"Nepal Airlines"},"KC":{"ar":"إير أستانا","en":"Air Astana"},"HY":{"ar":"إير أوزبك","en":"Uzbekistan Airways"},"ET":{"ar":"إثيوبيا","en":"Ethiopian Airlines"},"KQ":{"ar":"كينيا","en":"Kenya Airways"},"SA":{"ar":"ساوث أفريكان","en":"South African Airways"},"WB":{"ar":"رواندا","en":"RwandAir"},"J7":{"ar":"أفريكيا","en":"Afriqiyah Airways"},"AF":{"ar":"الخطوط الفرنسية","en":"Air France"},"BA":{"ar":"بريتيش","en":"British Airways"},"LH":{"ar":"لوفتهانزا","en":"Lufthansa"},"KL":{"ar":"كيه إل إم","en":"KLM"},"IB":{"ar":"إيبيريا","en":"Iberia"},"LX":{"ar":"سويس","en":"Swiss"},"OS":{"ar":"أوستريان","en":"Austrian"},"SK":{"ar":"سكانديناف","en":"SAS"},"AY":{"ar":"فين إير","en":"Finnair"},"AZ":{"ar":"إيطاليا","en":"ITA Airways"},"SN":{"ar":"بروكسيل","en":"Brussels Airlines"},"TP":{"ar":"تاب","en":"TAP Air Portugal"},"LO":{"ar":"لوت","en":"LOT Polish Airlines"},"BT":{"ar":"إير بالتيك","en":"airBaltic"},"OA":{"ar":"أولمبيك","en":"Olympic Air"},"A3":{"ar":"إيجيان","en":"Aegean Airlines"},"RO":{"ar":"تارام","en":"TAROM"},"JU":{"ar":"صربيا","en":"Air Serbia"},"FB":{"ar":"إير صوفيا","en":"Bulgaria Air"},"WF":{"ar":"وايدرو","en":"Widerøe"},"EI":{"ar":"إير لينغوس","en":"Aer Lingus"},"FI":{"ar":"أيسلاند","en":"Icelandair"},"TK":{"ar":"الخطوط التركية","en":"Turkish Airlines"},"PC":{"ar":"بيغاسوس","en":"Pegasus"},"XQ":{"ar":"سان إكسبريس","en":"SunExpress"},"U2":{"ar":"إيزي جيت","en":"easyJet"},"FR":{"ar":"رايان إير","en":"Ryanair"},"W6":{"ar":"ويز إير","en":"Wizz Air"},"VY":{"ar":"فيولينغ","en":"Vueling"},"LS":{"ar":"جيت2","en":"Jet2"},"HV":{"ar":"ترانسافيا","en":"Transavia"},"TO":{"ar":"ترانسافيا فرنسا","en":"Transavia France"},"SU":{"ar":"أيروفلوت","en":"Aeroflot"},"S7":{"ar":"سيبيريا","en":"S7 Airlines"},"U6":{"ar":"يورال","en":"Ural Airlines"},"UT":{"ar":"يو تي إير","en":"UTair"},"PS":{"ar":"أوكرانيا","en":"Ukraine International"},"IR":{"ar":"إير إيران","en":"Iran Air"},"EP":{"ar":"إيران أسمان","en":"Iran Aseman"},"W5":{"ar":"ماهان","en":"Mahan Air"},"AA":{"ar":"أمريكان","en":"American Airlines"},"UA":{"ar":"يونايتد","en":"United Airlines"},"DL":{"ar":"دلتا","en":"Delta"},"WN":{"ar":"ساوثويست","en":"Southwest"},"B6":{"ar":"جيت بلو","en":"JetBlue"},"AS":{"ar":"ألاسكا","en":"Alaska Airlines"},"AC":{"ar":"إير كندا","en":"Air Canada"},"WS":{"ar":"ويست جيت","en":"WestJet"},"F8":{"ar":"فرونتير","en":"Frontier Airlines"},"NK":{"ar":"سبيريت","en":"Spirit Airlines"},"G4":{"ar":"أليجيانت","en":"Allegiant Air"},"HA":{"ar":"هاواي","en":"Hawaiian Airlines"},"LA":{"ar":"لاتام","en":"LATAM Airlines"},"G3":{"ar":"غول","en":"GOL Airlines"},"AD":{"ar":"أزول","en":"Azul"},"AV":{"ar":"أفيانكا","en":"Avianca"},"CM":{"ar":"كوبا","en":"Copa Airlines"},"AM":{"ar":"إيروميخيكو","en":"Aeroméxico"},"VO":{"ar":"فولاريس","en":"Volaris"},"QF":{"ar":"قانتاس","en":"Qantas"},"JQ":{"ar":"جيت ستار","en":"Jetstar"},"VA":{"ar":"فيرجن أستراليا","en":"Virgin Australia"},"NZ":{"ar":"نيوزيلاند","en":"Air New Zealand"},"FJ":{"ar":"فيجي","en":"Fiji Airways"},"NE":{"ar":"نسمه","en":"Nasma"}};
-const _saudiAirports=new Set(["RUH","JED","DMM","MED","TIF","AHB","GIZ","YNB","TUU","AJF","EAM","HOF","RAE","WAE","SHW","ABT","BHH","DWD","AKH","TUI","ULH","URY"]);
-const _cityToIATA={"riyadh":"RUH","jeddah":"JED","dammam":"DMM","madinah":"MED","medina":"MED","taif":"TIF","abha":"AHB","jazan":"GIZ","jizan":"GIZ","yanbu":"YNB","tabuk":"TUU","najran":"EAM","al-jouf":"AJF","al jouf":"AJF","dubai":"DXB","sharjah":"SHJ","abu dhabi":"AUH","doha":"DOH","bahrain":"BAH","manama":"BAH","kuwait":"KWI","kuwait city":"KWI","muscat":"MCT","salalah":"SLL","cairo":"CAI","alexandria":"HBE","hurghada":"HRG","sharm el sheikh":"SSH","luxor":"LXR","aswan":"ASW","sohag":"HMB","port said":"PSD","amman":"AMM","aqaba":"AQJ","beirut":"BEY","damascus":"DAM","aleppo":"ALP","baghdad":"BGW","basra":"BSR","najaf":"NJF","erbil":"EBL","istanbul":"IST","ankara":"ESB","antalya":"AYT","izmir":"ADB","tehran":"THR","mashhad":"MHD","shiraz":"SYZ","london":"LHR","manchester":"MAN","birmingham":"BHX","paris":"CDG","nice":"NCE","marseille":"MRS","frankfurt":"FRA","munich":"MUC","berlin":"BER","amsterdam":"AMS","brussels":"BRU","zurich":"ZRH","geneva":"GVA","vienna":"VIE","rome":"FCO","milan":"MXP","madrid":"MAD","barcelona":"BCN","athens":"ATH","tel aviv":"TLV","casablanca":"CMN","marrakech":"RAK","agadir":"AGA","tunis":"TUN","algiers":"ALG","tripoli":"TRI","addis ababa":"ADD","nairobi":"NBO","johannesburg":"JNB","cape town":"CPT","mumbai":"BOM","delhi":"DEL","bangalore":"BLR","bengaluru":"BLR","chennai":"MAA","hyderabad":"HYD","kolkata":"CCU","kochi":"COK","kozhikode":"CCJ","calicut":"CCJ","karachi":"KHI","lahore":"LHE","islamabad":"ISB","dhaka":"DAC","kathmandu":"KTM","male":"MLE","colombo":"CMB","kuala lumpur":"KUL","singapore":"SIN","bangkok":"BKK","jakarta":"CGK","bali":"DPS","manila":"MNL","ho chi minh":"SGN","hanoi":"HAN","hong kong":"HKG","beijing":"PEK","shanghai":"PVG","guangzhou":"CAN","seoul":"ICN","tokyo":"NRT","osaka":"KIX","taipei":"TPE","new york":"JFK","los angeles":"LAX","chicago":"ORD","dallas":"DFW","miami":"MIA","houston":"IAH","san francisco":"SFO","boston":"BOS","seattle":"SEA","las vegas":"LAS","denver":"DEN","orlando":"MCO","toronto":"YYZ","vancouver":"YVR","montreal":"YUL","sydney":"SYD","melbourne":"MEL","brisbane":"BNE","auckland":"AKL","الرياض":"RUH","جدة":"JED","الدمام":"DMM","المدينة":"MED","الطائف":"TIF","أبها":"AHB","جازان":"GIZ","ينبع":"YNB","تبوك":"TUU","نجران":"EAM","دبي":"DXB","الشارقة":"SHJ","أبوظبي":"AUH","الدوحة":"DOH","البحرين":"BAH","الكويت":"KWI","مسقط":"MCT","صلالة":"SLL","القاهرة":"CAI","الإسكندرية":"HBE","الغردقة":"HRG","شرم الشيخ":"SSH","الأقصر":"LXR","أسوان":"ASW","عمّان":"AMM","عمان":"AMM","بيروت":"BEY","دمشق":"DAM","حلب":"ALP","بغداد":"BGW","البصرة":"BSR","النجف":"NJF","أربيل":"EBL","إسطنبول":"IST","طهران":"THR","مشهد":"MHD","لندن":"LHR","باريس":"CDG","فرانكفورت":"FRA","أمستردام":"AMS","زيوريخ":"ZRH","روما":"FCO","مدريد":"MAD","برشلونة":"BCN","الدار البيضاء":"CMN","مراكش":"RAK","تونس":"TUN","الجزائر":"ALG","طرابلس":"TRI","أديس أبابا":"ADD","نيروبي":"NBO","مومباي":"BOM","دلهي":"DEL","بنغالور":"BLR","كراتشي":"KHI","لاهور":"LHE","إسلام آباد":"ISB","سنغافورة":"SIN","بانكوك":"BKK","كوالالمبور":"KUL","جاكرتا":"CGK","هونغ كونغ":"HKG","بكين":"PEK","شنغهاي":"PVG","سيول":"ICN","طوكيو":"NRT","نيويورك":"JFK","لوس أنجلوس":"LAX"};
+// ─── Airport / Airline databases — loaded from GitHub ────────────────
+// These are populated by _loadGithubDB() at startup; do NOT hardcode values here.
+let _airportMap = {};
+let _airDB      = {};
+let _saudiAirports = new Set();
+let _cityToIATA = {};
+let _dbReady    = false;           // true once the JSON is loaded
+let _dbLoadPromise = null;         // single shared promise
+
+const _GH_DB_URL =
+  'https://raw.githubusercontent.com/moh-rezk/GDS2/main/flight_data.json';
+
+function _loadGithubDB() {
+  if (_dbLoadPromise) return _dbLoadPromise;          // already in-flight / done
+  _dbLoadPromise = fetch(_GH_DB_URL, { cache: 'force-cache' })
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(data => {
+      // airports: {IATA: {ar, en, country}}
+      if (data.airports)    _airportMap    = data.airports;
+      // airlines: {IATA2: {ar, en}}
+      if (data.airlines)    _airDB         = data.airlines;
+      // saudiAirports: ["RUH","JED",...]
+      if (data.saudiAirports) _saudiAirports = new Set(data.saudiAirports);
+      // cityToIATA: {"riyadh":"RUH", ...}
+      if (data.cityToIATA)  _cityToIATA    = data.cityToIATA;
+      _dbReady = true;
+      console.log('[DB] loaded from GitHub — airports:', Object.keys(_airportMap).length,
+                  '| airlines:', Object.keys(_airDB).length);
+    })
+    .catch(err => {
+      console.warn('[DB] GitHub fetch failed, retrying once…', err);
+      // one silent retry after 2 s
+      return new Promise(res => setTimeout(res, 2000))
+        .then(() => fetch(_GH_DB_URL).then(r => r.json()))
+        .then(data => {
+          if (data.airports)    _airportMap    = data.airports;
+          if (data.airlines)    _airDB         = data.airlines;
+          if (data.saudiAirports) _saudiAirports = new Set(data.saudiAirports);
+          if (data.cityToIATA)  _cityToIATA    = data.cityToIATA;
+          _dbReady = true;
+          console.log('[DB] loaded on retry');
+        })
+        .catch(err2 => {
+          console.error('[DB] could not load database:', err2);
+          // leave maps empty — the rest of the code handles missing lookups gracefully
+        });
+    });
+  return _dbLoadPromise;
+}
+
+// Kick-off immediately so the DB is ready before the user uploads a ticket
+_loadGithubDB();
+
+// ─── month helpers (unchanged) ────────────────────────────────
 const _monthMapEn={jan:'JAN',feb:'FEB',mar:'MAR',apr:'APR',may:'MAY',jun:'JUN',jul:'JUL',aug:'AUG',sep:'SEP',oct:'OCT',nov:'NOV',dec:'DEC',january:'JAN',february:'FEB',march:'MAR',april:'APR',june:'JUN',july:'JUL',august:'AUG',september:'SEP',october:'OCT',november:'NOV',december:'DEC'};
 const _monthMapAr={'يناير':'JAN','فبراير':'FEB','مارس':'MAR','أبريل':'APR','مايو':'MAY','يونيو':'JUN','يوليو':'JUL','أغسطس':'AUG','سبتمبر':'SEP','أكتوبر':'OCT','نوفمبر':'NOV','ديسمبر':'DEC'};
 const _monthAr={JAN:'يناير',FEB:'فبراير',MAR:'مارس',APR:'أبريل',MAY:'مايو',JUN:'يونيو',JUL:'يوليو',AUG:'أغسطس',SEP:'سبتمبر',OCT:'أكتوبر',NOV:'نوفمبر',DEC:'ديسمبر'};
 function _numToMon(n){return['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][n-1]||'JAN';}
 function _extractDate(text){const yr=new Date().getFullYear().toString();let dm;dm=text.match(/(\d{4})-(\d{2})-(\d{2})/);if(dm)return{day:dm[3],mon:_numToMon(parseInt(dm[2])),year:dm[1]};dm=text.match(/(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,})\s+(\d{4})/);if(dm){const mo=_monthMapEn[dm[2].toLowerCase()]||_monthMapEn[dm[2].substring(0,3).toLowerCase()]||dm[2].substring(0,3).toUpperCase();return{day:dm[1].padStart(2,'0'),mon:mo,year:dm[3]};}dm=text.match(/([A-Za-z]{3,})\s+(\d{1,2})(?:st|nd|rd|th)?,?\s*(\d{4})/);if(dm){const mo=_monthMapEn[dm[1].toLowerCase()]||_monthMapEn[dm[1].substring(0,3).toLowerCase()]||dm[1].substring(0,3).toUpperCase();if(mo)return{day:dm[2].padStart(2,'0'),mon:mo,year:dm[3]};}for(const[k,v]of Object.entries(_monthMapAr)){const re=new RegExp('(\\d{1,2})\\s+'+k+'(?:\\s+(\\d{4}))?');const am=text.match(re);if(am)return{day:am[1].padStart(2,'0'),mon:v,year:am[2]||yr};}dm=text.match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);if(dm)return{day:dm[1].padStart(2,'0'),mon:_numToMon(parseInt(dm[2])),year:dm[3]};dm=text.match(/\b(\d{2})(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)(\d{2,4})?\b/i);if(dm){const y=dm[3]?(dm[3].length===2?'20'+dm[3]:dm[3]):yr;return{day:dm[1],mon:dm[2].toUpperCase(),year:y};}return{day:'??',mon:'???',year:yr};}
 function _extractAirline(text){const re=/(?:^|[\s,;(])([A-Z][A-Z0-9]|[0-9][A-Z])\s?[-\s]?\s?(\d{2,4})\b/g;let m;while((m=re.exec(text))!==null){const code=m[1].toUpperCase();if(_airDB[code])return{code,num:m[2]};}const re1b=/\b([A-Z0-9]{2})\s?[-]?\s?(\d{2,4})\b/g;re1b.lastIndex=0;while((m=re1b.exec(text))!==null){const code=m[1].toUpperCase();if(_airDB[code])return{code,num:m[2]};}const re2=/\b([A-Z]{2})\s?[-]?\s?(\d{2,4})\b/g;const skipCodes=new Set(['TO','AT','IN','OF','ON','BY','IS','DO','IT','AS','AN','OR','BE','IF','NO','SO','UP','GO','HE','WE','MY','US','AM','PM','RT','OW']);re2.lastIndex=0;while((m=re2.exec(text))!==null){const code=m[1].toUpperCase();if(!skipCodes.has(code))return{code,num:m[2]};}return{code:null,num:''};}
-function _extractAirports(text){const hits=[];const re1=/\(([A-Z]{3})\)/g;let m;while((m=re1.exec(text))!==null)if(_airportMap[m[1]])hits.push({code:m[1],idx:m.index});if(hits.length<2){const sw=new Set(['PDF','PNR','ADT','CHD','INF','MRS','THE','AND','FOR','NOT','FROM','OUT','INC','VAT','SAR','AED','USD','KWD','OMR','QAR','BHD','APR','AUG','SEP','OCT','NOV','DEC','JAN','FEB','MAR','MAY','JUN','JUL','DEP','ARR','MON','TUE','WED','THU','FRI','SAT','SUN','ECO','BUS','YES','ALL','VIA','AIR','JET','SKY','STATUS','OPEN']);const re2=/\b([A-Z]{3})\b/g;while((m=re2.exec(text))!==null)if(_airportMap[m[1]]&&!sw.has(m[1])&&!hits.find(h=>h.code===m[1]))hits.push({code:m[1],idx:m.index});}hits.sort((a,b)=>a.idx-b.idx);const seen=new Set();return hits.filter(h=>{if(seen.has(h.code))return false;seen.add(h.code);return true;});}
+function _extractAirports(text){
+    // ── PASS 1: explicit route patterns preserve order ──────────────
+    // "ORY to AGP", "CAI → DXB", "CAI->DXB", "ORY - AGP"
+    const routeRe=/\b([A-Z]{3})\s*(?:to|→|->|–|-)\s*([A-Z]{3})\b/g;
+    let m;const routePairs=[];
+    while((m=routeRe.exec(text))!==null){
+        const a=m[1],b=m[2];
+        if(_airportMap[a]&&_airportMap[b]&&a!==b)
+            routePairs.push({from:{code:a,idx:m.index},to:{code:b,idx:m.index+m[0].length}});
+    }
+    if(routePairs.length>0){
+        // Return the first pair's from+to in the correct order
+        const ordered=[];const seen=new Set();
+        for(const p of routePairs){
+            if(!seen.has(p.from.code)){seen.add(p.from.code);ordered.push(p.from);}
+            if(!seen.has(p.to.code)){seen.add(p.to.code);ordered.push(p.to);}
+        }
+        console.debug('[_extractAirports] route-pattern hits:',ordered.map(h=>h.code));
+        return ordered;
+    }
+    // ── PASS 2: airports in parentheses ────────────────────────────
+    const hits=[];
+    const re1=/\(([A-Z]{3})\)/g;
+    while((m=re1.exec(text))!==null)if(_airportMap[m[1]])hits.push({code:m[1],idx:m.index});
+    if(hits.length>=2){
+        hits.sort((a,b)=>a.idx-b.idx);
+        const seen=new Set();
+        const result=hits.filter(h=>{if(seen.has(h.code))return false;seen.add(h.code);return true;});
+        console.debug('[_extractAirports] paren hits:',result.map(h=>h.code));
+        return result;
+    }
+    // ── PASS 3: bare IATA codes (skip common stopwords) ────────────
+    const sw=new Set(['PDF','PNR','ADT','CHD','INF','MRS','THE','AND','FOR','NOT','FROM','OUT','INC','VAT',
+        'SAR','AED','USD','KWD','OMR','QAR','BHD','APR','AUG','SEP','OCT','NOV','DEC',
+        'JAN','FEB','MAR','MAY','JUN','JUL','DEP','ARR','MON','TUE','WED','THU','FRI',
+        'SAT','SUN','ECO','BUS','YES','ALL','VIA','AIR','JET','SKY','STATUS','OPEN',
+        'LCC','FSC','OAL','PNR','GDS','APD','TAX','FEE','FLY','PAX','REF','RES']);
+    const re2=/\b([A-Z]{3})\b/g;
+    while((m=re2.exec(text))!==null){
+        if(_airportMap[m[1]]&&!sw.has(m[1])&&!hits.find(h=>h.code===m[1]))
+            hits.push({code:m[1],idx:m.index});
+    }
+    hits.sort((a,b)=>a.idx-b.idx);
+    const seen2=new Set();
+    const result2=hits.filter(h=>{if(seen2.has(h.code))return false;seen2.add(h.code);return true;});
+    console.debug('[_extractAirports] bare hits:',result2.map(h=>h.code));
+    return result2;
+}
 const _PNR_STOPWORDS=new Set(['STATUS','ISSUED','OPENED','TICKET','BOOKED','FLIGHT','RETURN','DEPART','ARRIVE','INFANT','ADULTS','CHILDS','PLEASE','THANKS','SINCER','REGARD','ECONOM','BUSINE','PREMIU','NORMAL','DIRECT','CONNEC','ACTIVE','CLOSED','CANCEL','REFUND','CHANGE','REISSU','UPGRAD','ONHOLD','WAITLI','CONFIR']);
 // ── IMPROVED SINGLE/MULTI PNR DETECTION ──────────────────────
 // Multi-PNR = two distinct labeled PNR codes OR two 13-digit e-tickets with different airline prefixes
@@ -1218,9 +1381,187 @@ const _nameStopWords=new Set(['YOUR','FLIGHT','PLEASE','MAKE','SURE','CONFIRM','
 function _isValidPassengerName(raw){if(!raw)return false;const clean=raw.trim().toUpperCase();if(/\.{2,}$/.test(clean)||/…$/.test(clean))return false;if(clean.length<4||clean.length>52)return false;if(/\d/.test(clean))return false;if(/[^A-Z\s\-]/.test(clean))return false;const tokens=clean.split(/\s+/).filter(Boolean);if(tokens.length===0||tokens.length>5)return false;for(const tok of tokens)if(_nameStopWords.has(tok))return false;if(tokens.length===1&&tokens[0].length>20)return false;const letterCount=clean.replace(/[^A-Z]/g,'').length;if(letterCount<4)return false;if(tokens.length<2)return false;const longTokens=tokens.filter(t_=>t_.length>1);if(longTokens.length<2)return false;const avgTokenLen=tokens.reduce((s,t_)=>s+t_.length,0)/tokens.length;if(avgTokenLen<2.0)return false;return true;}
 function _cleanName(raw){return raw.trim().replace(/^(?:MR\.?|MRS?\.?|MS\.?|DR\.?|MISS\.?)\s+/i,'').replace(/\/+/g,' ').replace(/\s{2,}/g,' ').replace(/[^A-Z\s\-]/gi,'').trim();}
 
+// ─── ALMOSAFER PDF DEDICATED PARSER ──────────────────────────────────────
+function _isAlmosaferPDF(text){
+    // Almosafer e-tickets contain these signatures
+    return /almosafer|mosafer|A\d{12}/i.test(text) ||
+           /Airline\s+Reference\s*\(PNR\)|الرقم الخاص بشركة الطيران/i.test(text) ||
+           /e-Ticket\s*\/\s*Itinerary|التذكرة الإلكترونية/i.test(text);
+}
+
+function parseAlmosaferPDF(text){
+    console.debug('[parseAlmosaferPDF] detected Almosafer format');
+    const t2 = text.replace(/\r/g,'');
+    const tUP = t2.toUpperCase();
+    const flat = t2.replace(/\n+/g,' ').replace(/\s+/g,' ');
+
+    // ── PNR / Booking ID ──────────────────────────────────────────
+    let pnr = null, bookingId = null;
+    const pnrM = tUP.match(/AIRLINE\s+REFERENCE\s*\(PNR\)[:\s]*([A-Z0-9]{5,8})/);
+    if(pnrM) pnr = pnrM[1];
+    const bidM = text.match(/(?:Booking\s+ID(?:\s*\/\s*Almosafer\s+ID)?|Almosafer\s+ID)\s*\n?\s*([A-Z]\d{8,14})\b/i);
+    if(bidM) bookingId = bidM[1];
+    if(!pnr){ const m2 = tUP.match(/\b([A-Z]{6})\b/); if(m2&&!_PNR_STOPWORDS.has(m2[1])) pnr=m2[1]; }
+    console.debug('[parseAlmosaferPDF] PNR:', pnr, '| Booking ID:', bookingId);
+
+    // ── Passengers ────────────────────────────────────────────────
+    const paxNames=[], paxTypes=[];
+    const _paxTypeMap={ADULT:'adult',CHILD:'child',INFANT:'infant'};
+    function _pushPax2(name,typeStr){
+        const type=_paxTypeMap[(typeStr||'').toUpperCase()]||'adult';
+        if(_isValidPassengerName(name)&&!paxNames.includes(name)){
+            paxNames.push(name); paxTypes.push(type);
+        }
+    }
+    // Pattern: "Mr KHALID ALSULAIMAN (Adult)"
+    [...tUP.matchAll(/\b(?:MR\.?|MRS\.?|MS\.?|DR\.?|MISS\.?)\s+([A-Z]{1,25}(?:\s[A-Z]{1,25}){0,4})\s*\(\s*(ADULT|CHILD|INFANT)\s*\)/g)]
+        .forEach(m=>_pushPax2(_cleanName(m[1]),m[2]));
+    // Fallback: "NAME (Adult)"
+    if(paxNames.length===0)
+        [...tUP.matchAll(/\b([A-Z]{2,25}(?:\s[A-Z]{1,25}){1,4})\s*\(\s*(ADULT|CHILD|INFANT)\s*\)/g)]
+            .forEach(m=>_pushPax2(_cleanName(m[1]),m[2]));
+    console.debug('[parseAlmosaferPDF] passengers:', paxNames);
+
+    // ── Segment splitting ─────────────────────────────────────────
+    // Split on "Departure from X to Y" or "Return from X to Y" or Arabic equivalents
+    // Also split on numbered segments, or repeated date+airline blocks
+    const segSplitRe = /(?=(?:Departure|Depart|Return)\s+from\b|المغادرة\s+من|رحلة\s+العودة)/gi;
+    let rawSegs = t2.split(segSplitRe).filter(s=>s.trim().length>30);
+    if(rawSegs.length<1) rawSegs=[t2];
+    console.debug('[parseAlmosaferPDF] segment count after split:', rawSegs.length);
+
+    const structuredFlights=[];
+
+    rawSegs.forEach((seg,si)=>{
+        if(structuredFlights.length>=6) return;
+        const segFlat = seg.replace(/\n+/g,' ').replace(/\s+/g,' ');
+        console.debug(`[parseAlmosaferPDF] seg[${si}] first 120 chars:`, segFlat.substring(0,120));
+
+        // Direction
+        const isReturn = /^\s*Return\s+from\b/i.test(seg) || /^رحلة\s+العودة/i.test(seg.trim());
+        const direction = isReturn ? 'inbound' : 'outbound';
+        const id = isReturn ? 'IB' : 'OB';
+
+        // ── Airports: try header "Departure from CITY to CITY" first ───
+        // e.g. "Departure from Paris to Malaga" — then look for IATA codes
+        let fromCode=null, toCode=null;
+
+        // Try: "ORY to AGP" or "ORY → AGP" style explicit route
+        const routeM = segFlat.match(/\b([A-Z]{3})\s*(?:to|→|->)\s*([A-Z]{3})\b/i);
+        if(routeM && _airportMap[routeM[1].toUpperCase()] && _airportMap[routeM[2].toUpperCase()]){
+            fromCode = routeM[1].toUpperCase();
+            toCode   = routeM[2].toUpperCase();
+            console.debug(`[parseAlmosaferPDF] seg[${si}] route match: ${fromCode}→${toCode}`);
+        }
+
+        // Try: PNR line often says "ORY to AGP" on Almosafer
+        if(!fromCode){
+            const pnrRouteM = flat.match(/\b([A-Z]{3})\s+to\s+([A-Z]{3})\b/);
+            if(pnrRouteM && _airportMap[pnrRouteM[1]] && _airportMap[pnrRouteM[2]]){
+                fromCode = pnrRouteM[1]; toCode = pnrRouteM[2];
+                console.debug(`[parseAlmosaferPDF] seg[${si}] PNR-line route: ${fromCode}→${toCode}`);
+            }
+        }
+
+        // Fallback: _extractAirports on segment
+        if(!fromCode){
+            const ap = _extractAirports(segFlat);
+            if(ap.length>=2){ fromCode=ap[0].code; toCode=ap[ap.length-1].code; }
+            else {
+                console.debug(`[parseAlmosaferPDF] seg[${si}] REJECTED – <2 airports found:`, ap.map(a=>a.code));
+                return;
+            }
+        }
+
+        // ── Airline & Flight Number ────────────────────────────────
+        // Almosafer: "VY-8171" or "VY 8171" or "VY8171"
+        let airline = _extractAirline(segFlat);
+        if(!airline.code) airline = _extractAirline(seg);
+        console.debug(`[parseAlmosaferPDF] seg[${si}] airline:`, airline);
+
+        // ── Date ──────────────────────────────────────────────────
+        const d = _extractDate(segFlat);
+        const dateAr = d.day!=='??'?`${parseInt(d.day)} ${_monthAr[d.mon]||d.mon} ${d.year}`:null;
+        const dateEn = d.day!=='??'?`${parseInt(d.day)} ${d.mon} ${d.year}`:null;
+
+        // ── Times ─────────────────────────────────────────────────
+        const segTimes=[...segFlat.matchAll(/\b([01]?\d|2[0-3]):[0-5]\d(?:\s*[AaPp][Mm])?\b/g)].map(m=>m[0].trim());
+
+        // ── Cabin class ───────────────────────────────────────────
+        const cabinM = segFlat.match(/\b(Economy|Business|First|Premium)\b/i);
+        const cabin = cabinM ? cabinM[1] : null;
+
+        console.debug(`[parseAlmosaferPDF] seg[${si}] → ${fromCode}→${toCode} | fn:${airline.code}-${airline.num} | date:${dateEn} | times:`, segTimes);
+
+        structuredFlights.push({
+            id, direction,
+            flightNumber: airline.code&&airline.num ? `${airline.code}-${airline.num}` : null,
+            airlineCode: airline.code,
+            airlineEn: airline.code?(_airDB[airline.code]?.en||airline.code):null,
+            airlineAr: airline.code?(_airDB[airline.code]?.ar||airline.code):null,
+            from: fromCode, fromAr: _airportMap[fromCode]?.ar||fromCode, fromEn: _airportMap[fromCode]?.en||fromCode,
+            to:   toCode,   toAr:   _airportMap[toCode]?.ar||toCode,     toEn:   _airportMap[toCode]?.en||toCode,
+            date: dateEn, dateAr,
+            departureTime: segTimes[0]||null,
+            arrivalTime:   segTimes[1]||null,
+            cabin
+        });
+    });
+
+    const ticketNums=[...flat.toUpperCase().matchAll(/\b(\d{13})\b/g)].map(m=>m[1]);
+
+    // ── Drop preamble segments: keep only flights with at least a date OR departure time OR airline ──
+    const qualifiedFlights = structuredFlights.filter(f => f.date || f.departureTime || f.airlineCode);
+    // If filtering removed everything, fall back to whatever we have
+    const finalFlights = qualifiedFlights.length > 0 ? qualifiedFlights : structuredFlights;
+    // Dedup by from+to: if two segments have same route, keep the one with more data
+    const routeSeen = new Map();
+    const dedupedFlights = [];
+    for(const f of finalFlights){
+        const key = f.from + '-' + f.to + '-' + f.direction;
+        if(!routeSeen.has(key)){
+            routeSeen.set(key, f);
+            dedupedFlights.push(f);
+        } else {
+            // Replace if current has more data
+            const prev = routeSeen.get(key);
+            const prevScore = (prev.date?1:0)+(prev.departureTime?1:0)+(prev.airlineCode?1:0);
+            const curScore  = (f.date?1:0)+(f.departureTime?1:0)+(f.airlineCode?1:0);
+            if(curScore > prevScore){
+                const idx = dedupedFlights.indexOf(prev);
+                dedupedFlights[idx] = f;
+                routeSeen.set(key, f);
+            }
+        }
+    }
+
+    const isRT = dedupedFlights.some(f=>f.direction==='inbound');
+    console.debug('[parseAlmosaferPDF] final flights:', dedupedFlights.length, '(after dedup) | RT:', isRT);
+
+    return{
+        pnr, pnr2: bookingId||null, hasMultiPNR: false,
+        ticketNumbers: ticketNums,
+        passengers: paxNames, passengerTypes: paxTypes,
+        adultCount: paxTypes.filter(t=>t==='adult').length || paxNames.length,
+        flights: dedupedFlights,
+        routeType: isRT?'RT':'OW',
+        paxCount: paxNames.length||1,
+        _source: 'almosafer'
+    };
+}
+
+// ─── MAIN TICKET TEXT PARSER ──────────────────────────────────────────────
 function parseTicketText(text){
     const t2=text.replace(/[ \t]+/g,' ').replace(/\r/g,'');
     const tUP=t2.toUpperCase();const t2flat=t2.replace(/\n+/g,' ').replace(/\s+/g,' ');
+
+    // ── Route to Almosafer dedicated parser ───────────────────────
+    if(_isAlmosaferPDF(text)){
+        console.debug('[parseTicketText] routing to parseAlmosaferPDF');
+        return parseAlmosaferPDF(text);
+    }
+    console.debug('[parseTicketText] using generic GDS parser');
+
     const _pnrDetect=_detectPnrType(text);const hasMultiPNR=_pnrDetect.hasMulti;const pnr=_pnrDetect.pnrs[0]||(_extractAllPNRs(tUP)[0]||null);const pnr2=_pnrDetect.pnrs[1]||(_extractAllPNRs(tUP)[1]||null);
     const ticketNums=[...t2flat.toUpperCase().matchAll(/\b(\d{13})\b/g)].map(m=>m[1]);
     const times=[...t2flat.matchAll(/\b([01]?\d|2[0-3]):[0-5]\d(?:\s*[AaPp][Mm])?\b/g)].map(m=>m[0].trim());
@@ -1236,14 +1577,31 @@ function parseTicketText(text){
     if(paxNames.length===0)[...tUP.matchAll(/\b([A-Z]{2,25})\/([A-Z]{2,25}(?:\s[A-Z]{2,20})?)\b/g)].forEach(m=>_pushPax(_cleanName(`${m[1]} ${m[2]}`),'ADT'));
     if(paxNames.length===0)[...tUP.matchAll(/(?:TRAVELL?ER|PASSENGER)[:\s]+([A-Z]{2,25}(?:\s[A-Z]{2,25}){1,3})\s*(?:\(|$)/g)].forEach(m=>_pushPax(_cleanName(m[1]),'ADT'));
     paxNames=paxNames.slice(0,9);paxTypes=paxTypes.slice(0,9);adultCount=adultCount||paxNames.length;
-    const segHeaderRe=/(?=\b(?:Departure\s+from|Return\s+from|المغادرة\s+من|رحلة\s+العودة)\b)/gi;
-    let rawSegs=t2.split(segHeaderRe).filter(s=>s.trim().length>30);if(rawSegs.length<1)rawSegs=[t2];
+
+    // ── Segment splitting: broad pattern covers more variations ───
+    // Covers: "Departure from", "Depart from", "Return from", "From", Arabic equivalents
+    const segHeaderRe=/(?=\b(?:Depart(?:ure)?\s+from|Return\s+from|From\s+[A-Z]|المغادرة\s+من|رحلة\s+العودة)\b)/gi;
+    let rawSegs=t2.split(segHeaderRe).filter(s=>s.trim().length>30);
+    if(rawSegs.length<1){
+        // Last-resort: split on repeated date+time blocks (multi-segment GDS)
+        rawSegs=[t2];
+        console.debug('[parseTicketText] segHeaderRe found 0 splits, using full text');
+    } else {
+        console.debug('[parseTicketText] segHeaderRe splits:', rawSegs.length);
+    }
+
     const structuredFlights=[];let obCount=0,ibCount=0;
-    rawSegs.forEach(seg=>{
+    rawSegs.forEach((seg,si)=>{
         if(structuredFlights.length>=6)return;
-        const segFlat=seg.replace(/\n+/g,' ');const isReturn=/^\s*Return\s+from\b/i.test(seg);
+        const segFlat=seg.replace(/\n+/g,' ');
+        const isReturn=/^\s*Return\s+from\b/i.test(seg);
         const direction=isReturn?'inbound':'outbound';const id=isReturn?'IB':'OB';
-        const airports=_extractAirports(segFlat);if(airports.length<2)return;
+        console.debug(`[parseTicketText] seg[${si}] dir:${direction} | first 80:`, segFlat.substring(0,80));
+        const airports=_extractAirports(segFlat);
+        if(airports.length<2){
+            console.debug(`[parseTicketText] seg[${si}] REJECTED – airports:`, airports.map(a=>a.code));
+            return;
+        }
         let airline=_extractAirline(segFlat);if(!airline.code)airline=_extractAirline(seg);
         const d=_extractDate(segFlat);
         const segTimes=[...segFlat.matchAll(/\b([01]?\d|2[0-3]):[0-5]\d(?:\s*[AaPp][Mm])?\b/g)].map(m=>m[0].trim());
@@ -1252,9 +1610,20 @@ function parseTicketText(text){
         const fromCode=airports[0].code;const toCode=airports[airports.length-1].code;
         if(direction==='outbound'&&obCount>0)return;if(direction==='inbound'&&ibCount>0)return;
         if(direction==='outbound')obCount++;else ibCount++;
+        console.debug(`[parseTicketText] seg[${si}] → ${fromCode}→${toCode} | ${airline.code}-${airline.num} | ${dateEn}`);
         structuredFlights.push({id,direction,flightNumber:airline.code&&airline.num?`${airline.code}-${airline.num}`:null,airlineCode:airline.code,airlineEn:airline.code?(_airDB[airline.code]?.en||airline.code):null,airlineAr:airline.code?(_airDB[airline.code]?.ar||airline.code):null,from:fromCode,fromAr:_airportMap[fromCode]?.ar||fromCode,fromEn:_airportMap[fromCode]?.en||fromCode,to:toCode,toAr:_airportMap[toCode]?.ar||toCode,toEn:_airportMap[toCode]?.en||toCode,date:dateEn,dateAr,departureTime:segTimes[0]||null,arrivalTime:segTimes[1]||null});
     });
-    if(structuredFlights.length===0){const airports=_extractAirports(t2flat);if(airports.length>=2){const airline=_extractAirline(t2flat);const d=_extractDate(t2flat);const dateAr=d.day!=='??'?`${parseInt(d.day)} ${_monthAr[d.mon]||d.mon} ${d.year}`:null;const dateEn=d.day!=='??'?`${parseInt(d.day)} ${d.mon} ${d.year}`:null;structuredFlights.push({id:'OB',direction:'outbound',flightNumber:airline.code&&airline.num?`${airline.code}-${airline.num}`:null,airlineCode:airline.code,airlineEn:airline.code?(_airDB[airline.code]?.en||airline.code):null,airlineAr:airline.code?(_airDB[airline.code]?.ar||airline.code):null,from:airports[0].code,fromAr:_airportMap[airports[0].code]?.ar||airports[0].code,fromEn:_airportMap[airports[0].code]?.en||airports[0].code,to:airports[airports.length-1].code,toAr:_airportMap[airports[airports.length-1].code]?.ar||airports[airports.length-1].code,toEn:_airportMap[airports[airports.length-1].code]?.en||airports[airports.length-1].code,date:dateEn,dateAr,departureTime:times[0]||null,arrivalTime:times[1]||null});}}
+    if(structuredFlights.length===0){
+        console.debug('[parseTicketText] no segments found from splits, trying full-text fallback');
+        const airports=_extractAirports(t2flat);
+        if(airports.length>=2){
+            const airline=_extractAirline(t2flat);const d=_extractDate(t2flat);
+            const dateAr=d.day!=='??'?`${parseInt(d.day)} ${_monthAr[d.mon]||d.mon} ${d.year}`:null;
+            const dateEn=d.day!=='??'?`${parseInt(d.day)} ${d.mon} ${d.year}`:null;
+            console.debug('[parseTicketText] fallback airports:', airports.map(a=>a.code));
+            structuredFlights.push({id:'OB',direction:'outbound',flightNumber:airline.code&&airline.num?`${airline.code}-${airline.num}`:null,airlineCode:airline.code,airlineEn:airline.code?(_airDB[airline.code]?.en||airline.code):null,airlineAr:airline.code?(_airDB[airline.code]?.ar||airline.code):null,from:airports[0].code,fromAr:_airportMap[airports[0].code]?.ar||airports[0].code,fromEn:_airportMap[airports[0].code]?.en||airports[0].code,to:airports[airports.length-1].code,toAr:_airportMap[airports[airports.length-1].code]?.ar||airports[airports.length-1].code,toEn:_airportMap[airports[airports.length-1].code]?.en||airports[airports.length-1].code,date:dateEn,dateAr,departureTime:times[0]||null,arrivalTime:times[1]||null});
+        }
+    }
     const isRT=structuredFlights.some(f=>f.direction==='inbound')||/\bReturn\s+from\b/i.test(t2);
     return{pnr,pnr2,hasMultiPNR,ticketNumbers:ticketNums,passengers:paxNames,passengerTypes:paxTypes,adultCount,flights:structuredFlights,routeType:isRT?'RT':'OW',paxCount:paxNames.length||1};
 }
@@ -1504,6 +1873,334 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 // ─── INIT ────────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════
+// FEATURE ADDITIONS v55
+// ══════════════════════════════════════════════════════════════
+
+// ── 1. DARK MODE ─────────────────────────────────────────────
+function toggleDarkMode(){
+    const isDark=document.documentElement.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode',isDark?'1':'');
+    const btn=document.getElementById('darkModeBtn');
+    if(btn){btn.textContent=isDark?'☀️ نهاري':'🌙 ليلي';}
+}
+(function initDark(){
+    if(localStorage.getItem('darkMode')==='1'){
+        document.documentElement.classList.add('dark-mode');
+        const btn=document.getElementById('darkModeBtn');
+        if(btn)btn.textContent='☀️ نهاري';
+    }
+})();
+
+// ── 2. TICKET HISTORY ────────────────────────────────────────
+const HISTORY_KEY='ticket_history_v2';
+const HISTORY_MAX=20;
+
+function _saveToHistory(data){
+    if(!data||!data.flights||data.flights.length===0)return;
+    try{
+        let hist=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');
+        const entry={
+            ts:Date.now(),
+            pnr:data.pnr||'',
+            pnr2:data.pnr2||'',
+            passengers:data.passengers||[],
+            flights:data.flights.map(f=>({from:f.from,to:f.to,fromAr:f.fromAr,toAr:f.toAr,flightNumber:f.flightNumber,date:f.date,airlineEn:f.airlineEn,departureTime:f.departureTime,arrivalTime:f.arrivalTime})),
+            routeType:data.routeType||'OW',
+            paxCount:data.paxCount||1,
+            _source:data._source||'generic'
+        };
+        // Remove dupe PNR
+        hist=hist.filter(h=>!h.pnr||h.pnr!==entry.pnr);
+        hist.unshift(entry);
+        hist=hist.slice(0,HISTORY_MAX);
+        localStorage.setItem(HISTORY_KEY,JSON.stringify(hist));
+        _updateHistoryBadge(hist.length);
+        _renderHistoryList(hist);
+    }catch(e){console.warn('History save failed:',e);}
+}
+
+function _updateHistoryBadge(count){
+    const badge=document.getElementById('historyBadge');
+    if(badge)badge.style.display=count>0?'block':'none';
+}
+
+function _renderHistoryList(hist){
+    const list=document.getElementById('historyList');
+    if(!list)return;
+    if(!hist||hist.length===0){list.innerHTML='<div style="text-align:center;padding:20px;font-size:0.75rem;color:var(--panel-hint);">لا يوجد سجل بعد</div>';return;}
+    list.innerHTML=hist.map((h,i)=>{
+        const fl=h.flights[0]||{};
+        const dt=new Date(h.ts);
+        const timeStr=dt.toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+        const dateStr=dt.toLocaleDateString('ar-SA',{day:'numeric',month:'short'});
+        const src=h._source==='almosafer'?'<span style="background:#fef3c7;color:#92400e;border-radius:4px;padding:1px 5px;font-size:0.55rem;font-weight:800;margin-right:4px;">ALM</span>':'';
+        return `<div onclick="loadFromHistory(${i})" style="padding:9px 11px;border-radius:8px;border:1px solid var(--panel-border);margin-bottom:6px;cursor:pointer;background:var(--panel-bg2);transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--panel-border)'">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <div style="font-size:0.72rem;font-weight:900;color:var(--panel-text);">${src}${fl.from||'---'} → ${fl.to||'---'}</div>
+                <div style="font-size:0.58rem;color:var(--panel-hint);">${dateStr} ${timeStr}</div>
+            </div>
+            <div style="font-size:0.63rem;color:var(--panel-sub);">${fl.flightNumber||''} · ${fl.airlineEn||''} · ${fl.date||''}</div>
+            ${h.pnr?`<div style="font-family:IBM Plex Mono,monospace;font-size:0.6rem;color:var(--accent);margin-top:3px;">${h.pnr}${h.pnr2?' / '+h.pnr2:''}</div>`:''}
+        </div>`;
+    }).join('');
+}
+
+function loadFromHistory(idx){
+    try{
+        const hist=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');
+        const h=hist[idx];if(!h)return;
+        // Reconstruct minimal ticketData from history entry
+        const data={
+            pnr:h.pnr,pnr2:h.pnr2,hasMultiPNR:false,
+            passengers:h.passengers,passengerTypes:h.passengers.map(()=>'adult'),
+            adultCount:h.paxCount||1,flights:h.flights.map(f=>({
+                id:'OB',direction:'outbound',...f,
+                fromEn:f.fromEn||f.from,toEn:f.toEn||f.to,
+                fromAr:f.fromAr||f.from,toAr:f.toAr||f.to,
+            })),
+            routeType:h.routeType||'OW',paxCount:h.paxCount||1,
+            ticketNumbers:[],_source:h._source
+        };
+        ticketData=data;
+        setScanStatus('success',t('✅ تم استعادة التذكرة من السجل','✅ Restored from history'),false);
+        renderTicketPanel(data);
+        _autoFillNsFromTicket(data);
+        closeHistory();
+    }catch(e){console.warn('Load history failed:',e);}
+}
+
+function toggleHistory(){
+    const panel=document.getElementById('historyPanel');
+    if(!panel)return;
+    const isOpen=panel.style.display==='block';
+    if(isOpen){closeHistory();}
+    else{
+        try{const hist=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');_renderHistoryList(hist);}catch(e){}
+        panel.style.display='block';
+        document.getElementById('sbHistoryIcon')?.classList.add('active');
+    }
+}
+function closeHistory(){
+    const panel=document.getElementById('historyPanel');
+    if(panel)panel.style.display='none';
+    document.getElementById('sbHistoryIcon')?.classList.remove('active');
+}
+function clearHistory(){
+    if(!confirm(t('حذف سجل التذاكر كاملاً؟','Clear all ticket history?')))return;
+    localStorage.removeItem(HISTORY_KEY);
+    _renderHistoryList([]);
+    _updateHistoryBadge(0);
+}
+// Init history badge
+(function initHistory(){
+    try{const h=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');_updateHistoryBadge(h.length);}catch(e){}
+})();
+
+// ── 3. BATCH PDF ─────────────────────────────────────────────
+async function handleBatchFiles(files){
+    if(!files||files.length===0)return;
+    if(files.length===1)return handleTicketFile(files[0]);
+    if(_frozenData){
+        if(!confirm(t('تم تطبيق بيانات تذكرة سابقة. هل تريد استبدالها؟','A ticket was already applied. Replace it?')))return;
+        unfreezeTicketData();
+    }
+    setScanStatus('scanning',t(`جارٍ معالجة ${files.length} ملفات...`,`Processing ${files.length} files...`),true);
+    const results=[];
+    for(let i=0;i<files.length;i++){
+        const file=files[i];
+        if(file.type!=='application/pdf')continue;
+        try{
+            setScanStatus('scanning',t(`معالجة ${i+1} من ${files.length}...`,`Processing ${i+1} of ${files.length}...`),true);
+            const fullText=await extractTextFromPDF(file);
+            if(!fullText.trim())continue;
+            const result=parseTicketText(fullText);
+            result._rawText=fullText;result._fileName=file.name;
+            results.push(result);
+        }catch(e){console.warn('Batch file error:',file.name,e);}
+    }
+    if(results.length===0){setScanStatus('error',t('❌ لم يتم استخراج أي بيانات من الملفات','❌ No data extracted from files'),false);return;}
+    // Load first result as main ticket
+    ticketData=results[0];
+    setScanStatus('success',t(`✅ تمت معالجة ${results.length} تذكرة`,`✅ Processed ${results.length} tickets`),false);
+    renderTicketPanel(results[0]);
+    _autoFillNsFromTicket(results[0]);
+    setTimeout(_syncNoShowFromSelectedFlights,100);
+    // Save all to history
+    results.forEach(r=>_saveToHistory(r));
+    // Show batch summary if more than 1
+    if(results.length>1) _showBatchSummary(results);
+}
+
+function _showBatchSummary(results){
+    const existing=document.getElementById('batchSummary');
+    if(existing)existing.remove();
+    const div=document.createElement('div');
+    div.id='batchSummary';
+    div.style.cssText='position:fixed;top:64px;left:50%;transform:translateX(-50%);background:var(--panel-bg);border:1px solid var(--panel-border2);border-radius:10px;padding:12px 16px;z-index:600;box-shadow:0 8px 28px rgba(0,0,0,0.18);max-width:360px;width:92%;';
+    div.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-size:0.8rem;font-weight:900;color:var(--panel-text);">📦 معالجة دفعية — ${results.length} تذكرة</span><button onclick="this.closest('#batchSummary').remove()" style="background:none;border:none;color:var(--panel-hint);cursor:pointer;font-size:1rem;">✕</button></div>
+    ${results.map((r,i)=>{const fl=r.flights[0]||{};return `<div onclick="ticketData=${JSON.stringify(r)};renderTicketPanel(${JSON.stringify(r)});this.closest('#batchSummary').remove();" style="padding:7px 9px;border-radius:7px;border:1px solid var(--panel-border);margin-bottom:5px;cursor:pointer;font-size:0.68rem;background:var(--panel-bg2);">${i===0?'🔵':'⚪'} <b>${fl.from||'?'}→${fl.to||'?'}</b> · ${fl.flightNumber||''} · ${r.pnr||''}</div>`;}).join('')}`;
+    document.body.appendChild(div);
+    setTimeout(()=>div.remove(),15000);
+}
+
+// ── 4. CLIPBOARD PASTE ───────────────────────────────────────
+async function pasteFromClipboard(){
+    try{
+        const text=await navigator.clipboard.readText();
+        if(!text||!text.trim()){alert(t('الحافظة فارغة أو لا يحتوي على نص','Clipboard is empty'));return;}
+        if(_frozenData){
+            if(!confirm(t('استبدال البيانات الحالية؟','Replace current data?')))return;
+            unfreezeTicketData();
+        }
+        setScanStatus('scanning',t('جارٍ تحليل النص من الحافظة...','Parsing clipboard text...'),true);
+        const result=parseTicketText(text);
+        if(!result.flights||result.flights.length===0){
+            setScanStatus('error',t('❌ لم يُكتشف تنسيق رحلة في النص','❌ No flight format detected in text'),false);return;
+        }
+        result._rawText=text;
+        ticketData=result;
+        setScanStatus('success',t('✅ تم تحليل النص بنجاح','✅ Text parsed successfully'),false);
+        renderTicketPanel(result);
+        _autoFillNsFromTicket(result);
+        setTimeout(_syncNoShowFromSelectedFlights,100);
+        _saveToHistory(result);
+    }catch(e){
+        if(e.name==='NotAllowedError')alert(t('يجب السماح بالوصول للحافظة من إعدادات المتصفح','Allow clipboard access in browser settings'));
+        else setScanStatus('error',t('❌ خطأ في قراءة الحافظة','❌ Clipboard read error'),false);
+    }
+}
+
+// ── 5. CSV EXPORT ────────────────────────────────────────────
+function exportCSV(){
+    if(!ticketData){alert(t('لا توجد بيانات تذكرة للتصدير','No ticket data to export'));return;}
+    const rows=[['PNR','Booking ID','Route Type','Flight #','From','To','Date','Dep Time','Arr Time','Airline','Passengers','PAX Count','Source']];
+    (ticketData.flights||[]).forEach(fl=>{
+        rows.push([
+            ticketData.pnr||'',
+            ticketData.pnr2||'',
+            ticketData.routeType||'',
+            fl.flightNumber||'',
+            fl.from||'',
+            fl.to||'',
+            fl.date||'',
+            fl.departureTime||'',
+            fl.arrivalTime||'',
+            fl.airlineEn||fl.airlineCode||'',
+            (ticketData.passengers||[]).join(' / '),
+            ticketData.paxCount||1,
+            ticketData._source||'generic'
+        ]);
+    });
+    const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`ticket_${ticketData.pnr||'export'}_${Date.now()}.csv`;
+    a.click();URL.revokeObjectURL(url);
+    showToast();
+}
+
+// ── 6. WHATSAPP TEMPLATE ─────────────────────────────────────
+const WA_TEMPLATE_KEY='wa_template_v1';
+const DEFAULT_WA_TEMPLATE=`✈️ تفاصيل رحلتك
+━━━━━━━━━━━━━━━
+🔢 رقم الرحلة: {flight}
+🛫 من: {from}
+🛬 إلى: {to}
+📅 التاريخ: {date}
+⏰ الإقلاع: {dep}
+🛬 الوصول: {arr}
+✈️ شركة الطيران: {airline}
+👥 المسافرون: {pax}
+━━━━━━━━━━━━━━━
+📌 رقم الحجز: {pnr}`;
+
+function _getWaTemplate(){
+    return localStorage.getItem(WA_TEMPLATE_KEY)||DEFAULT_WA_TEMPLATE;
+}
+function resetWaTemplate(){
+    localStorage.removeItem(WA_TEMPLATE_KEY);
+    const ed=document.getElementById('waTemplateEditor');
+    if(ed)ed.value=DEFAULT_WA_TEMPLATE;
+}
+function applyWaTemplate(){
+    if(!ticketData){alert(t('قم برفع تذكرة أولاً','Upload a ticket first'));return;}
+    const ed=document.getElementById('waTemplateEditor');
+    const tpl=ed?ed.value:_getWaTemplate();
+    if(ed)localStorage.setItem(WA_TEMPLATE_KEY,tpl);
+    const fl=(ticketData.flights||[])[0]||{};
+    const paxStr=(ticketData.passengers||[]).join(' / ');
+    const result=tpl
+        .replace(/{flight}/g,fl.flightNumber||'—')
+        .replace(/{from}/g,(fl.fromAr||fl.from||'—')+' ('+( fl.from||'')+')' )
+        .replace(/{to}/g,(fl.toAr||fl.to||'—')+' ('+(fl.to||'')+')' )
+        .replace(/{date}/g,fl.dateAr||fl.date||'—')
+        .replace(/{dep}/g,fl.departureTime||'—')
+        .replace(/{arr}/g,fl.arrivalTime||'—')
+        .replace(/{airline}/g,fl.airlineAr||fl.airlineEn||'—')
+        .replace(/{pax}/g,paxStr||'—')
+        .replace(/{pnr}/g,ticketData.pnr||'—');
+    navigator.clipboard.writeText(result).then(()=>showToast()).catch(()=>{
+        prompt(t('انسخ النص:','Copy text:'),result);
+    });
+}
+// Init template editor
+(function initWaTemplate(){
+    const ed=document.getElementById('waTemplateEditor');
+    if(ed)ed.value=_getWaTemplate();
+})();
+
+// ── 7. DEBUG PANEL ────────────────────────────────────────────
+function toggleDebugPanel(){
+    const panel=document.getElementById('debugPanel');
+    if(!panel)return;
+    const isOpen=panel.style.display==='block';
+    if(isOpen){panel.style.display='none';return;}
+    panel.style.display='block';
+    _renderDebug();
+}
+function _renderDebug(){
+    const el=document.getElementById('debugContent');
+    if(!el||!ticketData)return;
+    const d=ticketData;
+    const lines=[
+        `Parser:      ${d._source||'generic'}`,
+        `PNR:         ${d.pnr||'—'} ${d.pnr2?'/ '+d.pnr2:''}`,
+        `Route:       ${d.routeType||'OW'} · ${d.paxCount||1} pax`,
+        `Tickets:     ${(d.ticketNumbers||[]).join(', ')||'—'}`,
+        '──────────────────────────',
+        ...(d.flights||[]).map((f,i)=>[
+            `Seg [${i}]:     ${f.from||'?'} → ${f.to||'?'} (${f.direction||'?'})`,
+            `  Flight#:   ${f.flightNumber||'—'}`,
+            `  Airline:   ${f.airlineEn||f.airlineCode||'—'}`,
+            `  Date:      ${f.date||'—'}`,
+            `  Times:     ${f.departureTime||'—'} → ${f.arrivalTime||'—'}`,
+        ].join('\n')),
+        '──────────────────────────',
+        `Passengers:`,
+        ...(d.passengers||[]).map((p,i)=>`  [${i}] ${p} (${(d.passengerTypes||[])[i]||'adult'})`),
+    ];
+    el.textContent=lines.join('\n');
+}
+
+// ── PATCH handleTicketFile to save history ────────────────────
+const _origHandleTicketFile=handleTicketFile;
+handleTicketFile=async function(file){
+    await _origHandleTicketFile(file);
+    if(ticketData)_saveToHistory(ticketData);
+};
+
+// ── PATCH onDrop for multi-file drop ─────────────────────────
+onDrop=function(e){
+    e.preventDefault();
+    document.getElementById('tscTopbar').style.outline='';
+    const files=e.dataTransfer.files;
+    if(files&&files.length>1)handleBatchFiles(files);
+    else if(files&&files.length===1)handleTicketFile(files[0]);
+};
+
 onServiceChange();
 // Load GitHub flight DB in background
 setTimeout(_loadGithubDB, 200);
