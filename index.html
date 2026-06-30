@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" id="htmlRoot">
 <head>
@@ -714,7 +713,7 @@
             </div>
             <div id="calcResults" style="display:none;">
                 <div id="quoteSection">
-                    <div class="section-title">📤 <span data-ar="عرض السعر للعميل" data-en="Customer Quote">عرض السعر للعميل</span></div>
+                    <div class="section-title"><span data-ar="عرض السعر للعميل" data-en="Customer Quote">عرض السعر للعميل</span></div>
                     <div class="result-card">
                         <div class="result-card-header">🇸🇦 العرض بالعربية</div>
                         <div class="result-card-body">
@@ -733,7 +732,7 @@
                 </div>
                 <div id="detailsSection" class="hidden-section animate-in">
                     <hr class="divider">
-                    <div class="section-title">🔒 Internal Log</div>
+                    <div class="section-title">Internal Log</div>
                     <div class="result-card">
                         <div class="result-card-header" style="background:linear-gradient(135deg,#0d1117,#1e293b);">⚙️ INTERNAL RECORD</div>
                         <div class="result-card-body" style="background:#0d1117;border-radius:0 0 14px 14px;">
@@ -1073,12 +1072,12 @@ function calculate(){
     if(selFlights&&selFlights.length>0){
         const obFl=selFlights.find(f=>f.direction==='outbound'||f.id==='OB');
         const ibFl=selFlights.find(f=>f.direction==='inbound'||f.id==='IB');
-        if(isRT&&obFl&&ibFl){routeLineAr=`الرحلة: 🛫 ${obFl.fromAr||obFl.from} ← ${obFl.toAr||obFl.to} | 🛬 ${ibFl.fromAr||ibFl.from} ← ${ibFl.toAr||ibFl.to}`;routeLineEn=`Route: 🛫 ${obFl.fromEn||obFl.from} → ${obFl.toEn||obFl.to} | 🛬 ${ibFl.fromEn||ibFl.from} → ${ibFl.toEn||ibFl.to}`;}
+        if(isRT&&obFl&&ibFl){routeLineAr=`الرحلة: ${obFl.fromAr||obFl.from} ← ${obFl.toAr||obFl.to} | ${ibFl.fromAr||ibFl.from} ← ${ibFl.toAr||ibFl.to}`;routeLineEn=`Route: ${obFl.fromEn||obFl.from} → ${obFl.toEn||obFl.to} | ${ibFl.fromEn||ibFl.from} → ${ibFl.toEn||ibFl.to}`;}
         else{const fl=obFl||selFlights[0];routeLineAr=`الرحلة: ${fl.fromAr||fl.from} ← ${fl.toAr||fl.to}`;routeLineEn=`Route: ${fl.fromEn||fl.from} → ${fl.toEn||fl.to}`;}
     }
 
     let airlineBreakAr,airlineBreakEn;
-    if(isRT){airlineBreakAr=`  🛫 ذهاب: ${totalAirlineOB.toFixed(2)} ${currencyAr}\n  🛬 عودة: ${totalAirlineIB.toFixed(2)} ${currencyAr}\n  إجمالي رسوم الطيران: ${totalAirline.toFixed(2)} ${currencyAr}`;airlineBreakEn=`  🛫 Outbound: ${totalAirlineOB.toFixed(2)} ${currency}\n  🛬 Inbound:  ${totalAirlineIB.toFixed(2)} ${currency}\n  Airline fees total: ${totalAirline.toFixed(2)} ${currency}`;}
+    if(isRT){airlineBreakAr=`  ذهاب: ${totalAirlineOB.toFixed(2)} ${currencyAr}\n  عودة: ${totalAirlineIB.toFixed(2)} ${currencyAr}\n  إجمالي رسوم الطيران: ${totalAirline.toFixed(2)} ${currencyAr}`;airlineBreakEn=`  Outbound: ${totalAirlineOB.toFixed(2)} ${currency}\n  Inbound:  ${totalAirlineIB.toFixed(2)} ${currency}\n  Airline fees total: ${totalAirline.toFixed(2)} ${currency}`;}
     else{airlineBreakAr=`إجمالي رسوم الطيران: ${totalAirline.toFixed(2)} ${currencyAr}`;airlineBreakEn=`Airline fees total: ${totalAirline.toFixed(2)} ${currency}`;}
     const mosFeeLineAr=(isMulti&&service!=='CheckIn')?`رسوم شركة المسافر (Multi PNR): ${totalMosFee.toFixed(2)} ${currencyAr}`:(isMulti&&service==='CheckIn')?`رسوم شركة المسافر (Multi PNR): ${mosFee} ${currencyAr} × ${pax} مسافر = ${totalMosFee.toFixed(2)} ${currencyAr}`:`رسوم شركة المسافر: ${totalMosFee.toFixed(2)} ${currencyAr}`;
     const mosFeeLineEn=(isMulti&&service!=='CheckIn')?`Almosafer fees (Multi PNR): ${totalMosFee.toFixed(2)} ${currency}`:(isMulti&&service==='CheckIn')?`Almosafer fees (Multi PNR): ${mosFee} ${currency} × ${pax} pax = ${totalMosFee.toFixed(2)} ${currency}`:`Almosafer fees: ${totalMosFee.toFixed(2)} ${currency}`;
@@ -1389,6 +1388,38 @@ function _isAlmosaferPDF(text){
            /e-Ticket\s*\/\s*Itinerary|التذكرة الإلكترونية/i.test(text);
 }
 
+// Extract ALL labeled PNR / Airline Reference codes from the raw ticket
+// text. Almosafer multi-leg tickets list one PNR per leg, but the
+// "Airline Reference (PNR)" heading itself only appears ONCE — followed by
+// both per-leg route blocks. PDF text extraction also flattens the
+// two-column layout, so the codes don't reliably sit right after the label
+// or even next to each other (e.g. "...14TTMT...RUH to CAI...7LD29H...").
+// We can't rely on position at all, so we use two passes.
+function _extractAlmosaferPNRs(text){
+    const found=[];
+    // Pass 1: explicit "Airline Reference (PNR)" label followed (possibly
+    // on the next line) by a 5-7 char alphanumeric code. Catches the first
+    // PNR, and handles pure-letter PNR codes (no digit) correctly.
+    const labelRe=/Airline\s*Reference\s*\(PNR\)\s*[:\n\r]*\s*([A-Za-z0-9]{5,7})/gi;
+    let m;
+    while((m=labelRe.exec(text))!==null){
+        if(/[a-z]/.test(m[1]))continue; // skip mixed-case false matches like "Riyadh"
+        const code=m[1].toUpperCase();
+        if(!_PNR_STOPWORDS.has(code)&&!found.includes(code))found.push(code);
+    }
+    // Pass 2: scan the WHOLE document for 5-7 char tokens that mix letters
+    // AND digits. Airport/city codes are letters-only (RUH, CAI), ticket
+    // numbers/dates are digits-only, so this pattern is specific enough to
+    // reliably catch the second (or first) PNR regardless of where the text
+    // extraction placed it.
+    const tokenRe=/\b(?=[A-Z0-9]{5,7}\b)(?=[A-Z0-9]*[A-Z])(?=[A-Z0-9]*\d)[A-Z0-9]{5,7}\b/g;
+    while((m=tokenRe.exec(text))!==null){
+        const code=m[0].toUpperCase();
+        if(!_PNR_STOPWORDS.has(code)&&!found.includes(code))found.push(code);
+    }
+    return found.slice(0,2);
+}
+
 function parseAlmosaferPDF(text){
     console.debug('[parseAlmosaferPDF] detected Almosafer format');
     const t2 = text.replace(/\r/g,'');
@@ -1396,13 +1427,19 @@ function parseAlmosaferPDF(text){
     const flat = t2.replace(/\n+/g,' ').replace(/\s+/g,' ');
 
     // ── PNR / Booking ID ──────────────────────────────────────────
-    let pnr = null, bookingId = null;
-    const pnrM = tUP.match(/AIRLINE\s+REFERENCE\s*\(PNR\)[:\s]*([A-Z0-9]{5,8})/);
-    if(pnrM) pnr = pnrM[1];
+    // Almosafer tickets can carry ONE PNR per direction (Multi PNR) when
+    // each leg is booked separately with a different airline. Collect ALL
+    // labeled PNRs first so we can correctly flag hasMultiPNR.
+    const allPnrs = _extractAlmosaferPNRs(text);
+    let pnr = allPnrs[0] || null;
+    let pnr2 = allPnrs[1] || null;
+    let bookingId = null;
     const bidM = text.match(/(?:Booking\s+ID(?:\s*\/\s*Almosafer\s+ID)?|Almosafer\s+ID)\s*\n?\s*([A-Z]\d{8,14})\b/i);
     if(bidM) bookingId = bidM[1];
-    if(!pnr){ const m2 = tUP.match(/\b([A-Z]{6})\b/); if(m2&&!_PNR_STOPWORDS.has(m2[1])) pnr=m2[1]; }
-    console.debug('[parseAlmosaferPDF] PNR:', pnr, '| Booking ID:', bookingId);
+    if(!pnr){ const m2 = tUP.match(/\b([A-Z0-9]{6})\b/); if(m2&&!_PNR_STOPWORDS.has(m2[1])) pnr=m2[1]; }
+    // Multi-PNR: two distinct labeled PNR codes found
+    const hasMultiPNR = !!(pnr && pnr2 && pnr!==pnr2);
+    console.debug('[parseAlmosaferPDF] PNR:', pnr, '| PNR2:', pnr2, '| Booking ID:', bookingId, '| MultiPNR:', hasMultiPNR);
 
     // ── Passengers ────────────────────────────────────────────────
     const paxNames=[], paxTypes=[];
@@ -1423,10 +1460,19 @@ function parseAlmosaferPDF(text){
     console.debug('[parseAlmosaferPDF] passengers:', paxNames);
 
     // ── Segment splitting ─────────────────────────────────────────
-    // Split on "Departure from X to Y" or "Return from X to Y" or Arabic equivalents
-    // Also split on numbered segments, or repeated date+airline blocks
+    // Split on "Departure from X to Y" or "Return from X to Y" or Arabic equivalents.
+    // IMPORTANT: the ticket header repeats route summaries like "RUH to CAI"
+    // / "CAI to RUH" near the PNR block BEFORE the real flight sections —
+    // those must NOT be treated as separate segments, so we split only on
+    // the actual section headers, never on bare "X to Y" patterns.
     const segSplitRe = /(?=(?:Departure|Depart|Return)\s+from\b|المغادرة\s+من|رحلة\s+العودة)/gi;
     let rawSegs = t2.split(segSplitRe).filter(s=>s.trim().length>30);
+    // Drop the preamble chunk (everything before the first real section
+    // header) — it contains the PNR header route summary and must not be
+    // parsed as a flight segment.
+    if(rawSegs.length>0 && !/^\s*(?:Departure|Depart|Return)\s+from\b/i.test(rawSegs[0].trim())){
+        rawSegs = rawSegs.slice(1);
+    }
     if(rawSegs.length<1) rawSegs=[t2];
     console.debug('[parseAlmosaferPDF] segment count after split:', rawSegs.length);
 
@@ -1454,16 +1500,8 @@ function parseAlmosaferPDF(text){
             console.debug(`[parseAlmosaferPDF] seg[${si}] route match: ${fromCode}→${toCode}`);
         }
 
-        // Try: PNR line often says "ORY to AGP" on Almosafer
-        if(!fromCode){
-            const pnrRouteM = flat.match(/\b([A-Z]{3})\s+to\s+([A-Z]{3})\b/);
-            if(pnrRouteM && _airportMap[pnrRouteM[1]] && _airportMap[pnrRouteM[2]]){
-                fromCode = pnrRouteM[1]; toCode = pnrRouteM[2];
-                console.debug(`[parseAlmosaferPDF] seg[${si}] PNR-line route: ${fromCode}→${toCode}`);
-            }
-        }
-
-        // Fallback: _extractAirports on segment
+        // Fallback: _extractAirports on segment (parentheses / bare codes,
+        // restricted to this segment's own text so OB/IB data never mixes)
         if(!fromCode){
             const ap = _extractAirports(segFlat);
             if(ap.length>=2){ fromCode=ap[0].code; toCode=ap[ap.length-1].code; }
@@ -1491,7 +1529,10 @@ function parseAlmosaferPDF(text){
         const cabinM = segFlat.match(/\b(Economy|Business|First|Premium)\b/i);
         const cabin = cabinM ? cabinM[1] : null;
 
-        console.debug(`[parseAlmosaferPDF] seg[${si}] → ${fromCode}→${toCode} | fn:${airline.code}-${airline.num} | date:${dateEn} | times:`, segTimes);
+        // ── Per-leg PNR (Multi PNR tickets list a different PNR per leg) ──
+        const legPnr = hasMultiPNR ? (isReturn ? (pnr2||pnr) : (pnr||pnr2)) : (pnr||pnr2);
+
+        console.debug(`[parseAlmosaferPDF] seg[${si}] → ${fromCode}→${toCode} | fn:${airline.code}-${airline.num} | date:${dateEn} | times:`, segTimes, '| pnr:', legPnr);
 
         structuredFlights.push({
             id, direction,
@@ -1504,7 +1545,8 @@ function parseAlmosaferPDF(text){
             date: dateEn, dateAr,
             departureTime: segTimes[0]||null,
             arrivalTime:   segTimes[1]||null,
-            cabin
+            cabin,
+            pnr: legPnr
         });
     });
 
@@ -1514,7 +1556,9 @@ function parseAlmosaferPDF(text){
     const qualifiedFlights = structuredFlights.filter(f => f.date || f.departureTime || f.airlineCode);
     // If filtering removed everything, fall back to whatever we have
     const finalFlights = qualifiedFlights.length > 0 ? qualifiedFlights : structuredFlights;
-    // Dedup by from+to: if two segments have same route, keep the one with more data
+    // Dedup by from+to+direction: if two segments have same route & direction,
+    // keep the one with more data (do NOT dedup OB vs IB even when the route
+    // codes are reversed-but-distinct, since direction already disambiguates).
     const routeSeen = new Map();
     const dedupedFlights = [];
     for(const f of finalFlights){
@@ -1536,10 +1580,10 @@ function parseAlmosaferPDF(text){
     }
 
     const isRT = dedupedFlights.some(f=>f.direction==='inbound');
-    console.debug('[parseAlmosaferPDF] final flights:', dedupedFlights.length, '(after dedup) | RT:', isRT);
+    console.debug('[parseAlmosaferPDF] final flights:', dedupedFlights.length, '(after dedup) | RT:', isRT, '| MultiPNR:', hasMultiPNR);
 
     return{
-        pnr, pnr2: bookingId||null, hasMultiPNR: false,
+        pnr, pnr2: pnr2||bookingId||null, hasMultiPNR,
         ticketNumbers: ticketNums,
         passengers: paxNames, passengerTypes: paxTypes,
         adultCount: paxTypes.filter(t=>t==='adult').length || paxNames.length,
@@ -1655,7 +1699,8 @@ function renderTicketPanel(data){
         const cityFrom=currentLang==='ar'?(fl.fromAr||fl.from):(fl.fromEn||fl.from);
         const cityTo=currentLang==='ar'?(fl.toAr||fl.to):(fl.toEn||fl.to);
         const dateDisp=currentLang==='ar'?(fl.dateAr||fl.date||''):(fl.date||'');
-        chip.innerHTML=`<div class="flight-chip-check">✓</div><div class="flight-chip-info"><div class="flight-chip-route">${fl.from||'---'} – ${fl.to||'---'} &nbsp;${dirLabel}</div><div class="flight-chip-cities">${cityFrom} → ${cityTo}</div><div class="flight-chip-detail">${fl.flightNumber?'<span class="fcd-fn">'+fl.flightNumber+'</span>':''}${airlineName?'<span class="fcd-al">· '+airlineName+'</span>':''}${dateDisp?'<span class="fcd-dt">· '+dateDisp+'</span>':''}${fl.departureTime?'<span class="fcd-tm">'+fl.departureTime+'</span>':''}</div></div>`;
+        const pnrBadge=fl.pnr?`<span class="fcd-fn" style="background:rgba(124,58,237,0.18);color:#c4b5fd;">${fl.pnr}</span>`:'';
+        chip.innerHTML=`<div class="flight-chip-check">✓</div><div class="flight-chip-info"><div class="flight-chip-route">${fl.from||'---'} – ${fl.to||'---'} &nbsp;${dirLabel}</div><div class="flight-chip-cities">${cityFrom} → ${cityTo}</div><div class="flight-chip-detail">${fl.flightNumber?'<span class="fcd-fn">'+fl.flightNumber+'</span>':''}${airlineName?'<span class="fcd-al">· '+airlineName+'</span>':''}${dateDisp?'<span class="fcd-dt">· '+dateDisp+'</span>':''}${fl.departureTime?'<span class="fcd-tm">'+fl.departureTime+'</span>':''}${pnrBadge}</div></div>`;
         chip.onclick=()=>{chip.classList.toggle('selected');chip.querySelector('.flight-chip-check').textContent=chip.classList.contains('selected')?'✓':'';_liveUpdateFromSelections();_syncNoShowFromSelectedFlights();};
         fc.appendChild(chip);
     });
@@ -1684,6 +1729,13 @@ function _liveUpdateFromSelections(){
         const selFls=selIdxs.map(i=>ticketData.flights[i]);const hasOB=selFls.some(f=>f.direction==='outbound'||f.id==='OB');const hasIB=selFls.some(f=>f.direction==='inbound'||f.id==='IB');const isRT=hasOB&&hasIB;
         const fl=selFls[0];const detectedType=fl?getRouteFlightType(fl.from,fl.to):_matchFlightType;
         if(detectedType!==_matchFlightType){setFlightType(detectedType,true);}
+        // ── Recompute Multi/Single PNR from the currently selected flights ──
+        // (When the user toggles which legs are selected, the PNR pairing
+        // can change — e.g. selecting only the outbound leg of a Multi PNR
+        // booking should reflect a single PNR for that leg.)
+        const selPnrs=[...new Set(selFls.map(f=>f.pnr).filter(Boolean))];
+        const detectedPnrType=selPnrs.length>=2?'multi':(ticketData.hasMultiPNR&&selPnrs.length<=1?_matchPnr:'single');
+        if(selPnrs.length>=2&&_matchPnr!=='multi'){setMatchPnr('multi',true);}
         _flashCell('lmsCellRoute');_setLmsRouteVal(isRT);
     }
     updateMatchSummary();runMatchValidation();_flashCell('lmsCellPax');
